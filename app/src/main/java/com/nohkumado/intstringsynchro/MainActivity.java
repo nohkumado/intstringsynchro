@@ -7,11 +7,12 @@ import android.view.View.*;
 import android.widget.*;
 import java.util.*;
 
-public class MainActivity extends Activity implements OnClickListener, DialogFragAddLang.AddLangDialogListener
+public class MainActivity extends Activity implements OnClickListener, 
+DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListener
 {
 
   Spinner langSpin;
-  Button addLang;
+  Button addLang, addToken;
   private String m_Text = "";
   ArrayList<String> langList;
 
@@ -33,6 +34,9 @@ public class MainActivity extends Activity implements OnClickListener, DialogFra
 
     addLang = (Button) findViewById(R.id.addLangBut);
     addLang.setOnClickListener(this);
+    
+    addToken = (Button) findViewById(R.id.addTokBut);
+    addToken.setOnClickListener(this);
   }//protected void onCreate(Bundle savedInstanceState)
 
   public String getLang()
@@ -45,10 +49,9 @@ public class MainActivity extends Activity implements OnClickListener, DialogFra
   @Override
   public void onClick(View p1)
   {
-    if (p1 == addLang)
-    {
-      showEditDialog();      
-    }
+    if (p1 == addLang) showEditDialog();
+    else if (p1 == addToken)  showAddTokenDialog();      
+    
   }//public void onClick(View p1)
 
   private void showEditDialog()
@@ -58,6 +61,13 @@ public class MainActivity extends Activity implements OnClickListener, DialogFra
     editNameDialog.show(fm, "fragment_add_lang");
   }
 
+  private void showAddTokenDialog()
+  {
+    FragmentManager fm = getFragmentManager();
+    DialogFragAddToken editNameDialog = new DialogFragAddToken();
+    editNameDialog.show(fm, "fragment_add_token");
+  }
+  
   @Override
   public void onFinishAddLangDialog(String inputText)
   {
@@ -71,6 +81,12 @@ public class MainActivity extends Activity implements OnClickListener, DialogFra
       langList.add(sanitized);
       Toast.makeText(this, "Added lang, " + sanitized, Toast.LENGTH_SHORT).show();
     }
+  }
+  
+  @Override
+  public void onFinishAddTokenDialog(String inputText)
+  {
+      Toast.makeText(this, "Added Token, " + inputText, Toast.LENGTH_SHORT).show();
   }
 
 }
