@@ -2,6 +2,8 @@
 <resources>
 
     <string name="app_name">IntStringSynchro</string>
-    <string name="hello_world">Hello world!</string>
-
+    <string name="actual_language">Actual</string>
+    <string name="add_lang">Add Lang</string>
+    <string name="add_tok">Add Token</string>
+    <string name="add_project">Add Project</string>
 </resources>
