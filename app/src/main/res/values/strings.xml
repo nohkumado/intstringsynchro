@@ -6,4 +6,5 @@
     <string name="add_lang">Add Lang</string>
     <string name="add_tok">Add Token</string>
     <string name="add_project">Add Project</string>
+    <string name="open_stringxml">open a string.xml file of a project</string>
 </resources>
