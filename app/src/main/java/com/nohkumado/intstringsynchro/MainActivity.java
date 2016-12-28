@@ -13,6 +13,7 @@ import com.github.angads25.filepicker.model.*;
 import com.github.angads25.filepicker.view.*;
 import java.io.*;
 import java.util.*;
+import java.util.regex.*;
 
 public class MainActivity extends Activity implements OnClickListener, 
 DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListener,
@@ -93,11 +94,58 @@ DialogSelectionListener
   @Override
   public void onFinishAddLangDialog(String inputText)
   {
+    Log.d(TAG,"adding lang "+inputText);
     if (inputText == null || inputText.length() <= 0) return;
-    String sanitized = inputText; 
-    if (inputText.length() > 2) sanitized = inputText.substring(0, 2);
-    sanitized = sanitized.toLowerCase();
+    String sanitized = inputText.trim();
 
+    Log.d(TAG,"analyzing "+sanitized);
+    Pattern simple = Pattern.compile("([a-z]{2})");
+    Pattern complete = Pattern.compile("([a-z]{2})\\-r([a-zA-Z]{2})");
+    Pattern iso = Pattern.compile("([a-z]{2})\\-([a-zA-Z]{2})");
+    Matcher m = complete.matcher(sanitized);
+    String lang = "", region = "";
+    if (m.find())
+    {
+      lang = m.group(1).toLowerCase();
+      region = m.group(2).toUpperCase();
+    }
+    else
+    {
+      Log.d(TAG,"not "+m+" of "+complete);
+      m = iso.matcher(sanitized);
+      if (m.find())
+      {
+        lang = m.group(1).toLowerCase();
+        region = m.group(2).toUpperCase();
+      }
+      else
+      {
+        Log.d(TAG,"not "+m+" of "+iso);
+        m = simple.matcher(sanitized);
+        if (m.find())
+        {
+          sanitized = sanitized.substring(0, 2);
+          lang = sanitized.toLowerCase();
+        }
+        else
+        {
+          Log.d(TAG,"not "+m+" of "+simple);
+          Toast.makeText(this, "Can't extract lang from " + sanitized + " valid examples: de, de-DE or de-rDE!", Toast.LENGTH_SHORT).show();
+        }
+      }
+    }
+
+    //if (inputText.length() > 2) sanitized = inputText.substring(0, 2);
+    //sanitized = sanitized.toLowerCase();
+    if (region.length() > 0)
+    {
+      sanitized = lang + "-r" + region;
+    }
+    else sanitized = lang;
+   
+    Log.d(TAG,"done analyzing "+sanitized);
+    
+    
     if (!langList.contains(sanitized))
     {
       langList.add(sanitized);
@@ -161,22 +209,27 @@ DialogSelectionListener
             break;
           }
         }
-        if(found)
+        if (found)
         {
           //ok we have the right directory
-          File resDir = new File(resValuesDir,"../");
+          File resDir = new File(resValuesDir, "../");
           //select allready selected languages
           String[] files = resDir.list(new FilenameFilter() {
               @Override
-              public boolean accept(File dir, String name) {
+              public boolean accept(File dir, String name)
+              {
                 return name.matches("values-\\[a-z\\-]{2,}");
               }
             });
-            
+
+          for (String aLang : files)
+          {
+
+          }
         }
         else
-        error.append("no strings.xml found in").append(actProjectPath);
-        
+          error.append("no strings.xml found in").append(actProjectPath);
+
       }
       else
         error.append("Dir not found: " + actProjectPath);
