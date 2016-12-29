@@ -11,28 +11,42 @@ import android.widget.*;
 import com.github.angads25.filepicker.controller.*;
 import com.github.angads25.filepicker.model.*;
 import com.github.angads25.filepicker.view.*;
+import com.nohkumado.nohutils.collection.*;
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
+import org.xmlpull.v1.*;
 
 public class MainActivity extends Activity implements OnClickListener, 
 DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListener,
 DialogSelectionListener
 {
-  Spinner langSpin;
-  Button addLang, addToken, openProject;
-  private String actProjectPath = "";
-  ArrayList<String> langList;
-
+  protected Spinner langSpin;
+  protected Button addLang, addToken, openProject;
+  protected  String actProjectPath = "";
+  protected ArrayList<String> langList;
+  protected TreeMapTable<String,String> data;
+  //protected ArrayList<StringEntry> tokenList;
+  protected ListView tokenTable;
+  protected StringEntryAdapter stringDataAdapter;
+  
   private static final int PROJECT_CHOOSED = 99;
 
   private static final String TAG="MA";
+
+  protected Pattern simple = Pattern.compile("([a-z]{2})");
+  protected Pattern complete = Pattern.compile("([a-z]{2})\\-r([a-zA-Z]{2})");
+  protected Pattern iso = Pattern.compile("([a-z]{2})\\-([a-zA-Z]{2})");
+
 
   @Override
   protected void onCreate(Bundle savedInstanceState)
   {
     super.onCreate(savedInstanceState);
+    Log.d(TAG,"#############################  start ###################################");
     setContentView(R.layout.main);
+    data = new TreeMapTable<>();
+    Log.d(TAG,"data : "+data);
     langSpin = (Spinner) findViewById(R.id.lang_selector);
     langList = new ArrayList<String>();
     langList.add("default");
@@ -52,6 +66,11 @@ DialogSelectionListener
 
     openProject  = (Button) findViewById(R.id.addProjBut);
     openProject.setOnClickListener(this);
+
+    //tokenList = new ArrayList<>();
+    tokenTable = (ListView) findViewById(R.id.stringListView);
+    stringDataAdapter = new StringEntryAdapter(this, data);
+    tokenTable.setAdapter(stringDataAdapter);
   }//protected void onCreate(Bundle savedInstanceState)
 
   public String getLang()
@@ -94,14 +113,9 @@ DialogSelectionListener
   @Override
   public void onFinishAddLangDialog(String inputText)
   {
-    Log.d(TAG,"adding lang "+inputText);
     if (inputText == null || inputText.length() <= 0) return;
     String sanitized = inputText.trim();
 
-    Log.d(TAG,"analyzing "+sanitized);
-    Pattern simple = Pattern.compile("([a-z]{2})");
-    Pattern complete = Pattern.compile("([a-z]{2})\\-r([a-zA-Z]{2})");
-    Pattern iso = Pattern.compile("([a-z]{2})\\-([a-zA-Z]{2})");
     Matcher m = complete.matcher(sanitized);
     String lang = "", region = "";
     if (m.find())
@@ -111,7 +125,6 @@ DialogSelectionListener
     }
     else
     {
-      Log.d(TAG,"not "+m+" of "+complete);
       m = iso.matcher(sanitized);
       if (m.find())
       {
@@ -120,7 +133,6 @@ DialogSelectionListener
       }
       else
       {
-        Log.d(TAG,"not "+m+" of "+iso);
         m = simple.matcher(sanitized);
         if (m.find())
         {
@@ -129,7 +141,6 @@ DialogSelectionListener
         }
         else
         {
-          Log.d(TAG,"not "+m+" of "+simple);
           Toast.makeText(this, "Can't extract lang from " + sanitized + " valid examples: de, de-DE or de-rDE!", Toast.LENGTH_SHORT).show();
         }
       }
@@ -142,10 +153,7 @@ DialogSelectionListener
       sanitized = lang + "-r" + region;
     }
     else sanitized = lang;
-   
-    Log.d(TAG,"done analyzing "+sanitized);
-    
-    
+
     if (!langList.contains(sanitized))
     {
       langList.add(sanitized);
@@ -154,9 +162,12 @@ DialogSelectionListener
   }
 
   @Override
-  public void onFinishAddTokenDialog(String inputText)
+  public void onFinishAddTokenDialog(String inputText,String defaultVal)
   {
     Toast.makeText(this, "Added Token, " + inputText, Toast.LENGTH_SHORT).show();
+    if(data != null) data.set(inputText.trim(),"default",defaultVal.trim());
+    else Log.e(TAG,"data was null.... tryed adding "+inputText);
+    if(stringDataAdapter != null) stringDataAdapter.notifyDataSetChanged();
   }
   private void showFileChooser()
   {
@@ -192,6 +203,7 @@ DialogSelectionListener
   @Override
   public void onSelectedFilePaths(String[] p1)
   {
+    //Log.d(TAG,"select file "+data);
     StringBuilder error = new StringBuilder();
     if (p1.length == 1)
     {
@@ -204,8 +216,11 @@ DialogSelectionListener
         {
           if ("strings.xml".equals(aFile))
           {
+            //TODO for later ArrayList<String> list = new ArrayList(Arrays.asList(getResources().getStringArray(R.array.strings)));//where R.array.strings is a reference to your resource
             //Toast.makeText(this, "found strings.xml", Toast.LENGTH_LONG).show();
             found = true;
+            loadStringsXmlFile(new File(resValuesDir, aFile),"default");
+
             break;
           }
         }
@@ -221,10 +236,22 @@ DialogSelectionListener
                 return name.matches("values-\\[a-z\\-]{2,}");
               }
             });
-
+          Pattern onlyLang = Pattern.compile("^values-(.*)$");
           for (String aLang : files)
           {
-
+            Matcher m = onlyLang.matcher(aLang);
+            String sanitized = m.group(1);
+            if (!langList.contains(sanitized))
+            {
+              langList.add(sanitized);
+              
+              Toast.makeText(this, "Added lang, " + sanitized, Toast.LENGTH_SHORT).show();
+            
+              }
+            File resLangFile = new File(resDir, aLang+"/strings.xml");
+            
+              if (resLangFile.exists())
+                loadStringsXmlFile(resLangFile,sanitized);
           }
         }
         else
@@ -324,6 +351,44 @@ DialogSelectionListener
     {
       e.printStackTrace();
     }
-  }
+  }//private void alterDocument(Uri uri)
+
+
+  protected void loadStringsXmlFile(File aFile,String langTok)
+  {
+    ArrayList<StringEntry> entries = new ArrayList<>(); 
+    //XmlPullParser parser =  Xml.newPullParser();
+    InputStream stream = null;
+    StringXmlParser parser = new StringXmlParser();
+    try
+    {
+      stream = new FileInputStream(aFile);
+      entries = parser.parse(stream);
+    }
+    catch (XmlPullParserException e)
+    {}
+    catch (IOException e)
+    {}
+    // Makes sure that the InputStream is closed after the app is
+    // finished using it.
+    finally
+    {
+      if (stream != null)
+      {
+        try
+        {
+          stream.close();
+        }
+        catch (IOException e)
+        {}
+      }
+    }
+    for (StringEntry anEntry: entries)
+    {
+      //Log.d(TAG,langTok+" adding entry tok "+anEntry.token+" val "+anEntry.text+" to d:"+data);
+      data.set(anEntry.token, langTok, anEntry.text);
+    }
+    if(stringDataAdapter != null) stringDataAdapter.notifyDataSetChanged();
+  }//List<StringEntry> loadStringsXmlFile(String aFile)
 
 }

@@ -21,6 +21,7 @@ android {
 
 dependencies {
   compile 'com.github.angads25:filepicker:1.0.6'
+  compile project('::../UtilsApp:nohutils')
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 

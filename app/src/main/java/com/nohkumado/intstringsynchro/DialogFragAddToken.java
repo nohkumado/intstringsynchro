@@ -13,9 +13,9 @@ public class DialogFragAddToken  extends DialogFragment implements OnEditorActio
   public static final String TAG = "TokFrag";
   public interface AddTokenDialogListener
   {
-    void onFinishAddTokenDialog(String inputText);
+    void onFinishAddTokenDialog(String inputText,String defaultVal);
   }
-  private EditText mEditText;
+  private EditText mEditText,dEditText;
 
   public DialogFragAddToken()
   {
@@ -26,15 +26,17 @@ public class DialogFragAddToken  extends DialogFragment implements OnEditorActio
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState)
   {
-    View view = inflater.inflate(R.layout.frag_add_lang, container);
-    mEditText = (EditText) view.findViewById(R.id.txt_add_lang);
+    View view = inflater.inflate(R.layout.frag_add_tok, container);
+    mEditText = (EditText) view.findViewById(R.id.txt_add_tokname);
+    dEditText = (EditText) view.findViewById(R.id.txt_add_tokdef);
     getDialog().setTitle(R.string.add_tok);
     // Show soft keyboard automatically
     mEditText.requestFocus();
     getDialog().getWindow().setSoftInputMode(
       WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     mEditText.setOnEditorActionListener(this);
-
+    dEditText.setOnEditorActionListener(this);
+    
     return view;
   }//createView
 
@@ -46,7 +48,7 @@ public class DialogFragAddToken  extends DialogFragment implements OnEditorActio
     {
       // Return input text to activity
       AddTokenDialogListener activity = (AddTokenDialogListener) getActivity();
-      activity.onFinishAddTokenDialog(mEditText.getText().toString());
+      activity.onFinishAddTokenDialog(mEditText.getText().toString(),dEditText.getText().toString());
       this.dismiss();
       return true;
     }
