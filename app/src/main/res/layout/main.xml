@@ -44,17 +44,11 @@
 
 	</LinearLayout>
 
-	<ScrollView
-		android:layout_height="wrap_content"
-		android:layout_width="wrap_content"
-		android:background="@drawable/border">
-
 		<ListView
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
 			android:id="@+id/stringListView"/>
 
-	</ScrollView>
 
 </LinearLayout>
 

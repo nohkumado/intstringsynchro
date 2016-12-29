@@ -1,14 +1,15 @@
 package com.nohkumado.intstringsynchro;
 
 import android.content.*;
+import android.util.*;
 import android.view.*;
 import android.widget.*;
 import com.nohkumado.nohutils.collection.*;
-import java.util.*;
 
 public class StringEntryAdapter extends BaseAdapter
 {
-
+  private static final String TAG="Adapter";
+  
   private TreeMapTable<String,String> mData = new TreeMapTable<>();
   private LayoutInflater mInflater;
 
@@ -30,6 +31,7 @@ public class StringEntryAdapter extends BaseAdapter
   @Override
   public int getCount()
   {
+    Log.d(TAG,"returnong size "+mData.size());
     return mData.size();
   }
 
@@ -63,9 +65,11 @@ public class StringEntryAdapter extends BaseAdapter
     {
       holder = (ViewHolder)convertView.getTag();
     }
+    
     String key = mData.get(position);
     holder.tagView.setText(key);
     if(key != null) holder.defView.setText(mData.get(key,"default"));
+    Log.d(TAG,"displaying "+position+" k:"+key+" v:"+mData.get(key,"default")+"\n"+mData);
     return convertView;
   }
 

@@ -4,6 +4,7 @@ import android.app.*;
 import android.content.*;
 import android.net.*;
 import android.os.*;
+import android.preference.*;
 import android.util.*;
 import android.view.*;
 import android.view.View.*;
@@ -52,6 +53,16 @@ DialogSelectionListener
     langList.add("default");
     langList.add("de");
     langList.add("fr");
+    SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(this);
+    if(prefs.contains("actprojectpath")) actProjectPath = prefs.getString("actprojectpath","");
+    Log.d(TAG,"retrieved default path '"+actProjectPath+"'");
+    
+    /*
+          final Editor editor = preferences.edit();
+
+          String s1 = serverIP.getText().toString();
+          editor.putString("SERVERIP", s1);
+    */
     ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
                                                                 android.R.layout.simple_spinner_item, langList);
     dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -165,8 +176,7 @@ DialogSelectionListener
   public void onFinishAddTokenDialog(String inputText,String defaultVal)
   {
     Toast.makeText(this, "Added Token, " + inputText, Toast.LENGTH_SHORT).show();
-    if(data != null) data.set(inputText.trim(),"default",defaultVal.trim());
-    else Log.e(TAG,"data was null.... tryed adding "+inputText);
+    data.set(inputText.trim(),"default",defaultVal.trim());
     if(stringDataAdapter != null) stringDataAdapter.notifyDataSetChanged();
   }
   private void showFileChooser()
@@ -174,8 +184,9 @@ DialogSelectionListener
     DialogProperties properties=new DialogProperties();
     properties.selection_mode = DialogConfigs.SINGLE_MODE;
     properties.selection_type = DialogConfigs.DIR_SELECT;
-    if (actProjectPath.length() > 0)  properties.root = new File(actProjectPath, "../");
+    if (actProjectPath.length() > 0)  properties.root = new File(actProjectPath);
     else properties.root = new File(DialogConfigs.DEFAULT_DIR);
+    
     properties.error_dir = new File(DialogConfigs.DEFAULT_DIR);
     properties.extensions = null;
 
@@ -228,6 +239,14 @@ DialogSelectionListener
         {
           //ok we have the right directory
           File resDir = new File(resValuesDir, "../");
+
+          //save the actual value of the path
+          SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(this);
+          if(prefs.contains("actprojectpath")) actProjectPath = prefs.getString("actprojectpath","");
+
+          SharedPreferences.Editor editor = prefs.edit();
+          editor.putString("actprojectpath",resDir.getAbsolutePath());
+          editor.apply();
           //select allready selected languages
           String[] files = resDir.list(new FilenameFilter() {
               @Override
@@ -388,7 +407,7 @@ DialogSelectionListener
       //Log.d(TAG,langTok+" adding entry tok "+anEntry.token+" val "+anEntry.text+" to d:"+data);
       data.set(anEntry.token, langTok, anEntry.text);
     }
+    
     if(stringDataAdapter != null) stringDataAdapter.notifyDataSetChanged();
   }//List<StringEntry> loadStringsXmlFile(String aFile)
-
 }
