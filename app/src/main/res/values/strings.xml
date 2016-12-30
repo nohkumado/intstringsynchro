@@ -8,4 +8,6 @@
     <string name="add_project">Add Project</string>
     <string name="open_stringxml">open a string.xml file of a project</string>
     <string name="def_val">default value</string>
+    <string name="fallback">default</string>
+    <string name="table_tok">Token / langs</string>
 </resources>

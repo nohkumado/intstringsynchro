@@ -28,8 +28,9 @@ DialogSelectionListener
   protected ArrayList<String> langList;
   protected TreeMapTable<String,String> data;
   //protected ArrayList<StringEntry> tokenList;
-  protected ListView tokenTable;
-  protected StringEntryAdapter stringDataAdapter;
+  //protected ListView tokenTable;
+  protected TableLayout tokenTable;
+  //protected StringEntryAdapter stringDataAdapter;
   
   private static final int PROJECT_CHOOSED = 99;
 
@@ -47,22 +48,16 @@ DialogSelectionListener
     Log.d(TAG,"#############################  start ###################################");
     setContentView(R.layout.main);
     data = new TreeMapTable<>();
-    Log.d(TAG,"data : "+data);
+    //Log.d(TAG,"data : "+data);
     langSpin = (Spinner) findViewById(R.id.lang_selector);
     langList = new ArrayList<String>();
-    langList.add("default");
-    langList.add("de");
-    langList.add("fr");
+    langList.add("default"); //can't use addNewLang, i think, default is in the layout anyway
+    //langList.add("de");
+    //langList.add("fr");
     SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(this);
     if(prefs.contains("actprojectpath")) actProjectPath = prefs.getString("actprojectpath","");
-    Log.d(TAG,"retrieved default path '"+actProjectPath+"'");
+    //Log.d(TAG,"retrieved default path '"+actProjectPath+"'");
     
-    /*
-          final Editor editor = preferences.edit();
-
-          String s1 = serverIP.getText().toString();
-          editor.putString("SERVERIP", s1);
-    */
     ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
                                                                 android.R.layout.simple_spinner_item, langList);
     dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -79,9 +74,11 @@ DialogSelectionListener
     openProject.setOnClickListener(this);
 
     //tokenList = new ArrayList<>();
-    tokenTable = (ListView) findViewById(R.id.stringListView);
-    stringDataAdapter = new StringEntryAdapter(this, data);
-    tokenTable.setAdapter(stringDataAdapter);
+    //tokenTable = (ListView) findViewById(R.id.stringListView);
+    tokenTable = (TableLayout) findViewById(R.id.table);
+    //tokenTable.setBackground(getResources().getDrawable(R.drawable.border);
+    //stringDataAdapter = new StringEntryAdapter(this, data);
+    //tokenTable.setAdapter(stringDataAdapter);
   }//protected void onCreate(Bundle savedInstanceState)
 
   public String getLang()
@@ -177,7 +174,7 @@ DialogSelectionListener
   {
     Toast.makeText(this, "Added Token, " + inputText, Toast.LENGTH_SHORT).show();
     data.set(inputText.trim(),"default",defaultVal.trim());
-    if(stringDataAdapter != null) stringDataAdapter.notifyDataSetChanged();
+    //if(stringDataAdapter != null) stringDataAdapter.notifyDataSetChanged();
   }
   private void showFileChooser()
   {
@@ -260,13 +257,7 @@ DialogSelectionListener
           {
             Matcher m = onlyLang.matcher(aLang);
             String sanitized = m.group(1);
-            if (!langList.contains(sanitized))
-            {
-              langList.add(sanitized);
-              
-              Toast.makeText(this, "Added lang, " + sanitized, Toast.LENGTH_SHORT).show();
-            
-              }
+            addNewLang(sanitized);
             File resLangFile = new File(resDir, aLang+"/strings.xml");
             
               if (resLangFile.exists())
@@ -289,6 +280,60 @@ DialogSelectionListener
 //    {
 //      Toast.makeText(this, "Selected file: "+aPath, Toast.LENGTH_LONG).show();
 //    }
+    View title = tokenTable.findViewById(R.id.title_line);
+    tokenTable.removeAllViews();
+    tokenTable.addView(title);
+    
+    //tr.setBackgroundColor(Color.BLACK);
+    //tr.setPadding(0, 0, 0, 2); //Border between rows
+
+    TableRow.LayoutParams llp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,TableRow.LayoutParams.WRAP_CONTENT);
+    llp.setMargins(0, 0, 2, 0);//2px right-margin
+
+    for(String token : data)
+    {
+      TableRow newRow = new TableRow(this);
+      newRow.setLayoutParams(llp);
+      newRow.addView(createTextView(llp, token, "token"));
+      for(String lang : langList)
+      {
+        String someContent = data.get(token,lang);
+        if(someContent == null) someContent = "";
+       
+        newRow.addView(createTextView(llp, someContent, token + ":" + lang));
+      }
+      tokenTable.addView(newRow);
+    }
+   tokenTable.invalidate();
+  }
+
+  private TextView createTextView(TableRow.LayoutParams llp, String someContent, String hintTxt)
+  {
+    TextView tv = new TextView(this);
+    tv.setLayoutParams(llp);
+    tv.setText(someContent);
+    tv.setBackground(getResources().getDrawable(R.drawable.border));
+    tv.setPadding(0, 0, 4, 3);
+    tv.setHint(hintTxt);
+    return tv;
+  }
+
+  private void addNewLang(String sanitized)
+  {
+    if (!langList.contains(sanitized))
+    {
+      langList.add(sanitized);
+      TableRow title = (TableRow)tokenTable.findViewById(R.id.title_line);
+      TableRow.LayoutParams llp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,TableRow.LayoutParams.WRAP_CONTENT);
+      llp.setMargins(0, 0, 2, 0);//2px right-margin
+      TextView tv = new TextView(this);
+      tv.setText(sanitized);
+      tv.setPadding(0, 0, 4, 3);
+
+      title.addView(tv);
+      Toast.makeText(this, "Added lang, " + sanitized, Toast.LENGTH_SHORT).show();
+
+    }
   }
 
 
@@ -408,6 +453,6 @@ DialogSelectionListener
       data.set(anEntry.token, langTok, anEntry.text);
     }
     
-    if(stringDataAdapter != null) stringDataAdapter.notifyDataSetChanged();
+    //if(stringDataAdapter != null) stringDataAdapter.notifyDataSetChanged();
   }//List<StringEntry> loadStringsXmlFile(String aFile)
 }
