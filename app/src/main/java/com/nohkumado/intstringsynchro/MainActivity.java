@@ -8,7 +8,9 @@ import android.preference.*;
 import android.util.*;
 import android.view.*;
 import android.view.View.*;
+import android.view.inputmethod.*;
 import android.widget.*;
+import android.widget.TextView.*;
 import com.github.angads25.filepicker.controller.*;
 import com.github.angads25.filepicker.model.*;
 import com.github.angads25.filepicker.view.*;
@@ -18,9 +20,11 @@ import java.util.*;
 import java.util.regex.*;
 import org.xmlpull.v1.*;
 
+import android.view.View.OnClickListener;
+
 public class MainActivity extends Activity implements OnClickListener, 
 DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListener,
-DialogSelectionListener
+DialogSelectionListener, OnEditorActionListener
 {
   protected Spinner langSpin;
   protected Button addLang, addToken, openProject;
@@ -264,11 +268,11 @@ DialogSelectionListener
                 //return name.matches("values-\\[a-z\\-]{2,}");
               }
             });
-          Log.d(TAG, "checking parent directory " + Arrays.toString(files));
+          //Log.d(TAG, "checking parent directory " + Arrays.toString(files));
           Pattern onlyLang = Pattern.compile("^values-(.*)$");
           for (String aLang : files)
           {
-            Log.d(TAG, "checking alternate " + aLang);
+            //Log.d(TAG, "checking alternate " + aLang);
             Matcher mlang = onlyLang.matcher(aLang);
             if(mlang.find())
             {
@@ -300,7 +304,7 @@ DialogSelectionListener
 //      Toast.makeText(this, "Selected file: "+aPath, Toast.LENGTH_LONG).show();
 //    }
 
-    Log.d(TAG, "about to print out " + data);
+    //Log.d(TAG, "about to print out " + data);
 
     View title = tokenTable.findViewById(R.id.title_line);
     tokenTable.removeAllViews();
@@ -322,7 +326,7 @@ DialogSelectionListener
         String someContent = data.get(token, lang);
         if (someContent == null) someContent = "";
 
-        newRow.addView(createTextView(llp, someContent, token + ":" + lang));
+        newRow.addView(createEditView(llp, someContent, token + ":" + lang));
       }
       tokenTable.addView(newRow);
     }
@@ -339,10 +343,42 @@ DialogSelectionListener
     tv.setHint(hintTxt);
     return tv;
   }
+  
 
+  private EditText createEditView(TableRow.LayoutParams llp, String someContent, String hintTxt)
+  {
+    EditText tv = new EditText(this);
+    tv.setLayoutParams(llp);
+    tv.setText(someContent);
+    tv.setBackground(getResources().getDrawable(R.drawable.border));
+    tv.setPadding(0, 0, 4, 3);
+    tv.setHint(hintTxt);
+    tv.setOnEditorActionListener(this);
+    return tv;
+  }
+
+  @Override
+  public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
+  {
+    //Log.d(TAG,"Editor action! "+event+"  id"+actionId);
+    if (EditorInfo.IME_ACTION_DONE == actionId|| (event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER))
+    {
+      String posHint = v.getHint().toString();
+      String[] pos = posHint.split(":");
+      //Log.d(TAG,"change["+pos[0]+":"+pos[1]+"] text "+v.getText().toString());
+      data.set(pos[0],pos[1],v.getText().toString());
+      return true;
+    }
+    return false;
+  }
+  
+  
+  
+  
+  
   private void addNewLang(String sanitized)
   {
-    Log.d(TAG, "asked to add " + sanitized);
+    //Log.d(TAG, "asked to add " + sanitized);
     if (!langList.contains(sanitized))
     {
       langList.add(sanitized);
@@ -358,7 +394,6 @@ DialogSelectionListener
 
     }
   }
-
 
 
   @Override
@@ -388,57 +423,6 @@ DialogSelectionListener
       }
     }
   }//protected void onActivityResult(int requestCode, int resultCode, Intent resultData)
-
-  private String readTextFromUri(Uri uri) throws IOException
-  {
-    InputStream inputStream = getContentResolver().openInputStream(uri);
-    BufferedReader reader = new BufferedReader(new InputStreamReader(
-                                                 inputStream));
-    StringBuilder stringBuilder = new StringBuilder();
-    String line;
-    while ((line = reader.readLine()) != null)
-    {
-      stringBuilder.append(line);
-    }
-    inputStream.close();
-    return stringBuilder.toString();
-  }
-  private static final int WRITE_REQUEST_CODE = 43;
-  private void createFile(String mimeType, String fileName)
-  {
-    Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-
-    // Filter to only show results that can be "opened", such as
-    // a file (as opposed to a list of contacts or timezones).
-    intent.addCategory(Intent.CATEGORY_OPENABLE);
-
-    // Create a file with the requested MIME type.
-    intent.setType(mimeType);
-    intent.putExtra(Intent.EXTRA_TITLE, fileName);
-    startActivityForResult(intent, WRITE_REQUEST_CODE);
-  }
-  private void alterDocument(Uri uri)
-  {
-    try
-    {
-      ParcelFileDescriptor pfd = getContentResolver().openFileDescriptor(uri, "w");
-      FileOutputStream fileOutputStream =
-        new FileOutputStream(pfd.getFileDescriptor());
-      fileOutputStream.write(("Overwritten by MyCloud at " +
-                             System.currentTimeMillis() + "\n").getBytes());
-      // Let the document provider know you're done by closing the stream.
-      fileOutputStream.close();
-      pfd.close();
-    }
-    catch (FileNotFoundException e)
-    {
-      e.printStackTrace();
-    }
-    catch (IOException e)
-    {
-      e.printStackTrace();
-    }
-  }//private void alterDocument(Uri uri)
 
 
   protected void loadStringsXmlFile(File aFile, String langTok)
