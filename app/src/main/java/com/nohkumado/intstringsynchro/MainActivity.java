@@ -24,6 +24,7 @@ DialogSelectionListener
 {
   protected Spinner langSpin;
   protected Button addLang, addToken, openProject;
+  protected ImageButton moveUpBut;
   protected  String actProjectPath = "";
   protected ArrayList<String> langList;
   protected TreeMapTable<String,String> data;
@@ -31,7 +32,7 @@ DialogSelectionListener
   //protected ListView tokenTable;
   protected TableLayout tokenTable;
   //protected StringEntryAdapter stringDataAdapter;
-  
+
   private static final int PROJECT_CHOOSED = 99;
 
   private static final String TAG="MA";
@@ -45,7 +46,7 @@ DialogSelectionListener
   protected void onCreate(Bundle savedInstanceState)
   {
     super.onCreate(savedInstanceState);
-    Log.d(TAG,"#############################  start ###################################");
+    Log.d(TAG, "#############################  start ###################################");
     setContentView(R.layout.main);
     data = new TreeMapTable<>();
     //Log.d(TAG,"data : "+data);
@@ -55,9 +56,9 @@ DialogSelectionListener
     //langList.add("de");
     //langList.add("fr");
     SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(this);
-    if(prefs.contains("actprojectpath")) actProjectPath = prefs.getString("actprojectpath","");
+    if (prefs.contains("actprojectpath")) actProjectPath = prefs.getString("actprojectpath", "");
     //Log.d(TAG,"retrieved default path '"+actProjectPath+"'");
-    
+
     ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
                                                                 android.R.layout.simple_spinner_item, langList);
     dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -72,6 +73,9 @@ DialogSelectionListener
 
     openProject  = (Button) findViewById(R.id.addProjBut);
     openProject.setOnClickListener(this);
+
+    moveUpBut   = (ImageButton) findViewById(R.id.moveUpBut);
+    moveUpBut.setOnClickListener(this);
 
     //tokenList = new ArrayList<>();
     //tokenTable = (ListView) findViewById(R.id.stringListView);
@@ -101,6 +105,11 @@ DialogSelectionListener
       //startActivityForResult(intent, PROJECT_CHOOSED);
       showFileChooser();
     }      
+    else if (p1 == moveUpBut)
+    {
+      File actDir = new File(actProjectPath, "../");
+      actProjectPath = actDir.getAbsolutePath();
+    }
 
   }//public void onClick(View p1)
 
@@ -170,10 +179,10 @@ DialogSelectionListener
   }
 
   @Override
-  public void onFinishAddTokenDialog(String inputText,String defaultVal)
+  public void onFinishAddTokenDialog(String inputText, String defaultVal)
   {
     Toast.makeText(this, "Added Token, " + inputText, Toast.LENGTH_SHORT).show();
-    data.set(inputText.trim(),"default",defaultVal.trim());
+    data.set(inputText.trim(), "default", defaultVal.trim());
     //if(stringDataAdapter != null) stringDataAdapter.notifyDataSetChanged();
   }
   private void showFileChooser()
@@ -183,7 +192,7 @@ DialogSelectionListener
     properties.selection_type = DialogConfigs.DIR_SELECT;
     if (actProjectPath.length() > 0)  properties.root = new File(actProjectPath);
     else properties.root = new File(DialogConfigs.DEFAULT_DIR);
-    
+
     properties.error_dir = new File(DialogConfigs.DEFAULT_DIR);
     properties.extensions = null;
 
@@ -227,7 +236,7 @@ DialogSelectionListener
             //TODO for later ArrayList<String> list = new ArrayList(Arrays.asList(getResources().getStringArray(R.array.strings)));//where R.array.strings is a reference to your resource
             //Toast.makeText(this, "found strings.xml", Toast.LENGTH_LONG).show();
             found = true;
-            loadStringsXmlFile(new File(resValuesDir, aFile),"default");
+            loadStringsXmlFile(new File(resValuesDir, aFile), "default");
 
             break;
           }
@@ -239,29 +248,39 @@ DialogSelectionListener
 
           //save the actual value of the path
           SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(this);
-          if(prefs.contains("actprojectpath")) actProjectPath = prefs.getString("actprojectpath","");
+          if (prefs.contains("actprojectpath")) actProjectPath = prefs.getString("actprojectpath", "");
 
           SharedPreferences.Editor editor = prefs.edit();
-          editor.putString("actprojectpath",resDir.getAbsolutePath());
+          editor.putString("actprojectpath", resDir.getAbsolutePath());
           editor.apply();
+          final Pattern p = Pattern.compile("values-[a-z\\-]{2,}");
           //select allready selected languages
           String[] files = resDir.list(new FilenameFilter() {
               @Override
               public boolean accept(File dir, String name)
               {
-                return name.matches("values-\\[a-z\\-]{2,}");
+                Matcher m = p.matcher(name);
+                return m.find();
+                //return name.matches("values-\\[a-z\\-]{2,}");
               }
             });
+          Log.d(TAG, "checking parent directory " + Arrays.toString(files));
           Pattern onlyLang = Pattern.compile("^values-(.*)$");
           for (String aLang : files)
           {
-            Matcher m = onlyLang.matcher(aLang);
-            String sanitized = m.group(1);
-            addNewLang(sanitized);
-            File resLangFile = new File(resDir, aLang+"/strings.xml");
-            
+            Log.d(TAG, "checking alternate " + aLang);
+            Matcher mlang = onlyLang.matcher(aLang);
+            if(mlang.find())
+            {
+              String sanitized = mlang.group(1);
+              addNewLang(sanitized);
+              File resLangFile = new File(resDir, aLang + "/strings.xml");
+
               if (resLangFile.exists())
-                loadStringsXmlFile(resLangFile,sanitized);
+                loadStringsXmlFile(resLangFile, sanitized);    
+            }
+            else Log.e(TAG,"wrng pattern "+mlang);
+          
           }
         }
         else
@@ -280,31 +299,34 @@ DialogSelectionListener
 //    {
 //      Toast.makeText(this, "Selected file: "+aPath, Toast.LENGTH_LONG).show();
 //    }
+
+    Log.d(TAG, "about to print out " + data);
+
     View title = tokenTable.findViewById(R.id.title_line);
     tokenTable.removeAllViews();
     tokenTable.addView(title);
-    
+
     //tr.setBackgroundColor(Color.BLACK);
     //tr.setPadding(0, 0, 0, 2); //Border between rows
 
-    TableRow.LayoutParams llp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,TableRow.LayoutParams.WRAP_CONTENT);
+    TableRow.LayoutParams llp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
     llp.setMargins(0, 0, 2, 0);//2px right-margin
 
-    for(String token : data)
+    for (String token : data)
     {
       TableRow newRow = new TableRow(this);
       newRow.setLayoutParams(llp);
       newRow.addView(createTextView(llp, token, "token"));
-      for(String lang : langList)
+      for (String lang : langList)
       {
-        String someContent = data.get(token,lang);
-        if(someContent == null) someContent = "";
-       
+        String someContent = data.get(token, lang);
+        if (someContent == null) someContent = "";
+
         newRow.addView(createTextView(llp, someContent, token + ":" + lang));
       }
       tokenTable.addView(newRow);
     }
-   tokenTable.invalidate();
+    tokenTable.invalidate();
   }
 
   private TextView createTextView(TableRow.LayoutParams llp, String someContent, String hintTxt)
@@ -320,11 +342,12 @@ DialogSelectionListener
 
   private void addNewLang(String sanitized)
   {
+    Log.d(TAG, "asked to add " + sanitized);
     if (!langList.contains(sanitized))
     {
       langList.add(sanitized);
       TableRow title = (TableRow)tokenTable.findViewById(R.id.title_line);
-      TableRow.LayoutParams llp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,TableRow.LayoutParams.WRAP_CONTENT);
+      TableRow.LayoutParams llp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
       llp.setMargins(0, 0, 2, 0);//2px right-margin
       TextView tv = new TextView(this);
       tv.setText(sanitized);
@@ -418,7 +441,7 @@ DialogSelectionListener
   }//private void alterDocument(Uri uri)
 
 
-  protected void loadStringsXmlFile(File aFile,String langTok)
+  protected void loadStringsXmlFile(File aFile, String langTok)
   {
     ArrayList<StringEntry> entries = new ArrayList<>(); 
     //XmlPullParser parser =  Xml.newPullParser();
@@ -452,7 +475,7 @@ DialogSelectionListener
       //Log.d(TAG,langTok+" adding entry tok "+anEntry.token+" val "+anEntry.text+" to d:"+data);
       data.set(anEntry.token, langTok, anEntry.text);
     }
-    
+
     //if(stringDataAdapter != null) stringDataAdapter.notifyDataSetChanged();
   }//List<StringEntry> loadStringsXmlFile(String aFile)
 }
