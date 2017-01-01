@@ -4,9 +4,9 @@ import java.util.*;
 
 public class PluralEntry extends StringEntry
 {
-  protected ArrayList<String> array;
+  protected ArrayList<StringEntry> array;
 
-  public PluralEntry(String n, ArrayList<String> a)
+  public PluralEntry(String n, ArrayList<StringEntry> a)
   {
     super(n,"");
     array = a;
@@ -16,7 +16,7 @@ public class PluralEntry extends StringEntry
   {
     StringBuilder  sb = new StringBuilder();
     sb.append("Plural[").append(token).append("]");
-    if(array != null) sb.append(Arrays.toString(array.toArray(new String[array.size()])));
+    if(array != null) sb.append(Arrays.toString(array.toArray(new StringEntry[array.size()])));
     return sb.toString();
   }
 }

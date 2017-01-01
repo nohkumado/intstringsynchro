@@ -4,6 +4,7 @@ import android.util.*;
 import java.io.*;
 import java.util.*;
 import org.xmlpull.v1.*;
+import org.apache.http.entity.*;
 
 public class StringXmlParser
 {
@@ -30,7 +31,7 @@ public class StringXmlParser
   private ArrayList<StringEntry> readResources(XmlPullParser parser) throws XmlPullParserException, IOException
   {
     ArrayList<StringEntry> entries = new ArrayList<>();
-Log.d(TAG,"etering parse");
+    //Log.d(TAG, "etering parse");
     parser.require(XmlPullParser.START_TAG, ns, "resources");
     while (parser.next() != XmlPullParser.END_TAG)
     {
@@ -39,7 +40,7 @@ Log.d(TAG,"etering parse");
         continue;
       }
       String name = parser.getName();
-      Log.d(TAG, "parsing " + name);
+      //Log.d(TAG, "parsing " + name);
       // Starts by looking for the entry tag
       if (name.equals("string"))
       {
@@ -59,19 +60,17 @@ Log.d(TAG,"etering parse");
         skip(parser);
       }
     }
-    Log.d(TAG,"returning ("+entries.size()+")"+Arrays.toString(entries.toArray(new StringEntry[entries.size()])));
+    Log.d(TAG, "returning (" + entries.size() + ")" + Arrays.toString(entries.toArray(new StringEntry[entries.size()])));
     return entries;
   }
 
   private StringEntry readPlurals(XmlPullParser parser) throws IOException, XmlPullParserException
   {
-    Log.d(TAG,"entering read plurals");
+    //Log.d(TAG, "entering read plurals");
     parser.require(XmlPullParser.START_TAG, ns, "plurals");
-    ArrayList<String> newList = new ArrayList<>();
+    ArrayList<StringEntry> newList = new ArrayList<>();
     StringEntry result = new PluralEntry(parser.getAttributeValue("", "name"), newList);
-    //result.plural = readItem(parser);
-    Log.d(TAG," new plural "+result);
-    
+   
     while (parser.next() != XmlPullParser.END_TAG)
     {
       if (parser.getEventType() != XmlPullParser.START_TAG)
@@ -79,11 +78,9 @@ Log.d(TAG,"etering parse");
         continue;
       }
       String name = parser.getName();
-      if (name.equals("item")) newList.add(readItem(parser));
+      if (name.equals("item")) newList.add(readPluralItem(parser));
     }
-    
-    
-    
+    //Log.d(TAG, " new plural " + result);
     return result;    
     /*
      <plurals
@@ -130,7 +127,7 @@ Log.d(TAG,"etering parse");
       if (name.equals("item")) newList.add(readItem(parser));
     }
     StringEntry result = new ArrayEntry(tag, newList);
-    Log.d(TAG," new array "+result);
+    //Log.d(TAG, " new array " + result);
     return result;    
   }
 
@@ -142,6 +139,16 @@ Log.d(TAG,"etering parse");
     while (parser.next() != XmlPullParser.END_TAG)  summary = parser.getText();
 
     return summary;
+  }
+  private StringEntry readPluralItem(XmlPullParser parser) throws IOException, XmlPullParserException
+  {
+    parser.require(XmlPullParser.START_TAG, ns, "item");
+    String summary = "";
+    StringEntry result = new StringEntry(parser.getAttributeValue(null, "quantity"), "");
+
+    while (parser.next() != XmlPullParser.END_TAG)  summary = parser.getText();
+    result.text = summary;
+    return result;
   }
 
   // Parses the contents of an entry. If it encounters a title, summary, or link tag, hands them off
@@ -158,7 +165,7 @@ Log.d(TAG,"etering parse");
       summary = parser.getText();
     }
     StringEntry result = new StringEntry(tag, summary);
-    Log.d(TAG," new string "+result);
+    //Log.d(TAG, " new string " + result);
     return result;
   }
 
