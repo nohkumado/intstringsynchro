@@ -457,7 +457,9 @@ DialogSelectionListener, OnEditorActionListener
     for (StringEntry anEntry: entries)
     {
       //Log.d(TAG,langTok+" adding entry tok "+anEntry.token+" val "+anEntry.text+" to d:"+data);
-      data.set(anEntry.token, langTok, anEntry.text);
+      if(anEntry.text != null && !"".equals(anEntry.text)) data.set(anEntry.token, langTok, anEntry.text);
+      else
+        Log.e(TAG,"not stored "+anEntry);
     }
 
     //if(stringDataAdapter != null) stringDataAdapter.notifyDataSetChanged();
