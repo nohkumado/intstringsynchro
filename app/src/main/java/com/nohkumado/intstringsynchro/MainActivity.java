@@ -28,10 +28,12 @@ DialogSelectionListener, OnEditorActionListener
 {
   protected Spinner langSpin;
   protected Button addLang, addToken, openProject;
-  protected ImageButton moveUpBut;
+  protected ImageButton moveUpBut,saveBut;
   protected  String actProjectPath = "";
   protected ArrayList<String> langList;
   protected TreeMapTable<String,String> data;
+  //protected ArrayList<StringEntry> rest;
+  protected HashMap<String, ArrayList<StringEntry>> rest;
   //protected ArrayList<StringEntry> tokenList;
   //protected ListView tokenTable;
   protected TableLayout tokenTable;
@@ -53,6 +55,12 @@ DialogSelectionListener, OnEditorActionListener
     Log.d(TAG, "#############################  start ###################################");
     setContentView(R.layout.main);
     data = new TreeMapTable<>();
+    rest = new  HashMap<String, ArrayList<StringEntry>>();
+    rest.put("default", new ArrayList<StringEntry>());
+    //rest = new ArrayList<StringEntry>() ; 
+
+
+
     //Log.d(TAG,"data : "+data);
     langSpin = (Spinner) findViewById(R.id.lang_selector);
     langList = new ArrayList<String>();
@@ -81,6 +89,8 @@ DialogSelectionListener, OnEditorActionListener
     moveUpBut   = (ImageButton) findViewById(R.id.moveUpBut);
     moveUpBut.setOnClickListener(this);
 
+    saveBut = (ImageButton) findViewById(R.id.saveBut);
+    saveBut.setOnClickListener(this);
     //tokenList = new ArrayList<>();
     //tokenTable = (ListView) findViewById(R.id.stringListView);
     tokenTable = (TableLayout) findViewById(R.id.table);
@@ -114,6 +124,11 @@ DialogSelectionListener, OnEditorActionListener
       File actDir = new File(actProjectPath, "../");
       actProjectPath = actDir.getAbsolutePath();
     }
+    else if (p1 == saveBut)
+    {
+      saveFiles();
+    }
+
 
   }//public void onClick(View p1)
 
@@ -274,7 +289,7 @@ DialogSelectionListener, OnEditorActionListener
           {
             //Log.d(TAG, "checking alternate " + aLang);
             Matcher mlang = onlyLang.matcher(aLang);
-            if(mlang.find())
+            if (mlang.find())
             {
               String sanitized = mlang.group(1);
               addNewLang(sanitized);
@@ -283,8 +298,8 @@ DialogSelectionListener, OnEditorActionListener
               if (resLangFile.exists())
                 loadStringsXmlFile(resLangFile, sanitized);    
             }
-            else Log.e(TAG,"wrng pattern "+mlang);
-          
+            else Log.e(TAG, "wrng pattern " + mlang);
+
           }
         }
         else
@@ -343,7 +358,7 @@ DialogSelectionListener, OnEditorActionListener
     tv.setHint(hintTxt);
     return tv;
   }
-  
+
 
   private EditText createEditView(TableRow.LayoutParams llp, String someContent, String hintTxt)
   {
@@ -361,21 +376,21 @@ DialogSelectionListener, OnEditorActionListener
   public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
   {
     //Log.d(TAG,"Editor action! "+event+"  id"+actionId);
-    if (EditorInfo.IME_ACTION_DONE == actionId|| (event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER))
+    if (EditorInfo.IME_ACTION_DONE == actionId || (event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER))
     {
       String posHint = v.getHint().toString();
       String[] pos = posHint.split(":");
       //Log.d(TAG,"change["+pos[0]+":"+pos[1]+"] text "+v.getText().toString());
-      data.set(pos[0],pos[1],v.getText().toString());
+      data.set(pos[0], pos[1], v.getText().toString());
       return true;
     }
     return false;
   }
-  
-  
-  
-  
-  
+
+
+
+
+
   private void addNewLang(String sanitized)
   {
     //Log.d(TAG, "asked to add " + sanitized);
@@ -390,6 +405,8 @@ DialogSelectionListener, OnEditorActionListener
       tv.setPadding(0, 0, 4, 3);
 
       title.addView(tv);
+
+      rest.put(sanitized, new ArrayList<StringEntry>());
       Toast.makeText(this, "Added lang, " + sanitized, Toast.LENGTH_SHORT).show();
 
     }
@@ -457,11 +474,70 @@ DialogSelectionListener, OnEditorActionListener
     for (StringEntry anEntry: entries)
     {
       //Log.d(TAG,langTok+" adding entry tok "+anEntry.token+" val "+anEntry.text+" to d:"+data);
-      if(anEntry.text != null && !"".equals(anEntry.text)) data.set(anEntry.token, langTok, anEntry.text);
+      if (anEntry.text != null && !"".equals(anEntry.text)) data.set(anEntry.token, langTok, anEntry.text);
       else
-        Log.e(TAG,"not stored "+anEntry);
+      {
+        rest.get(langTok).add(anEntry);
+      }
+
+      //Log.e(TAG,"not stored "+anEntry);
     }
 
     //if(stringDataAdapter != null) stringDataAdapter.notifyDataSetChanged();
   }//List<StringEntry> loadStringsXmlFile(String aFile)
+
+  protected boolean saveFiles()
+  {
+    boolean result = true;
+    StringBuilder sb ;
+
+    for (String lang : langList)
+    {
+      Log.d(TAG, "printing for lang : " + lang);
+      sb = new StringBuilder();
+      sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<resources>\n");
+      String indent =  "   ";
+      for (String token : data)
+      {
+        String msg = data.get(token, lang);
+        if (msg != null && msg.length() > 0)
+        {
+          msg = new StringEntry(token, msg).toXml(indent);
+          sb.append(msg);  
+        }
+      }
+
+      ArrayList<StringEntry> otherStrucs = rest.get(lang);
+      if (otherStrucs != null)
+      {
+        for (StringEntry record : otherStrucs)
+        {
+          sb.append(record.toXml(indent));  
+        }  
+      }
+      sb.append("</resources>");
+      
+      File saveFile = new File(getExternalFilesDir(null), "test-strings-" + lang + ".xml");
+      try
+      {
+        BufferedWriter  os = new BufferedWriter(new FileWriter(saveFile));
+        Log.d(TAG, "writing into "+saveFile+" " + sb);
+        os.write(sb.toString());
+        os.close();
+        //Log.d(TAG,"wroten file "+saveFile);
+      }
+      catch (FileNotFoundException e)
+      {
+        Log.e(TAG, "file not found :" + e);
+      }
+      catch (IOException f)
+      {
+        Log.e(TAG, "IO ex :" + f);
+      }
+      Log.d(TAG,"done writing ");
+
+
+    }
+    return result;
+  }
 }

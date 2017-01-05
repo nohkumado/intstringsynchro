@@ -24,4 +24,12 @@ public class StringEntry
     
     return sb.toString();
   }
+  
+  public String toXml(String indent)
+  {
+    StringBuilder  sb = new StringBuilder();
+    sb.append(indent).append("<string name=\"").append(token).append("\">");
+    sb.append(text).append("</string>\n");
+    return sb.toString();
+  }
 }
