@@ -321,6 +321,11 @@ DialogSelectionListener, OnEditorActionListener
 
     //Log.d(TAG, "about to print out " + data);
 
+    buildTableView();
+  }
+
+  private void buildTableView()
+  {
     View title = tokenTable.findViewById(R.id.title_line);
     tokenTable.removeAllViews();
     tokenTable.addView(title);
