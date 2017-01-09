@@ -6,6 +6,8 @@ import android.widget.*;
 import android.widget.TextView.*;
 import com.nohkumado.nohutils.collection.*;
 import java.util.*;
+import android.os.*;
+import android.util.*;
 
 public class StringXmlTableFrag extends Fragment implements OnEditorActionListener
 {
@@ -29,12 +31,27 @@ public class StringXmlTableFrag extends Fragment implements OnEditorActionListen
     this.context = context;
   }
 
+  @Override
+  public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+  {
+    View v = super.onCreateView(inflater, container, savedInstanceState);
+    if (v == null)
+    {
+      v = inflater.inflate(R.layout.string_xml_frag, container, false);
+    }
+    Log.d(TAG,"view is "+v);
+    tokenTable = (TableLayout)v.findViewById(R.id.table);
+    return v;
+  }
+
+
   /**
    * buildTableView
    */
-  private void buildTableView()
+  public void buildTableView()
   {
     View title = tokenTable.findViewById(R.id.title_line);
+    Log.d(TAG,"removing all viees" );
     tokenTable.removeAllViews();
     tokenTable.addView(title);
 
@@ -118,5 +135,22 @@ public class StringXmlTableFrag extends Fragment implements OnEditorActionListen
     }
     return false;
   }//onEditorAction
+
+  public void addNewLang(String sanitized)
+  {
+    //Log.d(TAG, "asked to add " + sanitized);
+    if (!langList.contains(sanitized))
+    {
+      TableRow title = (TableRow)tokenTable.findViewById(R.id.title_line);
+      TableRow.LayoutParams llp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
+      llp.setMargins(0, 0, 2, 0);//2px right-margin
+      TextView tv = new TextView(context);
+      tv.setText(sanitized);
+      tv.setPadding(0, 0, 4, 3);
+
+      title.addView(tv);
+    }//if
+  }//addNewLang
+
 
 }//class

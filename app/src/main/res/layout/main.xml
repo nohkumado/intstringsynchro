@@ -60,30 +60,6 @@
 		android:layout_width="wrap_content"
 		android:id="@+id/table">
 
-		<TableRow
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:id="@+id/title_line">
-
-			<TextView
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:textAppearance="?android:attr/textAppearanceLarge"
-				android:text="@string/table_tok"
-				android:id="@+id/c00"
-				android:paddingRight="10dp"
-				android:background="@drawable/border"/>
-
-			<TextView
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:textAppearance="?android:attr/textAppearanceMedium"
-				android:text="@string/fallback"
-				android:id="@+id/c01"
-				android:background="@drawable/border"/>
-
-		</TableRow>
-
 	</TableLayout>
 
 </LinearLayout>

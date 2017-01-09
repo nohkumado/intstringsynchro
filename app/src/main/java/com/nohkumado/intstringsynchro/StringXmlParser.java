@@ -60,7 +60,7 @@ public class StringXmlParser
         skip(parser);
       }
     }
-    Log.d(TAG, "returning (" + entries.size() + ")" + Arrays.toString(entries.toArray(new StringEntry[entries.size()])));
+    //Log.d(TAG, "returning (" + entries.size() + ")" + Arrays.toString(entries.toArray(new StringEntry[entries.size()])));
     return entries;
   }
 

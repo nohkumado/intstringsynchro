@@ -24,7 +24,7 @@ import android.view.View.OnClickListener;
 
 public class MainActivity extends Activity implements OnClickListener, 
 DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListener,
-DialogSelectionListener, OnEditorActionListener
+DialogSelectionListener//, OnEditorActionListener
 {
   protected Spinner langSpin;
   protected Button addLang, addToken, openProject;
@@ -36,7 +36,7 @@ DialogSelectionListener, OnEditorActionListener
   protected HashMap<String, ArrayList<StringEntry>> rest;
   //protected ArrayList<StringEntry> tokenList;
   //protected ListView tokenTable;
-  protected TableLayout tokenTable;
+  //protected TableLayout tokenTable;
   //protected StringEntryAdapter stringDataAdapter;
 
   private static final int PROJECT_CHOOSED = 99;
@@ -47,6 +47,7 @@ DialogSelectionListener, OnEditorActionListener
   protected Pattern complete = Pattern.compile("([a-z]{2})\\-r([a-zA-Z]{2})");
   protected Pattern iso = Pattern.compile("([a-z]{2})\\-([a-zA-Z]{2})");
 
+  protected StringXmlTableFrag tokenTable;
 
   @Override
   protected void onCreate(Bundle savedInstanceState)
@@ -93,11 +94,17 @@ DialogSelectionListener, OnEditorActionListener
     saveBut.setOnClickListener(this);
     //tokenList = new ArrayList<>();
     //tokenTable = (ListView) findViewById(R.id.stringListView);
-    tokenTable = (TableLayout) findViewById(R.id.table);
+    tokenTable = new StringXmlTableFrag(langList, data, rest, this);
+    FragmentManager fm = getFragmentManager();
+    FragmentTransaction ft = fm.beginTransaction();
+    ft.replace(R.id.table, tokenTable);
+    ft.commit();
+
+    //tokenTable = (TableLayout) findViewById(R.id.table);
     //tokenTable.setBackground(getResources().getDrawable(R.drawable.border);
     //stringDataAdapter = new StringEntryAdapter(this, data);
     //tokenTable.setAdapter(stringDataAdapter);
-  }//protected void onCreate(Bundle savedInstanceState)
+  }
 
   public String getLang()
   {
@@ -122,7 +129,12 @@ DialogSelectionListener, OnEditorActionListener
     else if (p1 == moveUpBut)
     {
       File actDir = new File(actProjectPath, "../");
-      actProjectPath = actDir.getAbsolutePath();
+      try
+      {
+        actProjectPath = actDir.getCanonicalPath();
+      }
+      catch (IOException e)
+      {}
     }
     else if (p1 == saveBut)
     {
@@ -240,6 +252,7 @@ DialogSelectionListener, OnEditorActionListener
   public void onSelectedFilePaths(String[] p1)
   {
     //Log.d(TAG,"select file "+data);
+    ArrayList<StringFile> toLoad = new ArrayList<StringFile>(); 
     StringBuilder error = new StringBuilder();
     if (p1.length == 1)
     {
@@ -255,7 +268,8 @@ DialogSelectionListener, OnEditorActionListener
             //TODO for later ArrayList<String> list = new ArrayList(Arrays.asList(getResources().getStringArray(R.array.strings)));//where R.array.strings is a reference to your resource
             //Toast.makeText(this, "found strings.xml", Toast.LENGTH_LONG).show();
             found = true;
-            loadStringsXmlFile(new File(resValuesDir, aFile), "default");
+            toLoad.add(new StringFile(resValuesDir, aFile, "default"));
+            //loadStringsXmlFile(new File(resValuesDir, aFile), "default");
 
             break;
           }
@@ -270,7 +284,14 @@ DialogSelectionListener, OnEditorActionListener
           if (prefs.contains("actprojectpath")) actProjectPath = prefs.getString("actprojectpath", "");
 
           SharedPreferences.Editor editor = prefs.edit();
-          editor.putString("actprojectpath", resDir.getAbsolutePath());
+          try
+          {
+            editor.putString("actprojectpath", resDir.getCanonicalPath());
+          }
+          catch (IOException e)
+          {
+            Log.e(TAG, "coouldn't set path to " + resDir.getAbsolutePath());
+          }
           editor.apply();
           final Pattern p = Pattern.compile("values-[a-z\\-]{2,}");
           //select allready selected languages
@@ -293,10 +314,10 @@ DialogSelectionListener, OnEditorActionListener
             {
               String sanitized = mlang.group(1);
               addNewLang(sanitized);
-              File resLangFile = new File(resDir, aLang + "/strings.xml");
+              StringFile resLangFile = new StringFile(resDir, aLang + "/strings.xml", sanitized);
 
-              if (resLangFile.exists())
-                loadStringsXmlFile(resLangFile, sanitized);    
+              if (resLangFile.exists()) toLoad.add(resLangFile);
+              //loadStringsXmlFile(resLangFile, sanitized);    
             }
             else Log.e(TAG, "wrng pattern " + mlang);
 
@@ -313,87 +334,19 @@ DialogSelectionListener, OnEditorActionListener
       error.append("select the values dir");
 
     if (error.toString().length() > 0) Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show();
-
-//    for(String aPath : p1)
-//    {
-//      Toast.makeText(this, "Selected file: "+aPath, Toast.LENGTH_LONG).show();
-//    }
-
-    //Log.d(TAG, "about to print out " + data);
-
-    buildTableView();
-  }
-
-  private void buildTableView()
-  {
-    View title = tokenTable.findViewById(R.id.title_line);
-    tokenTable.removeAllViews();
-    tokenTable.addView(title);
-
-    //tr.setBackgroundColor(Color.BLACK);
-    //tr.setPadding(0, 0, 0, 2); //Border between rows
-
-    TableRow.LayoutParams llp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
-    llp.setMargins(0, 0, 2, 0);//2px right-margin
-
-    for (String token : data)
+    if (toLoad.size() > 0)
     {
-      TableRow newRow = new TableRow(this);
-      newRow.setLayoutParams(llp);
-      newRow.addView(createTextView(llp, token, "token"));
-      for (String lang : langList)
-      {
-        String someContent = data.get(token, lang);
-        if (someContent == null) someContent = "";
-
-        newRow.addView(createEditView(llp, someContent, token + ":" + lang));
-      }
-      tokenTable.addView(newRow);
+      for (StringFile aFile: toLoad)
+        Log.d(TAG, "about to load :" + aFile.toString() + " of " + aFile.lang());
+      StringFileLoadTask task = new StringFileLoadTask(data, rest, this);
+      task.execute(toLoad.toArray(new StringFile[toLoad.size()]));
     }
-    tokenTable.invalidate();
-  }
+  }//  public void onSelectedFilePaths(String[] p1)
 
-  private TextView createTextView(TableRow.LayoutParams llp, String someContent, String hintTxt)
+  public void buildTableView()
   {
-    TextView tv = new TextView(this);
-    tv.setLayoutParams(llp);
-    tv.setText(someContent);
-    tv.setBackground(getResources().getDrawable(R.drawable.border));
-    tv.setPadding(0, 0, 4, 3);
-    tv.setHint(hintTxt);
-    return tv;
-  }
-
-
-  private EditText createEditView(TableRow.LayoutParams llp, String someContent, String hintTxt)
-  {
-    EditText tv = new EditText(this);
-    tv.setLayoutParams(llp);
-    tv.setText(someContent);
-    tv.setBackground(getResources().getDrawable(R.drawable.border));
-    tv.setPadding(0, 0, 4, 3);
-    tv.setHint(hintTxt);
-    tv.setOnEditorActionListener(this);
-    return tv;
-  }
-
-  @Override
-  public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
-  {
-    //Log.d(TAG,"Editor action! "+event+"  id"+actionId);
-    if (EditorInfo.IME_ACTION_DONE == actionId || (event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER))
-    {
-      String posHint = v.getHint().toString();
-      String[] pos = posHint.split(":");
-      //Log.d(TAG,"change["+pos[0]+":"+pos[1]+"] text "+v.getText().toString());
-      data.set(pos[0], pos[1], v.getText().toString());
-      return true;
-    }
-    return false;
-  }
-
-
-
+    tokenTable.buildTableView();
+  }//public void buildTableView()
 
 
   private void addNewLang(String sanitized)
@@ -402,147 +355,21 @@ DialogSelectionListener, OnEditorActionListener
     if (!langList.contains(sanitized))
     {
       langList.add(sanitized);
-      TableRow title = (TableRow)tokenTable.findViewById(R.id.title_line);
-      TableRow.LayoutParams llp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
-      llp.setMargins(0, 0, 2, 0);//2px right-margin
-      TextView tv = new TextView(this);
-      tv.setText(sanitized);
-      tv.setPadding(0, 0, 4, 3);
 
-      title.addView(tv);
+      tokenTable.addNewLang(sanitized);
 
       rest.put(sanitized, new ArrayList<StringEntry>());
       Toast.makeText(this, "Added lang, " + sanitized, Toast.LENGTH_SHORT).show();
 
-    }
-  }
-
-
-  @Override
-  protected void onActivityResult(int requestCode, int resultCode, Intent resultData)
-  {
-    super.onActivityResult(requestCode, resultCode, resultData);
-    if (requestCode == PROJECT_CHOOSED && resultCode == Activity.RESULT_OK)
-    {
-      // The document selected by the user won't be returned in the intent.
-      // Instead, a URI to that document will be contained in the return intent
-      // provided to this method as a parameter.
-      // Pull that URI using resultData.getData().
-      Uri uri = null;
-      if (resultData != null)
-      {
-        uri = resultData.getData();
-        //Uri pwd = new Uri(uri, ".");
-        File strpointer = new File(uri.getPath());
-        File dirPtr = new File(strpointer, "..");
-
-        Log.i(TAG, "Uri: " + uri.toString() + " " + strpointer.getAbsolutePath());
-        //Toast.makeText(this, "Retrieved URI " + strpointer.getAbsolutePath(), Toast.LENGTH_LONG).show();
-        Toast.makeText(this, "proj dir " + dirPtr.getAbsolutePath(), Toast.LENGTH_LONG).show();
-
-
-        //showImage(uri);
-      }
-    }
-  }//protected void onActivityResult(int requestCode, int resultCode, Intent resultData)
-
-
-  protected void loadStringsXmlFile(File aFile, String langTok)
-  {
-    ArrayList<StringEntry> entries = new ArrayList<>(); 
-    //XmlPullParser parser =  Xml.newPullParser();
-    InputStream stream = null;
-    StringXmlParser parser = new StringXmlParser();
-    try
-    {
-      stream = new FileInputStream(aFile);
-      entries = parser.parse(stream);
-    }
-    catch (XmlPullParserException e)
-    {}
-    catch (IOException e)
-    {}
-    // Makes sure that the InputStream is closed after the app is
-    // finished using it.
-    finally
-    {
-      if (stream != null)
-      {
-        try
-        {
-          stream.close();
-        }
-        catch (IOException e)
-        {}
-      }
-    }
-    for (StringEntry anEntry: entries)
-    {
-      //Log.d(TAG,langTok+" adding entry tok "+anEntry.token+" val "+anEntry.text+" to d:"+data);
-      if (anEntry.text != null && !"".equals(anEntry.text)) data.set(anEntry.token, langTok, anEntry.text);
-      else
-      {
-        rest.get(langTok).add(anEntry);
-      }
-
-      //Log.e(TAG,"not stored "+anEntry);
-    }
-
-    //if(stringDataAdapter != null) stringDataAdapter.notifyDataSetChanged();
-  }//List<StringEntry> loadStringsXmlFile(String aFile)
+    }//if
+  }//add-newLang
 
   protected boolean saveFiles()
   {
+
     boolean result = true;
-    StringBuilder sb ;
-
-    for (String lang : langList)
-    {
-      Log.d(TAG, "printing for lang : " + lang);
-      sb = new StringBuilder();
-      sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<resources>\n");
-      String indent =  "   ";
-      for (String token : data)
-      {
-        String msg = data.get(token, lang);
-        if (msg != null && msg.length() > 0)
-        {
-          msg = new StringEntry(token, msg).toXml(indent);
-          sb.append(msg);  
-        }
-      }
-
-      ArrayList<StringEntry> otherStrucs = rest.get(lang);
-      if (otherStrucs != null)
-      {
-        for (StringEntry record : otherStrucs)
-        {
-          sb.append(record.toXml(indent));  
-        }  
-      }
-      sb.append("</resources>");
-      
-      File saveFile = new File(getExternalFilesDir(null), "test-strings-" + lang + ".xml");
-      try
-      {
-        BufferedWriter  os = new BufferedWriter(new FileWriter(saveFile));
-        Log.d(TAG, "writing into "+saveFile+" " + sb);
-        os.write(sb.toString());
-        os.close();
-        //Log.d(TAG,"wroten file "+saveFile);
-      }
-      catch (FileNotFoundException e)
-      {
-        Log.e(TAG, "file not found :" + e);
-      }
-      catch (IOException f)
-      {
-        Log.e(TAG, "IO ex :" + f);
-      }
-      Log.d(TAG,"done writing ");
-
-
-    }
+    SaveStringXmlTask task = new SaveStringXmlTask(data, rest, this);
+    task.execute(langList.toArray(new String[langList.size()]));
     return result;
   }
 }
