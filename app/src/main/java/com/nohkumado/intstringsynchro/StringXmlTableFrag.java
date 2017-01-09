@@ -16,7 +16,8 @@ public class StringXmlTableFrag extends Fragment implements OnEditorActionListen
   protected ArrayList<String> langList;
   protected TreeMapTable<String,String> data;
   //protected ArrayList<StringEntry> rest;
-  protected HashMap<String, ArrayList<StringEntry>> rest;
+  //protected HashMap<String, ArrayList<StringEntry>> rest;
+  protected TreeMapTable<String, StringEntry> rest;
   protected TableLayout tokenTable;
 
   protected MainActivity context;
@@ -24,7 +25,8 @@ public class StringXmlTableFrag extends Fragment implements OnEditorActionListen
    CTOR
 
    */
-  public StringXmlTableFrag(ArrayList<String> langList, TreeMapTable<String, String> data, HashMap<String, ArrayList<StringEntry>> rest, MainActivity context)
+  //public StringXmlTableFrag(ArrayList<String> langList, TreeMapTable<String, String> data, HashMap<String, ArrayList<StringEntry>> rest, MainActivity context)
+  public StringXmlTableFrag(ArrayList<String> langList, TreeMapTable<String, String> data, TreeMapTable<String, StringEntry> rest, MainActivity context)
   {
     this.langList = langList;
     this.data = data;
@@ -40,7 +42,7 @@ public class StringXmlTableFrag extends Fragment implements OnEditorActionListen
     {
       v = inflater.inflate(R.layout.string_xml_frag, container, false);
     }
-    Log.d(TAG,"view is "+v);
+    Log.d(TAG, "view is " + v);
     tokenTable = (TableLayout)v.findViewById(R.id.table);
     return v;
   }
@@ -52,7 +54,7 @@ public class StringXmlTableFrag extends Fragment implements OnEditorActionListen
   public void buildTableView()
   {
     View title = tokenTable.findViewById(R.id.title_line);
-    Log.d(TAG,"removing all viees" );
+    Log.d(TAG, "removing all viees");
     tokenTable.removeAllViews();
     tokenTable.addView(title);
 
@@ -76,6 +78,37 @@ public class StringXmlTableFrag extends Fragment implements OnEditorActionListen
       }
       tokenTable.addView(newRow);
     }
+
+    for (String token : rest)
+    {
+      TableRow newRow = new TableRow(context);
+      newRow.setLayoutParams(llp);
+      newRow.addView(createTextView(llp, token, "token"));
+      //Log.d(TAG, "add rest stuff for " + token + " vla " + entry.getValue());
+      for (String lang : langList)
+      {
+        //Log.d(TAG, "add rest stuff for " + token + " vla " + entry.getValue());
+        StringEntry someContent = rest.get(token, lang);//.get(lang);
+        if (someContent != null)
+        {
+          if (someContent instanceof PluralEntry)
+          {
+            Log.d(TAG, "plural :" + someContent);
+          }
+          else if (someContent instanceof ArrayEntry)
+          {
+            Log.d(TAG, "array :" + someContent);
+          }
+        }
+        
+        //newRow.addView(createEditView(llp, someContent, token + ":" + lang));
+      }
+      tokenTable.addView(newRow);
+    }
+
+
+
+
     tokenTable.invalidate();
   }//buildTableView
   /**
@@ -125,20 +158,20 @@ public class StringXmlTableFrag extends Fragment implements OnEditorActionListen
   @Override
   public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
   {
-    Log.d(TAG,"Editor action! "+event+"  id"+actionId);
-    
+    //Log.d(TAG,"Editor action! "+event+"  id"+actionId);
+
     if (EditorInfo.IME_ACTION_DONE == actionId || (event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER))
     {
       String posHint = v.getHint().toString();
       String[] pos = posHint.split(":");
-      Log.d(TAG,"change["+pos[0]+":"+pos[1]+"] text "+v.getText().toString());
+      //Log.d(TAG,"change["+pos[0]+":"+pos[1]+"] text "+v.getText().toString());
       data.set(pos[0], pos[1], v.getText().toString());
       return true;
     }
     return false;
   }//onEditorAction
 
-  
+
   public void addNewLang(String sanitized)
   {
     //Log.d(TAG, "asked to add " + sanitized);

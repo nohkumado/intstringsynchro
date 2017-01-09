@@ -12,10 +12,10 @@ public class SaveStringXmlTask extends AsyncTask<String,Integer,Void>
   private static final String TAG="SaveF";
 
   protected TreeMapTable<String,String> data;
-  protected HashMap<String, ArrayList<StringEntry>> rest;
+  protected TreeMapTable<String,StringEntry> rest;
   protected MainActivity context;
 
-  public SaveStringXmlTask(TreeMapTable<String, String> data, HashMap<String, ArrayList<StringEntry>> rest, 
+  public SaveStringXmlTask(TreeMapTable<String, String> data, TreeMapTable<String,StringEntry> rest, 
                             MainActivity context)
   {
     this.data = data;
@@ -44,15 +44,22 @@ public class SaveStringXmlTask extends AsyncTask<String,Integer,Void>
           sb.append(msg);  
         }
       }
-
-      ArrayList<StringEntry> otherStrucs = rest.get(lang);
-      if (otherStrucs != null)
+      for (String token : rest)
       {
-        for (StringEntry record : otherStrucs)
+        StringEntry msg = rest.get(token, lang);
+        if (msg != null)
         {
-          sb.append(record.toXml(indent));  
-        }  
+          sb.append(msg.toXml(indent));
+        }
       }
+//      ArrayList<StringEntry> otherStrucs = rest.get(lang);
+//      if (otherStrucs != null)
+//      {
+//        for (StringEntry record : otherStrucs)
+//        {
+//          sb.append(record.toXml(indent));  
+//        }  
+//      }
       sb.append("</resources>");
 
       File saveFile = new File(context.getExternalFilesDir(null), "test-strings-" + lang + ".xml");

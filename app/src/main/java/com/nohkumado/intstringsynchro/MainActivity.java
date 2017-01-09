@@ -33,7 +33,9 @@ DialogSelectionListener//, OnEditorActionListener
   protected ArrayList<String> langList;
   protected TreeMapTable<String,String> data;
   //protected ArrayList<StringEntry> rest;
-  protected HashMap<String, ArrayList<StringEntry>> rest;
+  protected TreeMapTable<String,StringEntry> rest;
+  
+  //protected HashMap<String, ArrayList<StringEntry>> rest;
   //protected ArrayList<StringEntry> tokenList;
   //protected ListView tokenTable;
   //protected TableLayout tokenTable;
@@ -56,8 +58,9 @@ DialogSelectionListener//, OnEditorActionListener
     Log.d(TAG, "#############################  start ###################################");
     setContentView(R.layout.main);
     data = new TreeMapTable<>();
-    rest = new  HashMap<String, ArrayList<StringEntry>>();
-    rest.put("default", new ArrayList<StringEntry>());
+    rest = new  TreeMapTable<>();
+    //rest = new  HashMap<String, ArrayList<StringEntry>>();
+    //rest.put("default", new ArrayList<StringEntry>());
     //rest = new ArrayList<StringEntry>() ; 
 
 
@@ -363,7 +366,7 @@ DialogSelectionListener//, OnEditorActionListener
 
       tokenTable.addNewLang(sanitized);
 
-      rest.put(sanitized, new ArrayList<StringEntry>());
+      //rest.put(sanitized, new ArrayList<StringEntry>());
       Toast.makeText(this, "Added lang, " + sanitized, Toast.LENGTH_SHORT).show();
 
     }//if

@@ -10,10 +10,12 @@ public class StringFileLoadTask extends AsyncTask<StringFile,Integer,Void>
 
 
   protected TreeMapTable<String,String> data;
-  protected HashMap<String, ArrayList<StringEntry>> rest;
+  //protected HashMap<String, ArrayList<StringEntry>> rest;
+  protected TreeMapTable<String,StringEntry> rest;
+  
   protected MainActivity context;
 
-  public StringFileLoadTask(TreeMapTable<String, String> data, HashMap<String, ArrayList<StringEntry>> rest, MainActivity context)
+  public StringFileLoadTask(TreeMapTable<String, String> data, TreeMapTable<String,StringEntry> rest, MainActivity context)
   {
     this.data = data;
     this.rest = rest;
@@ -66,7 +68,7 @@ public class StringFileLoadTask extends AsyncTask<StringFile,Integer,Void>
       if (anEntry.text != null && !"".equals(anEntry.text)) data.set(anEntry.token, langTok, anEntry.text);
       else
       {
-        rest.get(langTok).add(anEntry);
+        rest.set(anEntry.token, langTok, anEntry);
       }
 
       //Log.e(TAG,"not stored "+anEntry);
