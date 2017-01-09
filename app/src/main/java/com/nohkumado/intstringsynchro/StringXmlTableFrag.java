@@ -11,6 +11,7 @@ import android.util.*;
 
 public class StringXmlTableFrag extends Fragment implements OnEditorActionListener
 {
+
   private static final String TAG="SXF";
   protected ArrayList<String> langList;
   protected TreeMapTable<String,String> data;
@@ -124,18 +125,20 @@ public class StringXmlTableFrag extends Fragment implements OnEditorActionListen
   @Override
   public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
   {
-    //Log.d(TAG,"Editor action! "+event+"  id"+actionId);
+    Log.d(TAG,"Editor action! "+event+"  id"+actionId);
+    
     if (EditorInfo.IME_ACTION_DONE == actionId || (event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER))
     {
       String posHint = v.getHint().toString();
       String[] pos = posHint.split(":");
-      //Log.d(TAG,"change["+pos[0]+":"+pos[1]+"] text "+v.getText().toString());
+      Log.d(TAG,"change["+pos[0]+":"+pos[1]+"] text "+v.getText().toString());
       data.set(pos[0], pos[1], v.getText().toString());
       return true;
     }
     return false;
   }//onEditorAction
 
+  
   public void addNewLang(String sanitized)
   {
     //Log.d(TAG, "asked to add " + sanitized);

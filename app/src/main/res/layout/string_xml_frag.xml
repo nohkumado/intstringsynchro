@@ -1,36 +1,39 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical">
-    <TableLayout
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:id="@+id/table">
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical">
 
-        <TableRow
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:id="@+id/title_line">
+	<TableLayout
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:id="@+id/table">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="@string/table_tok"
-                android:id="@+id/c00"
-                android:paddingRight="10dp"
-                android:background="@drawable/border"/>
+		<TableRow
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:id="@+id/title_line">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="@string/fallback"
-                android:id="@+id/c01"
-                android:background="@drawable/border"/>
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/table_tok"
+				android:id="@+id/c00"
+				android:paddingRight="10dp"
+				android:background="@drawable/border"
+				android:textSize="12sp"/>
 
-        </TableRow>
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/fallback"
+				android:id="@+id/c01"
+				android:background="@drawable/border"/>
 
-    </TableLayout>
-    
+		</TableRow>
+
+	</TableLayout>
+
 </LinearLayout>
+

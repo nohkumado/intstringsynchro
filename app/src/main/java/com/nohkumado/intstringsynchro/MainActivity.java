@@ -69,7 +69,11 @@ DialogSelectionListener//, OnEditorActionListener
     //langList.add("de");
     //langList.add("fr");
     SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(this);
-    if (prefs.contains("actprojectpath")) actProjectPath = prefs.getString("actprojectpath", "");
+    if (prefs.contains("actprojectpath")) 
+    {
+      actProjectPath = prefs.getString("actprojectpath", "");
+      
+    }
     //Log.d(TAG,"retrieved default path '"+actProjectPath+"'");
 
     ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
@@ -104,6 +108,7 @@ DialogSelectionListener//, OnEditorActionListener
     //tokenTable.setBackground(getResources().getDrawable(R.drawable.border);
     //stringDataAdapter = new StringEntryAdapter(this, data);
     //tokenTable.setAdapter(stringDataAdapter);
+    if(actProjectPath != null && actProjectPath.length() > 0) onSelectedFilePaths(new String[] {actProjectPath+"/values"});
   }
 
   public String getLang()
