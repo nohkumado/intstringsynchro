@@ -1,13 +1,14 @@
 package com.nohkumado.intstringsynchro;
 import android.app.*;
+import android.graphics.*;
+import android.os.*;
+import android.util.*;
 import android.view.*;
 import android.view.inputmethod.*;
 import android.widget.*;
 import android.widget.TextView.*;
 import com.nohkumado.nohutils.collection.*;
 import java.util.*;
-import android.os.*;
-import android.util.*;
 
 public class StringXmlTableFrag extends Fragment implements OnEditorActionListener
 {
@@ -82,28 +83,113 @@ public class StringXmlTableFrag extends Fragment implements OnEditorActionListen
     for (String token : rest)
     {
       TableRow newRow = new TableRow(context);
-      newRow.setLayoutParams(llp);
-      newRow.addView(createTextView(llp, token, "token"));
+      newRow.setBackground(context.getDrawable(R.drawable.border));
+      
       //Log.d(TAG, "add rest stuff for " + token + " vla " + entry.getValue());
-      for (String lang : langList)
+      StringEntry someContent = rest.get(token, "default");//.get(lang);
+      if (someContent != null)
       {
-        //Log.d(TAG, "add rest stuff for " + token + " vla " + entry.getValue());
-        StringEntry someContent = rest.get(token, lang);//.get(lang);
-        if (someContent != null)
+        if (someContent instanceof PluralEntry)
         {
-          if (someContent instanceof PluralEntry)
+          llp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
+          llp.setMargins(0, 0, 2, 0);//2px right-margin
+          String[] quant = new String[] {"zero","one","two","few","many","other"};
+          
+          newRow.setBackgroundColor(Color.parseColor("#b7eeff"));
+          newRow.setLayoutParams(llp);
+          newRow.addView(createTextView(llp, token, "token"));
+
+          //complete with empty
+          for (String lang : langList) newRow.addView(createTextView(llp, "", token+":"+lang));
+          tokenTable.addView(newRow);
+          
+          
+          Log.d(TAG, "plural :" + someContent);
+          //tokenTable.addView(newRow);
+          
+          for (String quantity : quant)
           {
-            Log.d(TAG, "plural :" + someContent);
-          }
-          else if (someContent instanceof ArrayEntry)
-          {
-            Log.d(TAG, "array :" + someContent);
+            newRow = new TableRow(context);
+            newRow.setBackground(context.getDrawable(R.drawable.border));
+            newRow.setBackgroundColor(Color.parseColor("#b7eeff"));
+            newRow.setLayoutParams(llp);
+            TextView tv = createTextView(llp, quantity, "");
+            tv.setGravity(Gravity.RIGHT);
+            newRow.addView(tv);
+            
+            for (String lang : langList)
+            {
+              //if (lang.equals("default")) continue;
+              if(rest.get(token, lang) != null)
+              {
+                PluralEntry rec = (PluralEntry) rest.get(token, lang);
+                StringEntry line = null;
+                for(StringEntry aline : rec.array)
+                {
+                  if(aline.token.equals(quantity)) 
+                  {
+                    line = aline;
+                    break;
+                  }
+                }
+                if(line != null) newRow.addView(createEditView(llp, line.text, token+":"+lang+":"+quantity));
+                else newRow.addView(createEditView(llp, "", token+":"+lang+":"+quantity));
+              }
+              else newRow.addView(createEditView(llp, "", token+":"+lang+":"+quantity));
+            }
+            tokenTable.addView(newRow);
           }
         }
-        
+        else if (someContent instanceof ArrayEntry)
+        {
+          llp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
+          llp.setMargins(0, 0, 2, 0);//2px right-margin
+          
+          newRow.setBackgroundColor(Color.parseColor("#abe666"));
+          newRow.setLayoutParams(llp);
+          newRow.addView(createTextView(llp, token, "token"));
+          
+          Log.d(TAG, "array :" + someContent);
+          ArrayEntry toDisp = (ArrayEntry) someContent;
+          int line;
+          for (line = 0; line < toDisp.array.size(); line++)
+          {
+            for (String lang : langList)
+            {
+              //if (lang.equals("default")) continue;
+              if(rest.get(token, lang) != null)
+              {
+                ArrayEntry rec = (ArrayEntry) rest.get(token, lang);
+                if(rec.array.size() > line)
+                {
+                  newRow.addView(createEditView(llp, rec.array.get(line), token+":"+lang+":"+line));
+                }
+                else newRow.addView(createEditView(llp, "", token+":"+lang+":"+line));
+              }
+              else newRow.addView(createEditView(llp, "", token+":"+lang+":"+line));
+            }
+            tokenTable.addView(newRow);
+            newRow = new TableRow(context);
+            newRow.setBackground(context.getDrawable(R.drawable.border));
+            newRow.setBackgroundColor(Color.parseColor("#abe666"));
+            newRow.setLayoutParams(llp);
+            newRow.addView(createTextView(llp, "", ""));
+          }
+          //and an empty row
+          newRow = new TableRow(context);
+          newRow.setBackground(context.getDrawable(R.drawable.border));
+          newRow.setBackgroundColor(Color.parseColor("#abe666"));
+          newRow.setLayoutParams(llp);
+          newRow.addView(createTextView(llp, "", ""));
+          for (String lang : langList)
+          {
+            newRow.addView(createEditView(llp, "", token+":"+lang+":"+line));
+          }
+          tokenTable.addView(newRow);
+        }
         //newRow.addView(createEditView(llp, someContent, token + ":" + lang));
       }
-      tokenTable.addView(newRow);
+      
     }
 
 
