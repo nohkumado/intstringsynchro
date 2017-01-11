@@ -29,7 +29,7 @@ DialogSelectionListener//, OnEditorActionListener
   protected Spinner langSpin;
   protected Button addLang, addToken, openProject;
   protected ImageButton moveUpBut,saveBut;
-  protected  String actProjectPath = "";
+  protected String actProjectPath = "";
   protected ArrayList<String> langList;
   protected TreeMapTable<String,StringEntry> data;
   //protected ArrayList<StringEntry> rest;
@@ -380,4 +380,11 @@ DialogSelectionListener//, OnEditorActionListener
     task.execute(langList.toArray(new String[langList.size()]));
     return result;
   }
+  
+
+  public String getProjectPath()
+  {
+    return actProjectPath;
+  }
+  
 }

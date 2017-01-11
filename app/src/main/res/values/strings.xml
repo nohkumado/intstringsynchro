@@ -1,27 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="app_name">IntStringSynchro</string>
-    <string name="actual_language">Actual</string>
-    <string name="add_lang">Add Lang</string>
-    <string name="add_tok">Add Token</string>
-    <string name="add_project">Add Project</string>
-    <string name="open_stringxml">open a string.xml file of a project</string>
-    <string name="def_val">default value</string>
-    <string name="fallback">default</string>
-    <string name="table_tok">Token / langs</string>
-    <string name="files_loaded">files loaded</string>
-    <string name="files_saved">files saved</string>
-    
-    <string-array name="planets_array">
-        <item>Mercury</item>
-        <item>Venus</item>
-        <item>Earth</item>
-        <item>Mars</item>
-    </string-array>
-    <plurals name="numberOfSongsAvailable">
-        <item quantity="one">Znaleziono %d piosenkę.</item>
-        <item quantity="few">Znaleziono %d piosenki.</item>
-        <item quantity="other">Znaleziono %d piosenek.</item>
-    </plurals>
+   <string name="actual_language">Actual</string>
+   <string name="add_lang">Add Lang</string>
+   <string name="add_project">Add Project</string>
+   <string name="add_tok">Add Token</string>
+   <string name="app_name">IntStringSynchro</string>
+   <string name="def_val">default value</string>
+   <string name="fallback">default</string>
+   <string name="files_loaded">files loaded</string>
+   <string name="files_saved">files saved</string>
+   <plurals name="numberOfSongsAvailable">
+      <item quantity="few">%d songs avaiable.</item>
+      <item quantity="one">One Song available.</item>
+      <item quantity="zero">No Songs available</item>
+      <item quantity="other">%d songs available.</item>
+   </plurals>
+   <string name="open_stringxml">open a string.xml file of a project</string>
+   <string-array name="planets_array">
+      <item>Mercury</item>
+      <item>Venus</item>
+      <item>Earth</item>
+      <item>Mars</item>
+   </string-array>
+   <string name="table_tok">Token / langs</string>
 </resources>

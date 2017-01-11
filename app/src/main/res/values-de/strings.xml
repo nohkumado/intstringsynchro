@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="actual_language">Aktuelle</string>
+   <string name="actual_language">Aktuelle</string>
+   <string name="add_lang">Sprache hinzufügen</string>
+   <string-array name="planets_array">
+      <item></item>
+      <item>Venus</item>
+   </string-array>
 </resources>

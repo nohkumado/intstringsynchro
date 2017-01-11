@@ -47,7 +47,12 @@ public class SaveStringXmlTask extends AsyncTask<String,Integer,Void>
 //      }
       sb.append("</resources>");
 
-      File saveFile = new File(context.getExternalFilesDir(null), "test-strings-" + lang + ".xml");
+      File saveFile;
+      if(lang.equals("default")) saveFile = new File(context.getProjectPath(), "values/strings.xml");
+      else saveFile = new File(context.getProjectPath(), "values-" + lang + "/strings.xml");
+      saveFile.mkdirs();
+      
+      //File saveFile = new File(context.getExternalFilesDir(null), "strings-" + lang + ".xml");
       try
       {
         BufferedWriter  os = new BufferedWriter(new FileWriter(saveFile));
