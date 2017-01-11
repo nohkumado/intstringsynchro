@@ -31,9 +31,9 @@ DialogSelectionListener//, OnEditorActionListener
   protected ImageButton moveUpBut,saveBut;
   protected  String actProjectPath = "";
   protected ArrayList<String> langList;
-  protected TreeMapTable<String,String> data;
+  protected TreeMapTable<String,StringEntry> data;
   //protected ArrayList<StringEntry> rest;
-  protected TreeMapTable<String,StringEntry> rest;
+  //protected TreeMapTable<String,StringEntry> rest;
   
   //protected HashMap<String, ArrayList<StringEntry>> rest;
   //protected ArrayList<StringEntry> tokenList;
@@ -58,7 +58,7 @@ DialogSelectionListener//, OnEditorActionListener
     Log.d(TAG, "#############################  start ###################################");
     setContentView(R.layout.main);
     data = new TreeMapTable<>();
-    rest = new  TreeMapTable<>();
+    //rest = new  TreeMapTable<>();
     //rest = new  HashMap<String, ArrayList<StringEntry>>();
     //rest.put("default", new ArrayList<StringEntry>());
     //rest = new ArrayList<StringEntry>() ; 
@@ -101,7 +101,7 @@ DialogSelectionListener//, OnEditorActionListener
     saveBut.setOnClickListener(this);
     //tokenList = new ArrayList<>();
     //tokenTable = (ListView) findViewById(R.id.stringListView);
-    tokenTable = new StringXmlTableFrag(langList, data, rest, this);
+    tokenTable = new StringXmlTableFrag(langList, data, this);
     FragmentManager fm = getFragmentManager();
     FragmentTransaction ft = fm.beginTransaction();
     ft.replace(R.id.table, tokenTable);
@@ -221,7 +221,7 @@ DialogSelectionListener//, OnEditorActionListener
   public void onFinishAddTokenDialog(String inputText, String defaultVal)
   {
     Toast.makeText(this, "Added Token, " + inputText, Toast.LENGTH_SHORT).show();
-    data.set(inputText.trim(), "default", defaultVal.trim());
+    data.set(inputText.trim(), "default", new StringEntry(inputText.trim(),defaultVal.trim()));
     //if(stringDataAdapter != null) stringDataAdapter.notifyDataSetChanged();
   }
   private void showFileChooser()
@@ -346,7 +346,7 @@ DialogSelectionListener//, OnEditorActionListener
     {
       for (StringFile aFile: toLoad)
         Log.d(TAG, "about to load :" + aFile.toString() + " of " + aFile.lang());
-      StringFileLoadTask task = new StringFileLoadTask(data, rest, this);
+      StringFileLoadTask task = new StringFileLoadTask(data, this);
       task.execute(toLoad.toArray(new StringFile[toLoad.size()]));
     }
   }//  public void onSelectedFilePaths(String[] p1)
@@ -376,7 +376,7 @@ DialogSelectionListener//, OnEditorActionListener
   {
 
     boolean result = true;
-    SaveStringXmlTask task = new SaveStringXmlTask(data, rest, this);
+    SaveStringXmlTask task = new SaveStringXmlTask(data, this);
     task.execute(langList.toArray(new String[langList.size()]));
     return result;
   }

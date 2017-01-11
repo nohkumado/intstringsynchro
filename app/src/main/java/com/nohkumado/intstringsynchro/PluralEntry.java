@@ -6,31 +6,21 @@ import java.util.*;
 public class PluralEntry extends StringEntry
 {
   private static final String TAG="Plur";
-  protected ArrayList<StringEntry> array;
+  protected HashMap<String,StringEntry> hashmap;
 
-  public PluralEntry(String n, ArrayList<StringEntry> a)
+  public PluralEntry(String n, HashMap<String,StringEntry> a)
   {
     super(n, "");
-    array = a;
+    hashmap = a;
   }
   @Override
   public String toString()
   {
     StringBuilder  sb = new StringBuilder();
     sb.append("Plural[").append(token).append("]");
-    try
-    {
       
-    if (array != null) sb.append(Arrays.toString(array.toArray(new StringEntry[array.size()])));
-    }
-    catch(ArrayStoreException e)
-    {
-      Log.e(TAG,"failde to store "+array);
-      for(StringEntry anEn : array)
-      {
-        Log.e(TAG,"content  "+anEn);
-      }
-    }
+    if (hashmap != null) sb.append(hashmap.toString());
+
     return sb.toString();
   }
   /**
@@ -46,8 +36,8 @@ public class PluralEntry extends StringEntry
   {
     StringBuilder  sb = new StringBuilder();
     sb.append(indent).append("<plurals name=\"").append(token).append("\">\n");
-    for (StringEntry iem : array) 
-      sb.append(indent).append(indent).append("<item quantity=\"").append(iem.token).append("\">").append(iem.text).append("</item>\n");
+    for (String quant : hashmap.keySet()) 
+      sb.append(indent).append(indent).append("<item quantity=\"").append(quant).append("\">").append(hashmap.get(quant).text).append("</item>\n");
     sb.append("</plurals>\n");
     return sb.toString();
   }

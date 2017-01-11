@@ -11,15 +11,13 @@ public class SaveStringXmlTask extends AsyncTask<String,Integer,Void>
 {
   private static final String TAG="SaveF";
 
-  protected TreeMapTable<String,String> data;
-  protected TreeMapTable<String,StringEntry> rest;
+  protected TreeMapTable<String,StringEntry> data;
   protected MainActivity context;
 
-  public SaveStringXmlTask(TreeMapTable<String, String> data, TreeMapTable<String,StringEntry> rest, 
+  public SaveStringXmlTask(TreeMapTable<String,StringEntry> rest, 
                             MainActivity context)
   {
-    this.data = data;
-    this.rest = rest;
+    this.data = rest;
     this.context = context;
   }
 
@@ -37,20 +35,8 @@ public class SaveStringXmlTask extends AsyncTask<String,Integer,Void>
       String indent =  "   ";
       for (String token : data)
       {
-        String msg = data.get(token, lang);
-        if (msg != null && msg.length() > 0)
-        {
-          msg = new StringEntry(token, msg).toXml(indent);
-          sb.append(msg);  
-        }
-      }
-      for (String token : rest)
-      {
-        StringEntry msg = rest.get(token, lang);
-        if (msg != null)
-        {
-          sb.append(msg.toXml(indent));
-        }
+        StringEntry msg = data.get(token, lang);
+        if (msg != null) sb.append(msg.toXml(indent));  
       }
 //      ArrayList<StringEntry> otherStrucs = rest.get(lang);
 //      if (otherStrucs != null)

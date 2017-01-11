@@ -68,7 +68,7 @@ public class StringXmlParser
   {
     //Log.d(TAG, "entering read plurals");
     parser.require(XmlPullParser.START_TAG, ns, "plurals");
-    ArrayList<StringEntry> newList = new ArrayList<>();
+    HashMap<String,StringEntry> newList = new HashMap<>();
     StringEntry result = new PluralEntry(parser.getAttributeValue("", "name"), newList);
    
     while (parser.next() != XmlPullParser.END_TAG)
@@ -78,7 +78,8 @@ public class StringXmlParser
         continue;
       }
       String name = parser.getName();
-      if (name.equals("item")) newList.add(readPluralItem(parser));
+      StringEntry pE = readPluralItem(parser);
+      if (name.equals("item")) newList.put(pE.token, pE);
     }
     //Log.d(TAG, " new plural " + result);
     return result;    
