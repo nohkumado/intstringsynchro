@@ -344,8 +344,8 @@ DialogSelectionListener//, OnEditorActionListener
     if (error.toString().length() > 0) Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show();
     if (toLoad.size() > 0)
     {
-      for (StringFile aFile: toLoad)
-        Log.d(TAG, "about to load :" + aFile.toString() + " of " + aFile.lang());
+      //for (StringFile aFile: toLoad)
+      //  Log.d(TAG, "about to load :" + aFile.toString() + " of " + aFile.lang());
       StringFileLoadTask task = new StringFileLoadTask(data, this);
       task.execute(toLoad.toArray(new StringFile[toLoad.size()]));
     }

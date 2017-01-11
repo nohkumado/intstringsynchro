@@ -43,7 +43,7 @@ public class StringXmlTableFrag extends Fragment implements OnEditorActionListen
     {
       v = inflater.inflate(R.layout.string_xml_frag, container, false);
     }
-    Log.d(TAG, "view is " + v);
+    //Log.d(TAG, "view is " + v);
     tokenTable = (TableLayout)v.findViewById(R.id.table);
     return v;
   }
@@ -55,7 +55,7 @@ public class StringXmlTableFrag extends Fragment implements OnEditorActionListen
   public void buildTableView()
   {
     View title = tokenTable.findViewById(R.id.title_line);
-    Log.d(TAG, "removing all viees");
+    //Log.d(TAG, "removing all viees");
     tokenTable.removeAllViews();
     tokenTable.addView(title);
 
@@ -157,21 +157,38 @@ public class StringXmlTableFrag extends Fragment implements OnEditorActionListen
         {
           int num =  Integer.parseInt(pos[2]);  
           //numeric
+          //Log.d(TAG, "adding array");
           ArrayEntry aEntry = (ArrayEntry) data.get(pos[0], pos[1]);
-          if (num > aEntry.array.size())
+          if (aEntry == null)
           {
-            aEntry.array.add(v.getText().toString());
+            aEntry = new ArrayEntry(pos[0]);
+            data.set(pos[0], pos[1], aEntry);
+          }
+
+          int diff = num - aEntry.array.size();
+          
+          if (diff >= 0)
+          {
+            for(int i = 0; i <= diff; i++) aEntry.array.add("");
             //TODO need to redraw!!
           }
-          else
-            aEntry.array.set(num, v.getText().toString());
+          aEntry.array.set(num, v.getText().toString());
         }
         catch (NumberFormatException e)
         {
+          //Log.d(TAG, "adding plural");
           PluralEntry aEntry = (PluralEntry) data.get(pos[0], pos[1]);
+          if (aEntry == null)
+          {
+            aEntry = new PluralEntry(pos[0]);
+            data.set(pos[0], pos[1], aEntry);
+          }
+
           aEntry.hashmap.put(pos[2], new StringEntry(pos[2], v.getText().toString()));
         }
       }//else
+      //Log.d(TAG, "changed[" + pos[0] + ":" + pos[1] + "] : " + data.get(pos[0], pos[1]));
+
       return true;
     }
     return false;

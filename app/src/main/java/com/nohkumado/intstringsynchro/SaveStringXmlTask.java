@@ -2,10 +2,9 @@ package com.nohkumado.intstringsynchro;
 
 import android.os.*;
 import android.util.*;
+import android.widget.*;
 import com.nohkumado.nohutils.collection.*;
 import java.io.*;
-import java.util.*;
-import org.xmlpull.v1.*;
 
 public class SaveStringXmlTask extends AsyncTask<String,Integer,Void>
 {
@@ -29,7 +28,7 @@ public class SaveStringXmlTask extends AsyncTask<String,Integer,Void>
 
     for (String lang : p1)
     {
-      Log.d(TAG, "printing for lang : " + lang);
+      //Log.d(TAG, "printing for lang : " + lang);
       sb = new StringBuilder();
       sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<resources>\n");
       String indent =  "   ";
@@ -52,7 +51,7 @@ public class SaveStringXmlTask extends AsyncTask<String,Integer,Void>
       try
       {
         BufferedWriter  os = new BufferedWriter(new FileWriter(saveFile));
-        Log.d(TAG, "writing into " + saveFile + " " + sb);
+        //Log.d(TAG, "writing into " + saveFile + " " + sb);
         os.write(sb.toString());
         os.close();
         //Log.d(TAG,"wroten file "+saveFile);
@@ -65,7 +64,7 @@ public class SaveStringXmlTask extends AsyncTask<String,Integer,Void>
       {
         Log.e(TAG, "IO ex :" + f);
       }
-      Log.d(TAG, "done writing ");
+      //Log.d(TAG, "done writing ");
 
 
     }
@@ -76,6 +75,9 @@ public class SaveStringXmlTask extends AsyncTask<String,Integer,Void>
   protected void onPostExecute(Void result)
   {
     super.onPostExecute(result);
+    String msg = context.getResources().getString(R.string.files_saved);
+    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+    
   }//List<StringEntry> loadStringsXmlFile(String aFile)
 
 

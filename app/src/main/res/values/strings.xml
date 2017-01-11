@@ -10,6 +10,8 @@
     <string name="def_val">default value</string>
     <string name="fallback">default</string>
     <string name="table_tok">Token / langs</string>
+    <string name="files_loaded">files loaded</string>
+    <string name="files_saved">files saved</string>
     
     <string-array name="planets_array">
         <item>Mercury</item>

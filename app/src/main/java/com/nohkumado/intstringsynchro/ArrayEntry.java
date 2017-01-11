@@ -16,10 +16,16 @@ public class ArrayEntry extends StringEntry
 {
   protected ArrayList<String> array;
 
+  public ArrayEntry(String n)
+  {
+    this(n,null);
+  }
   public ArrayEntry(String n, ArrayList<String> a)
   {
     super(n, "");
-    array = a;
+    if(a != null) array = a;
+    else array = new ArrayList<>();
+    
   }
   @Override
   public String toString()
@@ -35,7 +41,7 @@ public class ArrayEntry extends StringEntry
     sb.append(indent).append("<string-array name=\"").append(token).append("\">\n");
     for (String iem : array) sb.append(indent).append(indent).append("<item>").append(iem).append("</item>\n");
 
-    sb.append("</string-array>\n");
+    sb.append(indent).append("</string-array>\n");
     return sb.toString();
   }
 

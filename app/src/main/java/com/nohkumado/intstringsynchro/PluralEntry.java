@@ -8,10 +8,15 @@ public class PluralEntry extends StringEntry
   private static final String TAG="Plur";
   protected HashMap<String,StringEntry> hashmap;
 
+  public PluralEntry(String n)
+  {
+    this(n, null);
+  }
   public PluralEntry(String n, HashMap<String,StringEntry> a)
   {
     super(n, "");
-    hashmap = a;
+    if(a != null) hashmap = a;
+    else hashmap = new HashMap<>();
   }
   @Override
   public String toString()
@@ -38,7 +43,7 @@ public class PluralEntry extends StringEntry
     sb.append(indent).append("<plurals name=\"").append(token).append("\">\n");
     for (String quant : hashmap.keySet()) 
       sb.append(indent).append(indent).append("<item quantity=\"").append(quant).append("\">").append(hashmap.get(quant).text).append("</item>\n");
-    sb.append("</plurals>\n");
+    sb.append(indent).append("</plurals>\n");
     return sb.toString();
   }
 }
