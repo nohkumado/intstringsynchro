@@ -224,9 +224,10 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
           if (diff >= 0)
           {
             for (int i = 0; i <= diff; i++) aEntry.array.add("");
+            aEntry.array.set(num, v.getText().toString());
             buildTableView();
           }
-          aEntry.array.set(num, v.getText().toString());
+          else aEntry.array.set(num, v.getText().toString());
         }
         catch (NumberFormatException e)
         {
