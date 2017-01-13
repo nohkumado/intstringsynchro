@@ -15,7 +15,7 @@
 			android:layout_width="wrap_content"
 			android:id="@+id/title_line">
 
-			<TextView
+			<!--TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="@string/table_tok"
@@ -29,7 +29,7 @@
 				android:layout_height="wrap_content"
 				android:text="@string/fallback"
 				android:id="@+id/c01"
-				android:background="@drawable/border"/>
+				android:background="@drawable/border"/-->
 
 		</TableRow>
 

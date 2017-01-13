@@ -13,6 +13,9 @@ public class DialogFragAddLang extends DialogFragment implements OnEditorActionL
 {
 
   public static final String TAG = "DiaFrag";
+  AddLangDialogListener listener;
+  
+  
   public interface AddLangDialogListener
   {
     void onFinishAddLangDialog(String inputText);
@@ -47,11 +50,19 @@ public class DialogFragAddLang extends DialogFragment implements OnEditorActionL
     if (EditorInfo.IME_ACTION_DONE == actionId|| (event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER))
     {
       // Return input text to activity
-      AddLangDialogListener activity = (AddLangDialogListener) getActivity();
-      activity.onFinishAddLangDialog(mEditText.getText().toString());
+      if(listener != null)
+      {
+        listener.onFinishAddLangDialog(mEditText.getText().toString());
+      }
+      //AddLangDialogListener activity = (AddLangDialogListener) getActivity();
       this.dismiss();
       return true;
     }
     return false;
+  }
+  
+  public void setAddLangDialogListener(AddLangDialogListener listCand)
+  {
+    listener = listCand;
   }
 }

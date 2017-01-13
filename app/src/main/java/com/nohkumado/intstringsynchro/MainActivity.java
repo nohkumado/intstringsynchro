@@ -124,8 +124,9 @@ DialogSelectionListener//, OnEditorActionListener
   @Override
   public void onClick(View p1)
   {
-    if (p1 == addLang) showEditDialog();
-    else if (p1 == addToken)  showAddTokenDialog();      
+    //if (p1 == addLang) showEditDialog();
+    if (p1 == addLang) tokenTable.showAddLangDialog();
+    else if (p1 == addToken)  tokenTable.showAddTokenDialog();      
     else if (p1 == openProject)  
     {
       //Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
@@ -212,8 +213,9 @@ DialogSelectionListener//, OnEditorActionListener
 
     if (!langList.contains(sanitized))
     {
-      langList.add(sanitized);
+      //langList.add(sanitized);
       Toast.makeText(this, "Added lang, " + sanitized, Toast.LENGTH_SHORT).show();
+      tokenTable.addNewLang(sanitized);
     }
   }
 
@@ -362,7 +364,7 @@ DialogSelectionListener//, OnEditorActionListener
     //Log.d(TAG, "asked to add " + sanitized);
     if (!langList.contains(sanitized))
     {
-      langList.add(sanitized);
+      //langList.add(sanitized);
 
       tokenTable.addNewLang(sanitized);
 

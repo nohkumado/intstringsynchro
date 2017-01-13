@@ -7,10 +7,13 @@ import android.view.inputmethod.*;
 import android.widget.*;
 import android.widget.TextView.*;
 import com.nohkumado.intstringsynchro.*;
+import com.nohkumado.intstringsynchro.DialogFragAddToken.*;
 
 public class DialogFragAddToken  extends DialogFragment implements OnEditorActionListener
 {
   public static final String TAG = "TokFrag";
+
+  private DialogFragAddToken.AddTokenDialogListener listener;
   public interface AddTokenDialogListener
   {
     void onFinishAddTokenDialog(String inputText,String defaultVal);
@@ -47,11 +50,17 @@ public class DialogFragAddToken  extends DialogFragment implements OnEditorActio
     if (EditorInfo.IME_ACTION_DONE == actionId || (event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER))
     {
       // Return input text to activity
-      AddTokenDialogListener activity = (AddTokenDialogListener) getActivity();
-      activity.onFinishAddTokenDialog(mEditText.getText().toString(),dEditText.getText().toString());
+      //AddTokenDialogListener activity = (AddTokenDialogListener) getActivity();
+      if(listener != null)
+      listener.onFinishAddTokenDialog(mEditText.getText().toString(),dEditText.getText().toString());
       this.dismiss();
       return true;
     }
     return false;
+  }
+  
+  public void setAddTokenDialogListener(AddTokenDialogListener listCand)
+  {
+    listener = listCand;
   }
 }

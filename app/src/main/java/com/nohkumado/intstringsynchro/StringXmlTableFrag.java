@@ -1,35 +1,53 @@
 package com.nohkumado.intstringsynchro;
 import android.app.*;
+import android.content.res.*;
 import android.graphics.*;
 import android.os.*;
 import android.util.*;
 import android.view.*;
+import android.view.View.*;
 import android.view.inputmethod.*;
 import android.widget.*;
 import android.widget.TextView.*;
 import com.nohkumado.nohutils.collection.*;
-import java.text.*;
 import java.util.*;
+import java.util.regex.*;
 
-public class StringXmlTableFrag extends Fragment implements OnEditorActionListener
+import android.view.View.OnClickListener;
+
+public class StringXmlTableFrag extends Fragment implements OnEditorActionListener, OnClickListener,
+DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListener
 {
-
   private static final String TAG="SXF";
   protected ArrayList<String> langList;
   protected TreeMapTable<String,StringEntry> data;
+  protected Pattern simple = Pattern.compile("([a-z]{2})");
+  protected Pattern complete = Pattern.compile("([a-z]{2})\\-r([a-zA-Z]{2})");
+  protected Pattern iso = Pattern.compile("([a-z]{2})\\-([a-zA-Z]{2})");
+  protected  HashMap<String,Boolean> hidden = new HashMap<>();
+
   //protected ArrayList<StringEntry> rest;
   //protected HashMap<String, ArrayList<StringEntry>> rest;
   //protected TreeMapTable<String, StringEntry> rest;
   protected TableLayout tokenTable;
 
   protected MainActivity context;
+
+  private ArrayList<String> tmpLangList;
   /**
    CTOR
 
    */
   //public StringXmlTableFrag(ArrayList<String> langList, TreeMapTable<String, String> data, HashMap<String, ArrayList<StringEntry>> rest, MainActivity context)
+  public StringXmlTableFrag()
+  {
+    super();
+    hidden.put("default", false);
+  }
+
   public StringXmlTableFrag(ArrayList<String> langList, TreeMapTable<String, StringEntry> data, MainActivity context)
   {
+    this();
     this.langList = langList;
     this.data = data;
     this.context = context;
@@ -45,7 +63,43 @@ public class StringXmlTableFrag extends Fragment implements OnEditorActionListen
     }
     //Log.d(TAG, "view is " + v);
     tokenTable = (TableLayout)v.findViewById(R.id.table);
+    if (tokenTable != null) Log.d(TAG, "found tokentable");
+
+    buildTitleRow();
+    //tokenTable.addView(buildTitleRow());
+
     return v;
+  }
+
+  private TableRow buildTitleRow() throws Resources.NotFoundException
+  {
+    TableRow title = (TableRow)tokenTable.findViewById(R.id.title_line);
+    if (title == null)
+    {
+      title = new TableRow(context);
+      title.setBackground(context.getDrawable(R.drawable.border));
+
+      TableRow.LayoutParams llp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
+      llp.setMargins(0, 0, 2, 0);//2px right-margin
+
+      //title.setBackgroundColor(Color.parseColor("#b7eeff"));
+      title.setLayoutParams(llp);
+      tokenTable.addView(title);
+    }
+
+    title.removeAllViews();
+    title.addView(createButton(context.getResources().getString(R.string.table_tok), "token"));
+    //title.addView(createButton(context.getResources().getString(R.string.fallback), "default"));
+    for (String lang: langList)
+    {
+      Log.d(TAG, "case lang " + lang);
+      if (!hidden.get(lang))title.addView(createButton(lang, lang));
+      else Log.d(TAG, "is hidden");
+    }
+    title.addView(createButton("...", "..."));
+    title.invalidate();
+
+    return title;
   }
 
 
@@ -54,11 +108,11 @@ public class StringXmlTableFrag extends Fragment implements OnEditorActionListen
    */
   public void buildTableView()
   {
-    View title = tokenTable.findViewById(R.id.title_line);
-    //Log.d(TAG, "removing all viees");
+    //View title = tokenTable.findViewById(R.id.title_line);
+    Log.d(TAG, "removing all views");
     tokenTable.removeAllViews();
-    tokenTable.addView(title);
-
+    //tokenTable.addView(title);
+    buildTitleRow();
     //tr.setBackgroundColor(Color.BLACK);
     //tr.setPadding(0, 0, 0, 2); //Border between rows
 
@@ -166,11 +220,11 @@ public class StringXmlTableFrag extends Fragment implements OnEditorActionListen
           }
 
           int diff = num - aEntry.array.size();
-          
+
           if (diff >= 0)
           {
-            for(int i = 0; i <= diff; i++) aEntry.array.add("");
-            //TODO need to redraw!!
+            for (int i = 0; i <= diff; i++) aEntry.array.add("");
+            buildTableView();
           }
           aEntry.array.set(num, v.getText().toString());
         }
@@ -209,7 +263,7 @@ public class StringXmlTableFrag extends Fragment implements OnEditorActionListen
     newRow.addView(createTextView(llp, token, "token"));
 
     //complete with empty
-    for (String lang : langList) newRow.addView(createTextView(llp, "", token + ":" + lang));
+    for (String lang : langList) if (!hidden.get(lang))newRow.addView(createTextView(llp, "", token + ":" + lang));
     tokenTable.addView(newRow);
 
 
@@ -228,6 +282,8 @@ public class StringXmlTableFrag extends Fragment implements OnEditorActionListen
 
       for (String lang : langList)
       {
+        if (hidden.get(lang))  continue;
+        
         //if (lang.equals("default")) continue;
         if (data.get(token, lang) != null)
         {
@@ -270,6 +326,7 @@ public class StringXmlTableFrag extends Fragment implements OnEditorActionListen
     {
       for (String lang : langList)
       {
+        if (hidden.get(lang))  continue;
         //if (lang.equals("default")) continue;
         if (data.get(token, lang) != null)
         {
@@ -297,6 +354,7 @@ public class StringXmlTableFrag extends Fragment implements OnEditorActionListen
     newRow.addView(createTextView(llp, "", ""));
     for (String lang : langList)
     {
+      if (hidden.get(lang))  continue;
       newRow.addView(createEditView(llp, "", token + ":" + lang + ":" + line));
     }
     tokenTable.addView(newRow);
@@ -314,6 +372,8 @@ public class StringXmlTableFrag extends Fragment implements OnEditorActionListen
     newRow.addView(createTextView(llp, token, "token"));
     for (String lang : langList)
     {
+      if (hidden.get(lang))  continue;
+      //Log.d(TAG, "adding string col " + lang + " tok " + token);
       StringEntry someContent = data.get(token, lang);
       String text = "";
       if (someContent != null) text = someContent.text;
@@ -324,19 +384,135 @@ public class StringXmlTableFrag extends Fragment implements OnEditorActionListen
 
   public void addNewLang(String sanitized)
   {
-    //Log.d(TAG, "asked to add " + sanitized);
+    Log.d(TAG, "asked to add " + sanitized);
     if (!langList.contains(sanitized))
     {
-      TableRow title = (TableRow)tokenTable.findViewById(R.id.title_line);
-      TableRow.LayoutParams llp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
-      llp.setMargins(0, 0, 2, 0);//2px right-margin
-      TextView tv = new TextView(context);
-      tv.setText(sanitized);
-      tv.setPadding(0, 0, 4, 3);
-
-      title.addView(tv);
+      langList.add(sanitized);
+      hidden.put(sanitized, false);
+      if (tokenTable == null)
+      {
+        //not yet initialized
+        if (tmpLangList == null) tmpLangList = new ArrayList<>();
+        tmpLangList.add(sanitized);
+        return;
+      }
     }//if
+    else Log.d(TAG, "allready in  " + Arrays.toString(langList.toArray(new String[langList.size()])));
+    buildTableView();
   }//addNewLang
 
+
+  private Button createButton(String oneLang, String hint)
+  {
+    TableRow.LayoutParams llp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
+    llp.setMargins(0, 0, 2, 0);//2px right-margin
+    Button tv = new Button(context);
+    tv.setText(oneLang);
+    tv.setPadding(0, 0, 4, 3);
+    tv.setOnClickListener(this);
+    tv.setHint(hint);
+    return tv;
+  }
+  @Override
+  public void onClick(View p1)
+  {
+    Button clicked = (Button) p1;
+
+    if (clicked.getHint().equals("token"))
+    {
+      Toast.makeText(context, "clicked otken ", Toast.LENGTH_SHORT).show();
+      showAddTokenDialog();
+    }
+    else if (clicked.getHint().equals("..."))
+    {
+      Toast.makeText(context, "clicked show selection", Toast.LENGTH_SHORT).show();
+      showAddLangDialog();
+    }      
+    else 
+    {
+      Toast.makeText(context, "clicked on lang " + clicked.getHint(), Toast.LENGTH_SHORT).show();
+      boolean toggle = hidden.get(clicked.getHint());
+      hidden.put(clicked.getHint().toString(), !toggle);
+      buildTableView();
+    }      
+
+  }//public void onClick(View p1)
+  public void showAddLangDialog()
+  {
+    FragmentManager fm = getFragmentManager();
+    DialogFragAddLang editNameDialog = new DialogFragAddLang();
+    editNameDialog.setAddLangDialogListener(this);
+    editNameDialog.show(fm, "fragment_add_lang");
+  }
+
+  public void showAddTokenDialog()
+  {
+    FragmentManager fm = getFragmentManager();
+    DialogFragAddToken editNameDialog = new DialogFragAddToken();
+    editNameDialog.setAddTokenDialogListener(this);
+    editNameDialog.show(fm, "fragment_add_token");
+  }
+
+  @Override
+  public void onFinishAddLangDialog(String inputText)
+  {
+    if (inputText == null || inputText.length() <= 0) return;
+    String sanitized = inputText.trim();
+
+    Matcher m = complete.matcher(sanitized);
+    String lang = "", region = "";
+    if (m.find())
+    {
+      lang = m.group(1).toLowerCase();
+      region = m.group(2).toUpperCase();
+    }
+    else
+    {
+      m = iso.matcher(sanitized);
+      if (m.find())
+      {
+        lang = m.group(1).toLowerCase();
+        region = m.group(2).toUpperCase();
+      }
+      else
+      {
+        m = simple.matcher(sanitized);
+        if (m.find())
+        {
+          sanitized = sanitized.substring(0, 2);
+          lang = sanitized.toLowerCase();
+        }
+        else
+        {
+          Toast.makeText(context, "Can't extract lang from " + sanitized + " valid examples: de, de-DE or de-rDE!", Toast.LENGTH_SHORT).show();
+        }
+      }
+    }
+
+    //if (inputText.length() > 2) sanitized = inputText.substring(0, 2);
+    //sanitized = sanitized.toLowerCase();
+    if (region.length() > 0)
+    {
+      sanitized = lang + "-r" + region;
+    }
+    else sanitized = lang;
+
+    if (!langList.contains(sanitized))
+    {
+      //langList.add(sanitized);
+      Toast.makeText(context, "Added lang, " + sanitized, Toast.LENGTH_SHORT).show();
+      addNewLang(sanitized);
+      buildTableView();
+    }
+  }
+
+  @Override
+  public void onFinishAddTokenDialog(String inputText, String defaultVal)
+  {
+    Toast.makeText(context, "Added Token, " + inputText, Toast.LENGTH_SHORT).show();
+    data.set(inputText.trim(), "default", new StringEntry(inputText.trim(), defaultVal.trim()));
+    buildTableView();
+    //if(stringDataAdapter != null) stringDataAdapter.notifyDataSetChanged();
+  }
 
 }//class
