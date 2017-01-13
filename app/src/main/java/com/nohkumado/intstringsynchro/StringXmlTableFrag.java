@@ -42,37 +42,89 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
   public StringXmlTableFrag()
   {
     super();
-    hidden.put("default", false);
+    if (data == null) data = new TreeMapTable<>();
+    if (langList == null) 
+    {
+      langList = new ArrayList<String>();
+      langList.add("default"); //can't use addNewLang, i think, default is in the layout anyway
+    }
   }
 
-  public StringXmlTableFrag(ArrayList<String> langList, TreeMapTable<String, StringEntry> data, MainActivity context)
+  public StringXmlTableFrag(MainActivity context)
   {
     this();
-    this.langList = langList;
-    this.data = data;
     this.context = context;
   }
+
+  public ArrayList<String> getLangList()
+  {
+    return langList;
+  }
+
+  public TreeMapTable<String, StringEntry> getData()
+  {
+    return data;
+  }
+
+  @Override
+  public void onCreate(Bundle savedInstanceState)
+  {
+    super.onCreate(savedInstanceState);
+    setRetainInstance(true);
+
+    hidden.put("default", false);
+    if (savedInstanceState != null)
+    {
+      Log.d(TAG, "coming back!" + data);
+
+      if (context == null) context = (MainActivity) getActivity();
+    }
+    //else
+    //  Log.d(TAG, "new inst!");
+  }
+  @Override
+  public void onSaveInstanceState(Bundle outState)
+  {
+    // TODO: Implement this method
+    super.onSaveInstanceState(outState);
+    Log.d(TAG, "in save state " + data);
+  }
+
+
+
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
   {
+    Log.d(TAG, "in create view...");
     View v = super.onCreateView(inflater, container, savedInstanceState);
+    if (context == null)
+    {
+      context = (MainActivity) getActivity();
+    }
+
     if (v == null)
     {
       v = inflater.inflate(R.layout.string_xml_frag, container, false);
     }
     //Log.d(TAG, "view is " + v);
     tokenTable = (TableLayout)v.findViewById(R.id.table);
-    if (tokenTable != null) Log.d(TAG, "found tokentable");
+    //if (tokenTable != null) Log.d(TAG, "found tokentable");
 
     buildTitleRow();
     //tokenTable.addView(buildTitleRow());
-
+    buildTableView();
+    
     return v;
   }
 
   private TableRow buildTitleRow() throws Resources.NotFoundException
   {
+    if (langList == null)
+    {
+      //Log.e(TAG,"called buildTitlerow with null langlist..");
+      return null;
+    }
     TableRow title = (TableRow)tokenTable.findViewById(R.id.title_line);
     if (title == null)
     {
@@ -88,13 +140,14 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     }
 
     title.removeAllViews();
+
     title.addView(createButton(context.getResources().getString(R.string.table_tok), "token"));
     //title.addView(createButton(context.getResources().getString(R.string.fallback), "default"));
     for (String lang: langList)
     {
-      Log.d(TAG, "case lang " + lang);
+      //Log.d(TAG, "case lang " + lang);
       if (!hidden.get(lang))title.addView(createButton(lang, lang));
-      else Log.d(TAG, "is hidden");
+      //else Log.d(TAG, "is hidden");
     }
     title.addView(createButton("...", "..."));
     title.invalidate();
@@ -108,32 +161,8 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
    */
   public void buildTableView()
   {
-    //View title = tokenTable.findViewById(R.id.title_line);
-    Log.d(TAG, "removing all views");
     tokenTable.removeAllViews();
-    //tokenTable.addView(title);
     buildTitleRow();
-    //tr.setBackgroundColor(Color.BLACK);
-    //tr.setPadding(0, 0, 0, 2); //Border between rows
-
-    /*TableRow.LayoutParams llp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
-     llp.setMargins(0, 0, 2, 0);//2px right-margin
-
-     for (String token : data)
-     {
-     TableRow newRow = new TableRow(context);
-     newRow.setLayoutParams(llp);
-     newRow.addView(createTextView(llp, token, "token"));
-     for (String lang : langList)
-     {
-     String someContent = data.get(token, lang);
-     if (someContent == null) someContent = "";
-
-     newRow.addView(createEditView(llp, someContent, token + ":" + lang));
-     }
-     tokenTable.addView(newRow);
-     }
-     */
 
     for (String token : data)
     {
@@ -144,9 +173,8 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
         if (someContent instanceof PluralEntry) createPluralTable(token);
         else if (someContent instanceof ArrayEntry)  createArrayTable(token, (ArrayEntry) someContent);
         else if (someContent instanceof StringEntry) createStringRow(token);
-      }
-
-    }
+      }// if (someContent != null)
+    }//for (String token : data)
     tokenTable.invalidate();
   }//buildTableView
   /**
@@ -167,7 +195,6 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     tv.setHint(hintTxt);
     return tv;
   }//createTextView
-
   /**
    * createEditView
    * @param layoutparms
@@ -196,15 +223,18 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
   @Override
   public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
   {
-    //Log.d(TAG,"Editor action! "+event+"  id"+actionId);
+    Log.d(TAG, "Editor action! " + event + "  id" + actionId);
 
     if (EditorInfo.IME_ACTION_DONE == actionId || (event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER))
     {
       String posHint = v.getHint().toString();
       String[] pos = posHint.split(":");
-      //Log.d(TAG,"change["+pos[0]+":"+pos[1]+"] text "+v.getText().toString());
+      Log.d(TAG, "change[" + pos[0] + ":" + pos[1] + "] text " + v.getText().toString());
       if (pos.length == 2)
-        data.set(pos[0], pos[1], new StringEntry(pos[0], v.getText().toString()));
+      {
+        StringEntry aEntry = new StringEntry(pos[0], v.getText().toString());
+        data.set(pos[0], pos[1], aEntry);
+      } 
       else
       {
         try
@@ -228,6 +258,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
             buildTableView();
           }
           else aEntry.array.set(num, v.getText().toString());
+
         }
         catch (NumberFormatException e)
         {
@@ -246,6 +277,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
 
       return true;
     }
+
     return false;
   }//onEditorAction
 
@@ -284,7 +316,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
       for (String lang : langList)
       {
         if (hidden.get(lang))  continue;
-        
+
         //if (lang.equals("default")) continue;
         if (data.get(token, lang) != null)
         {
@@ -311,7 +343,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
 
   private void createArrayTable(String token, ArrayEntry toDisp)
   {
-
+    Log.d(TAG, "create arraytable tok:" + token + " vs " + toDisp);
     TableRow newRow = new TableRow(context);
     newRow.setBackground(context.getDrawable(R.drawable.border));
 
@@ -319,7 +351,9 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     llp.setMargins(0, 0, 2, 0);//2px right-margin
     newRow.setBackgroundColor(Color.parseColor("#abe666"));
     newRow.setLayoutParams(llp);
-    newRow.addView(createTextView(llp, token, "token"));
+    TextView tv = createTextView(llp, token, "token");
+    newRow.addView(tv);
+    Log.d(TAG, "added view " + tv.getText());
 
     //Log.d(TAG, "array :" + someContent);
     int line;
@@ -385,7 +419,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
 
   public void addNewLang(String sanitized)
   {
-    Log.d(TAG, "asked to add " + sanitized);
+    //Log.d(TAG, "asked to add " + sanitized);
     if (!langList.contains(sanitized))
     {
       langList.add(sanitized);
@@ -398,7 +432,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
         return;
       }
     }//if
-    else Log.d(TAG, "allready in  " + Arrays.toString(langList.toArray(new String[langList.size()])));
+    //else Log.d(TAG, "allready in  " + Arrays.toString(langList.toArray(new String[langList.size()])));
     buildTableView();
   }//addNewLang
 
@@ -414,6 +448,10 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     tv.setHint(hint);
     return tv;
   }
+  /**
+   * onClick
+   * @argument  p1 the button clicked
+   */
   @Override
   public void onClick(View p1)
   {
@@ -421,17 +459,17 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
 
     if (clicked.getHint().equals("token"))
     {
-      Toast.makeText(context, "clicked otken ", Toast.LENGTH_SHORT).show();
+      //Toast.makeText(context, "clicked otken ", Toast.LENGTH_SHORT).show();
       showAddTokenDialog();
     }
     else if (clicked.getHint().equals("..."))
     {
-      Toast.makeText(context, "clicked show selection", Toast.LENGTH_SHORT).show();
+      //Toast.makeText(context, "clicked show selection", Toast.LENGTH_SHORT).show();
       showAddLangDialog();
     }      
     else 
     {
-      Toast.makeText(context, "clicked on lang " + clicked.getHint(), Toast.LENGTH_SHORT).show();
+      //Toast.makeText(context, "clicked on lang " + clicked.getHint(), Toast.LENGTH_SHORT).show();
       boolean toggle = hidden.get(clicked.getHint());
       hidden.put(clicked.getHint().toString(), !toggle);
       buildTableView();
@@ -508,10 +546,12 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
   }
 
   @Override
-  public void onFinishAddTokenDialog(String inputText, String defaultVal)
+  public void onFinishAddTokenDialog(StringEntry input)
   {
-    Toast.makeText(context, "Added Token, " + inputText, Toast.LENGTH_SHORT).show();
-    data.set(inputText.trim(), "default", new StringEntry(inputText.trim(), defaultVal.trim()));
+    //Toast.makeText(context, "Added Token, " + input.token +" val= "+input, Toast.LENGTH_SHORT).show();
+    //Log.d(TAG,"Added Token, " + input.token +" val= "+input);
+    data.set(input.token, "default", input);
+
     buildTableView();
     //if(stringDataAdapter != null) stringDataAdapter.notifyDataSetChanged();
   }

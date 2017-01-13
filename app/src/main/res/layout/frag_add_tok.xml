@@ -1,23 +1,40 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/dia_add_tok"
-    android:layout_width="wrap_content" android:layout_height="wrap_content"
-    android:layout_gravity="center" android:orientation="vertical"  >
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/dia_add_tok"
+	android:layout_width="wrap_content"
+	android:layout_height="wrap_content"
+	android:layout_gravity="center"
+	android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/lbl_your_name" android:text="@string/add_tok" 
-        android:layout_width="wrap_content" android:layout_height="wrap_content" />
+	<TextView
+		android:id="@+id/lbl_your_name"
+		android:text="@string/add_tok"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"/>
 
-    <EditText
-        android:id="@+id/txt_add_tokname"
-        android:layout_width="match_parent"  android:layout_height="wrap_content" 
-        android:inputType="text"
-        android:imeOptions="actionDone" />
-    <EditText
-        android:id="@+id/txt_add_tokdef"
-        android:layout_width="match_parent"  android:layout_height="wrap_content" 
-        android:inputType="text"
-        android:hint="@string/def_val"
-        android:selectAllOnFocus="true"
-        android:imeOptions="actionDone" />
-    
+	<Spinner
+      android:id="@+id/type_spin"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+      android:entries="@array/string_res_type_array"
+		android:prompt="@string/choose_type"/>
+
+	<EditText
+		android:id="@+id/txt_add_tokname"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:inputType="text"
+		android:imeOptions="actionDone"/>
+
+	<EditText
+		android:id="@+id/txt_add_tokdef"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:inputType="text"
+		android:hint="@string/def_val"
+		android:selectAllOnFocus="true"
+		android:imeOptions="actionDone"/>
+
 </LinearLayout>
+

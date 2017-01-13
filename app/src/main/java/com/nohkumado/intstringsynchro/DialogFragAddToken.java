@@ -2,22 +2,28 @@ package com.nohkumado.intstringsynchro;
 
 import android.app.*;
 import android.os.*;
+import android.util.*;
 import android.view.*;
 import android.view.inputmethod.*;
 import android.widget.*;
 import android.widget.TextView.*;
-import com.nohkumado.intstringsynchro.*;
-import com.nohkumado.intstringsynchro.DialogFragAddToken.*;
 
 public class DialogFragAddToken  extends DialogFragment implements OnEditorActionListener
 {
+
+  private Spinner spinner;
+  /**
+  * an interface to be able to pass back the data
+  */
+  public interface AddTokenDialogListener
+  {
+    void onFinishAddTokenDialog(StringEntry input);
+  }
+  
   public static final String TAG = "TokFrag";
 
   private DialogFragAddToken.AddTokenDialogListener listener;
-  public interface AddTokenDialogListener
-  {
-    void onFinishAddTokenDialog(String inputText,String defaultVal);
-  }
+ 
   private EditText mEditText,dEditText;
 
   public DialogFragAddToken()
@@ -39,7 +45,7 @@ public class DialogFragAddToken  extends DialogFragment implements OnEditorActio
       WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     mEditText.setOnEditorActionListener(this);
     dEditText.setOnEditorActionListener(this);
-    
+    spinner = (Spinner) view.findViewById(R.id.type_spin);    
     return view;
   }//createView
 
@@ -52,7 +58,28 @@ public class DialogFragAddToken  extends DialogFragment implements OnEditorActio
       // Return input text to activity
       //AddTokenDialogListener activity = (AddTokenDialogListener) getActivity();
       if(listener != null)
-      listener.onFinishAddTokenDialog(mEditText.getText().toString(),dEditText.getText().toString());
+      {
+        
+        StringEntry input = null;
+        switch (spinner.getSelectedItemPosition())
+        {
+          case 1:
+            input = new ArrayEntry(mEditText.getText().toString().trim());
+            break;
+          case 2:
+            input = new PluralEntry(mEditText.getText().toString().trim());
+            break;
+            default:
+            Log.e(TAG,"spinner has unknown case: "+spinner.getSelectedItemPosition());
+          case 0:
+            input = new StringEntry(mEditText.getText().toString().trim(),dEditText.getText().toString().trim());
+            break;
+            
+        }
+         
+        listener.onFinishAddTokenDialog(input);
+        
+      }
       this.dismiss();
       return true;
     }

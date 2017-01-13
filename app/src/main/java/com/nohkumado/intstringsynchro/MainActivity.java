@@ -23,111 +23,130 @@ import org.xmlpull.v1.*;
 import android.view.View.OnClickListener;
 
 public class MainActivity extends Activity implements OnClickListener, 
-DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListener,
 DialogSelectionListener//, OnEditorActionListener
 {
-  protected Spinner langSpin;
-  protected Button addLang, addToken, openProject;
+  //protected Spinner langSpin;
+  protected Button openProject;//addLang, addToken, 
   protected ImageButton moveUpBut,saveBut;
   protected String actProjectPath = "";
   protected ArrayList<String> langList;
   protected TreeMapTable<String,StringEntry> data;
   //protected ArrayList<StringEntry> rest;
   //protected TreeMapTable<String,StringEntry> rest;
-  
+
   //protected HashMap<String, ArrayList<StringEntry>> rest;
   //protected ArrayList<StringEntry> tokenList;
   //protected ListView tokenTable;
   //protected TableLayout tokenTable;
   //protected StringEntryAdapter stringDataAdapter;
 
-  private static final int PROJECT_CHOOSED = 99;
+  //private static final int PROJECT_CHOOSED = 99;
 
   private static final String TAG="MA";
 
-  protected Pattern simple = Pattern.compile("([a-z]{2})");
-  protected Pattern complete = Pattern.compile("([a-z]{2})\\-r([a-zA-Z]{2})");
-  protected Pattern iso = Pattern.compile("([a-z]{2})\\-([a-zA-Z]{2})");
+  //protected Pattern simple = Pattern.compile("([a-z]{2})");
+  //protected Pattern complete = Pattern.compile("([a-z]{2})\\-r([a-zA-Z]{2})");
+  //protected Pattern iso = Pattern.compile("([a-z]{2})\\-([a-zA-Z]{2})");
 
   protected StringXmlTableFrag tokenTable;
 
+
+  public MainActivity()
+  {
+
+  }
+  /**
+   *   onCreate
+   * @arg savedInstanceState
+   */
   @Override
   protected void onCreate(Bundle savedInstanceState)
   {
     super.onCreate(savedInstanceState);
-    Log.d(TAG, "#############################  start ###################################");
     setContentView(R.layout.main);
-    data = new TreeMapTable<>();
-    //rest = new  TreeMapTable<>();
-    //rest = new  HashMap<String, ArrayList<StringEntry>>();
-    //rest.put("default", new ArrayList<StringEntry>());
-    //rest = new ArrayList<StringEntry>() ; 
 
+    // find the retained fragment on activity restarts
+    FragmentManager fm = getFragmentManager();
+    tokenTable = (StringXmlTableFrag) fm.findFragmentByTag("data");
+    // create the fragment and data the first time
+    if (tokenTable == null)
+    {
+      // add the fragment
+      tokenTable = new StringXmlTableFrag(this);
 
+      fm.beginTransaction().add(tokenTable, "data").replace(R.id.table, tokenTable).commit();
+      //FragmentTransaction ft = fm.beginTransaction();
+      //ft.replace(R.id.table, tokenTable);
+      //ft.commit();
 
-    //Log.d(TAG,"data : "+data);
-    langSpin = (Spinner) findViewById(R.id.lang_selector);
-    langList = new ArrayList<String>();
-    langList.add("default"); //can't use addNewLang, i think, default is in the layout anyway
-    //langList.add("de");
-    //langList.add("fr");
+    }
+    data = tokenTable.getData();
+    langList = tokenTable.getLangList();
+
     SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(this);
     if (prefs.contains("actprojectpath")) 
     {
       actProjectPath = prefs.getString("actprojectpath", "");
-      
+
     }
-    //Log.d(TAG,"retrieved default path '"+actProjectPath+"'");
 
-    ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
-                                                                android.R.layout.simple_spinner_item, langList);
-    dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    langSpin.setAdapter(dataAdapter);
-    langSpin.setOnItemSelectedListener(new LangSpinnerItemSelected());
+    if (savedInstanceState != null)
+    {
+      Log.d(TAG, "#############################  restart ###################################");  
+    }
+    else
+    {
+      Log.d(TAG, "#############################  start ###################################");  
+    }
+    
+      //Log.d(TAG,"data : "+data);
+    /*langSpin = (Spinner) findViewById(R.id.lang_selector);
+      
+      ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
+                                                                  android.R.layout.simple_spinner_item, langList);
+      dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+      langSpin.setAdapter(dataAdapter);
+      langSpin.setOnItemSelectedListener(new LangSpinnerItemSelected());
 
-    addLang = (Button) findViewById(R.id.addLangBut);
-    addLang.setOnClickListener(this);
+      addLang = (Button) findViewById(R.id.addLangBut);
+      addLang.setOnClickListener(this);
 
-    addToken = (Button) findViewById(R.id.addTokBut);
-    addToken.setOnClickListener(this);
+      addToken = (Button) findViewById(R.id.addTokBut);
+      addToken.setOnClickListener(this);
+*/
+      openProject  = (Button) findViewById(R.id.addProjBut);
+      openProject.setOnClickListener(this);
 
-    openProject  = (Button) findViewById(R.id.addProjBut);
-    openProject.setOnClickListener(this);
+      moveUpBut   = (ImageButton) findViewById(R.id.moveUpBut);
+      moveUpBut.setOnClickListener(this);
 
-    moveUpBut   = (ImageButton) findViewById(R.id.moveUpBut);
-    moveUpBut.setOnClickListener(this);
+      saveBut = (ImageButton) findViewById(R.id.saveBut);
+      saveBut.setOnClickListener(this);
+      //tokenList = new ArrayList<>();
+      //tokenTable = (ListView) findViewById(R.id.stringListView);
+      //tokenTable = (TableLayout) findViewById(R.id.table);
+      //tokenTable.setBackground(getResources().getDrawable(R.drawable.border);
+      //stringDataAdapter = new StringEntryAdapter(this, data);
+      //tokenTable.setAdapter(stringDataAdapter);
+      if (actProjectPath != null && actProjectPath.length() > 0 && data.size() <= 0) 
+        onSelectedFilePaths(new String[] {actProjectPath + "/values"});
+  }//onCreate
 
-    saveBut = (ImageButton) findViewById(R.id.saveBut);
-    saveBut.setOnClickListener(this);
-    //tokenList = new ArrayList<>();
-    //tokenTable = (ListView) findViewById(R.id.stringListView);
-    tokenTable = new StringXmlTableFrag(langList, data, this);
-    FragmentManager fm = getFragmentManager();
-    FragmentTransaction ft = fm.beginTransaction();
-    ft.replace(R.id.table, tokenTable);
-    ft.commit();
-
-    //tokenTable = (TableLayout) findViewById(R.id.table);
-    //tokenTable.setBackground(getResources().getDrawable(R.drawable.border);
-    //stringDataAdapter = new StringEntryAdapter(this, data);
-    //tokenTable.setAdapter(stringDataAdapter);
-    if(actProjectPath != null && actProjectPath.length() > 0) onSelectedFilePaths(new String[] {actProjectPath+"/values"});
-  }
-
-  public String getLang()
+  /*public String getLang()
   {
     if (langSpin != null) return String.valueOf(langSpin.getSelectedItem());
     return("default");
   }//public String getLang()
-
+*/
 
   @Override
   public void onClick(View p1)
   {
     //if (p1 == addLang) showEditDialog();
-    if (p1 == addLang) tokenTable.showAddLangDialog();
-    else if (p1 == addToken)  tokenTable.showAddTokenDialog();      
-    else if (p1 == openProject)  
+    //if (p1 == addLang) tokenTable.showAddLangDialog();
+    //else if (p1 == addToken)  tokenTable.showAddTokenDialog();      
+    //else 
+    if (p1 == openProject)  
     {
       //Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
       //intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -153,79 +172,6 @@ DialogSelectionListener//, OnEditorActionListener
 
   }//public void onClick(View p1)
 
-  private void showEditDialog()
-  {
-    FragmentManager fm = getFragmentManager();
-    DialogFragAddLang editNameDialog = new DialogFragAddLang();
-    editNameDialog.show(fm, "fragment_add_lang");
-  }
-
-  private void showAddTokenDialog()
-  {
-    FragmentManager fm = getFragmentManager();
-    DialogFragAddToken editNameDialog = new DialogFragAddToken();
-    editNameDialog.show(fm, "fragment_add_token");
-  }
-
-  @Override
-  public void onFinishAddLangDialog(String inputText)
-  {
-    if (inputText == null || inputText.length() <= 0) return;
-    String sanitized = inputText.trim();
-
-    Matcher m = complete.matcher(sanitized);
-    String lang = "", region = "";
-    if (m.find())
-    {
-      lang = m.group(1).toLowerCase();
-      region = m.group(2).toUpperCase();
-    }
-    else
-    {
-      m = iso.matcher(sanitized);
-      if (m.find())
-      {
-        lang = m.group(1).toLowerCase();
-        region = m.group(2).toUpperCase();
-      }
-      else
-      {
-        m = simple.matcher(sanitized);
-        if (m.find())
-        {
-          sanitized = sanitized.substring(0, 2);
-          lang = sanitized.toLowerCase();
-        }
-        else
-        {
-          Toast.makeText(this, "Can't extract lang from " + sanitized + " valid examples: de, de-DE or de-rDE!", Toast.LENGTH_SHORT).show();
-        }
-      }
-    }
-
-    //if (inputText.length() > 2) sanitized = inputText.substring(0, 2);
-    //sanitized = sanitized.toLowerCase();
-    if (region.length() > 0)
-    {
-      sanitized = lang + "-r" + region;
-    }
-    else sanitized = lang;
-
-    if (!langList.contains(sanitized))
-    {
-      //langList.add(sanitized);
-      Toast.makeText(this, "Added lang, " + sanitized, Toast.LENGTH_SHORT).show();
-      tokenTable.addNewLang(sanitized);
-    }
-  }
-
-  @Override
-  public void onFinishAddTokenDialog(String inputText, String defaultVal)
-  {
-    Toast.makeText(this, "Added Token, " + inputText, Toast.LENGTH_SHORT).show();
-    data.set(inputText.trim(), "default", new StringEntry(inputText.trim(),defaultVal.trim()));
-    //if(stringDataAdapter != null) stringDataAdapter.notifyDataSetChanged();
-  }
   private void showFileChooser()
   {
     DialogProperties properties=new DialogProperties();
@@ -323,7 +269,7 @@ DialogSelectionListener//, OnEditorActionListener
             if (mlang.find())
             {
               String sanitized = mlang.group(1);
-              addNewLang(sanitized);
+              tokenTable.addNewLang(sanitized);
               StringFile resLangFile = new StringFile(resDir, aLang + "/strings.xml", sanitized);
 
               if (resLangFile.exists()) toLoad.add(resLangFile);
@@ -353,27 +299,18 @@ DialogSelectionListener//, OnEditorActionListener
     }
   }//  public void onSelectedFilePaths(String[] p1)
 
+  /**
+   * callback needed by the loader task to signify the data is ready
+   */
   public void buildTableView()
   {
     tokenTable.buildTableView();
   }//public void buildTableView()
 
-
-  private void addNewLang(String sanitized)
-  {
-    //Log.d(TAG, "asked to add " + sanitized);
-    if (!langList.contains(sanitized))
-    {
-      //langList.add(sanitized);
-
-      tokenTable.addNewLang(sanitized);
-
-      //rest.put(sanitized, new ArrayList<StringEntry>());
-      Toast.makeText(this, "Added lang, " + sanitized, Toast.LENGTH_SHORT).show();
-
-    }//if
-  }//add-newLang
-
+  /**
+   * @return boolean  if it was a success
+   * saveFiles
+   */  
   protected boolean saveFiles()
   {
 
@@ -382,11 +319,11 @@ DialogSelectionListener//, OnEditorActionListener
     task.execute(langList.toArray(new String[langList.size()]));
     return result;
   }
-  
+
 
   public String getProjectPath()
   {
     return actProjectPath;
   }
-  
+
 }

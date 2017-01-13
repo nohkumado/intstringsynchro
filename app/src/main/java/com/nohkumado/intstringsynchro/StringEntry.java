@@ -4,9 +4,9 @@ import java.util.*;
 
 public class StringEntry
 {
-  String token;
+  protected String token;
   
-  String text;
+  protected String text;
   
 
   public StringEntry(String name, String text)

@@ -31,7 +31,7 @@ public class ArrayEntry extends StringEntry
   public String toString()
   {
     StringBuilder  sb = new StringBuilder();
-    sb.append("Plural[").append(token).append("]");
+    sb.append("Array[").append(token).append("]");
     if (array != null) sb.append(Arrays.toString(array.toArray(new String[array.size()])));
     return sb.toString();
   }

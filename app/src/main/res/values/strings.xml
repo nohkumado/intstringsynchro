@@ -5,6 +5,7 @@
    <string name="add_project">Add Project</string>
    <string name="add_tok">Add Token</string>
    <string name="app_name">IntStringSynchro</string>
+   <string name="choose_type">Choose ressource type</string>
    <string name="def_val">default value</string>
    <string name="fallback">default</string>
    <string name="files_loaded">files loaded</string>
@@ -12,15 +13,14 @@
    <plurals name="numberOfSongsAvailable">
       <item quantity="few">%d songs avaiable.</item>
       <item quantity="one">One Song available.</item>
-      <item quantity="zero">No Songs available</item>
       <item quantity="other">%d songs available.</item>
+      <item quantity="zero">No Songs available</item>
    </plurals>
    <string name="open_stringxml">open a string.xml file of a project</string>
-   <string-array name="planets_array">
-      <item>Mercury</item>
-      <item>Venus</item>
-      <item>Earth</item>
-      <item>Mars</item>
+   <string-array name="string_res_type_array">
+      <item>string</item>
+      <item>array</item>
+      <item>plural</item>
    </string-array>
    <string name="table_tok">Token / langs</string>
 </resources>

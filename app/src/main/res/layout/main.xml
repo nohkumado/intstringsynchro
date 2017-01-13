@@ -13,7 +13,7 @@
 		android:id="@+id/titleLine"
 		android:background="@drawable/border">
 
-		<TextView
+		<!--TextView
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
 			android:text="@string/actual_language"
@@ -34,7 +34,7 @@
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
 			android:text="@string/add_tok"
-			android:id="@+id/addTokBut"/>
+			android:id="@+id/addTokBut"/-->
 
 		<Button
 			android:layout_height="wrap_content"
