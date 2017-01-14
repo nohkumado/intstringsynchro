@@ -10,6 +10,7 @@
    <string name="fallback">default</string>
    <string name="files_loaded">files loaded</string>
    <string name="files_saved">files saved</string>
+   <string name="none">none</string>
    <plurals name="numberOfSongsAvailable">
       <item quantity="few">%d songs avaiable.</item>
       <item quantity="one">One Song available.</item>
@@ -17,6 +18,7 @@
       <item quantity="zero">No Songs available</item>
    </plurals>
    <string name="open_stringxml">open a string.xml file of a project</string>
+   <string name="stored_langs">pre-loaded</string>
    <string-array name="string_res_type_array">
       <item>string</item>
       <item>array</item>

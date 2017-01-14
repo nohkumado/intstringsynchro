@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
    <string name="actual_language">actuelle</string>
+   <string name="none">aucune</string>
    <string-array name="planets_array">
       <item>Mercure</item>
       <item>Venus</item>

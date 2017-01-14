@@ -2,6 +2,7 @@
 <resources>
    <string name="actual_language">Aktuelle</string>
    <string name="add_lang">Sprache hinzufügen</string>
+   <string name="none">keine</string>
    <string-array name="planets_array">
       <item></item>
       <item>Venus</item>

@@ -75,7 +75,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     hidden.put("default", false);
     if (savedInstanceState != null)
     {
-      Log.d(TAG, "coming back!" + data);
+      //Log.d(TAG, "coming back!" + data);
 
       if (context == null) context = (MainActivity) getActivity();
     }
@@ -87,7 +87,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
   {
     // TODO: Implement this method
     super.onSaveInstanceState(outState);
-    Log.d(TAG, "in save state " + data);
+    //Log.d(TAG, "in save state " + data);
   }
 
 
@@ -96,7 +96,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
   {
-    Log.d(TAG, "in create view...");
+    //Log.d(TAG, "in create view...");
     View v = super.onCreateView(inflater, container, savedInstanceState);
     if (context == null)
     {
@@ -114,7 +114,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     buildTitleRow();
     //tokenTable.addView(buildTitleRow());
     buildTableView();
-    
+
     return v;
   }
 
@@ -223,13 +223,13 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
   @Override
   public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
   {
-    Log.d(TAG, "Editor action! " + event + "  id" + actionId);
+    //Log.d(TAG, "Editor action! " + event + "  id" + actionId);
 
     if (EditorInfo.IME_ACTION_DONE == actionId || (event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER))
     {
       String posHint = v.getHint().toString();
       String[] pos = posHint.split(":");
-      Log.d(TAG, "change[" + pos[0] + ":" + pos[1] + "] text " + v.getText().toString());
+      //Log.d(TAG, "change[" + pos[0] + ":" + pos[1] + "] text " + v.getText().toString());
       if (pos.length == 2)
       {
         StringEntry aEntry = new StringEntry(pos[0], v.getText().toString());
@@ -343,7 +343,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
 
   private void createArrayTable(String token, ArrayEntry toDisp)
   {
-    Log.d(TAG, "create arraytable tok:" + token + " vs " + toDisp);
+    //Log.d(TAG, "create arraytable tok:" + token + " vs " + toDisp);
     TableRow newRow = new TableRow(context);
     newRow.setBackground(context.getDrawable(R.drawable.border));
 
@@ -353,7 +353,8 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     newRow.setLayoutParams(llp);
     TextView tv = createTextView(llp, token, "token");
     newRow.addView(tv);
-    Log.d(TAG, "added view " + tv.getText());
+    tv.invalidate();
+    //Log.d(TAG, "added view " + tv.getText());
 
     //Log.d(TAG, "array :" + someContent);
     int line;
@@ -481,6 +482,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     FragmentManager fm = getFragmentManager();
     DialogFragAddLang editNameDialog = new DialogFragAddLang();
     editNameDialog.setAddLangDialogListener(this);
+    editNameDialog.setData(langList, hidden);
     editNameDialog.show(fm, "fragment_add_lang");
   }
 
@@ -497,6 +499,12 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
   {
     if (inputText == null || inputText.length() <= 0) return;
     String sanitized = inputText.trim();
+    if (hidden.get(sanitized) != null)
+    {
+      hidden.put(sanitized, false);
+      buildTableView();
+      return;
+    }
 
     Matcher m = complete.matcher(sanitized);
     String lang = "", region = "";
@@ -539,8 +547,14 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     if (!langList.contains(sanitized))
     {
       //langList.add(sanitized);
-      Toast.makeText(context, "Added lang, " + sanitized, Toast.LENGTH_SHORT).show();
+      //Toast.makeText(context, "Added lang, " + sanitized, Toast.LENGTH_SHORT).show();
       addNewLang(sanitized);
+      buildTableView();
+    }
+    else if (hidden.get(sanitized) != null)
+    {
+      boolean status = hidden.get(sanitized);
+      hidden.put(sanitized, !status);
       buildTableView();
     }
   }
