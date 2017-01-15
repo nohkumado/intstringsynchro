@@ -141,6 +141,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
 
     title.removeAllViews();
 
+    title.addView(createImageButton("",android.R.drawable.ic_delete));
     title.addView(createButton(context.getResources().getString(R.string.table_tok), "token"));
     //title.addView(createButton(context.getResources().getString(R.string.fallback), "default"));
     for (String lang: langList)
@@ -293,7 +294,10 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
 
     newRow.setBackgroundColor(Color.parseColor("#b7eeff"));
     newRow.setLayoutParams(llp);
+    newRow.addView(createImageButton(token,android.R.drawable.ic_delete));
     newRow.addView(createTextView(llp, token, "token"));
+
+    //newRow.addView(createTokenField(token));
 
     //complete with empty
     for (String lang : langList) if (!hidden.get(lang))newRow.addView(createTextView(llp, "", token + ":" + lang));
@@ -309,7 +313,8 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
       newRow.setBackground(context.getDrawable(R.drawable.border));
       newRow.setBackgroundColor(Color.parseColor("#b7eeff"));
       newRow.setLayoutParams(llp);
-      TextView tv = createTextView(llp, quantity, "");
+      newRow.addView(createTextView(llp, "", ""));//del but
+      TextView tv = createTextView(llp, quantity, "");//token but
       tv.setGravity(Gravity.RIGHT);
       newRow.addView(tv);
 
@@ -338,7 +343,19 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
       }
       tokenTable.addView(newRow);
     }
-  }//private void createPluralTable(String token)
+  }
+
+  /*private RelativeLayout createTokenField(String token)
+   {
+   LayoutInflater inflater = LayoutInflater.from(context);
+   RelativeLayout tokenCont = (RelativeLayout) inflater.inflate(R.layout.token_field,null);
+   ImageButton tv = (ImageButton) tokenCont.findViewById(R.id.tok_del_but);
+   tv.setOnClickListener(this);
+   TextView text = (TextView)    tokenCont.findViewById(R.id.token_label);
+   text.setText(token);
+
+   return tokenCont;
+   }*/
 
 
   private void createArrayTable(String token, ArrayEntry toDisp)
@@ -351,9 +368,13 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     llp.setMargins(0, 0, 2, 0);//2px right-margin
     newRow.setBackgroundColor(Color.parseColor("#abe666"));
     newRow.setLayoutParams(llp);
+    newRow.addView(createImageButton(token,android.R.drawable.ic_delete));
+
+    //newRow.addView(createTokenField(token));
+
     TextView tv = createTextView(llp, token, "token");
     newRow.addView(tv);
-    tv.invalidate();
+    //tv.invalidate();
     //Log.d(TAG, "added view " + tv.getText());
 
     //Log.d(TAG, "array :" + someContent);
@@ -380,7 +401,9 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
       newRow.setBackground(context.getDrawable(R.drawable.border));
       newRow.setBackgroundColor(Color.parseColor("#abe666"));
       newRow.setLayoutParams(llp);
-      newRow.addView(createTextView(llp, "", ""));
+      newRow.addView(createTextView(llp, "", ""));//del but
+      newRow.addView(createTextView(llp, "", ""));//token
+      
     }
     //and an empty row
     newRow = new TableRow(context);
@@ -405,6 +428,11 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     TableRow newRow = new TableRow(context);
     newRow.setBackground(context.getDrawable(R.drawable.border));
     newRow.setLayoutParams(llp);
+    //newRow.addView(createTokenField(token));
+    newRow.addView(createImageButton(token,android.R.drawable.ic_delete));
+
+    //newRow.addView(createTokenField(token));
+
     newRow.addView(createTextView(llp, token, "token"));
     for (String lang : langList)
     {
@@ -449,6 +477,18 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     tv.setHint(hint);
     return tv;
   }
+  private DelTokImageButton createImageButton(String name,int icon_id)
+  {
+    TableRow.LayoutParams llp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
+    llp.setMargins(0, 0, 2, 0);//2px right-margin
+    DelTokImageButton tv = new DelTokImageButton(name,context);
+    tv.setImageResource(icon_id);
+    tv.setPadding(0, 0, 4, 3);
+    tv.setOnClickListener(this);
+    return tv;
+  }
+
+
   /**
    * onClick
    * @argument  p1 the button clicked
@@ -456,26 +496,41 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
   @Override
   public void onClick(View p1)
   {
-    Button clicked = (Button) p1;
-
-    if (clicked.getHint().equals("token"))
+    if (p1 instanceof Button)
     {
-      //Toast.makeText(context, "clicked otken ", Toast.LENGTH_SHORT).show();
-      showAddTokenDialog();
+      Button clicked = (Button) p1;
+
+      if (clicked.getHint().equals("token"))
+      {
+        //Toast.makeText(context, "clicked otken ", Toast.LENGTH_SHORT).show();
+        showAddTokenDialog();
+      }
+      else if (clicked.getHint().equals("..."))
+      {
+        //Toast.makeText(context, "clicked show selection", Toast.LENGTH_SHORT).show();
+        showAddLangDialog();
+      }      
+      else 
+      {
+        //Toast.makeText(context, "clicked on lang " + clicked.getHint(), Toast.LENGTH_SHORT).show();
+        boolean toggle = hidden.get(clicked.getHint());
+        hidden.put(clicked.getHint().toString(), !toggle);
+        buildTableView();
+      } 
+    }//if Button
+    else if (p1 instanceof DelTokImageButton)
+    {
+      DelTokImageButton tv = (DelTokImageButton) p1;
+      deleteToken(tv.getToken());
     }
-    else if (clicked.getHint().equals("..."))
-    {
-      //Toast.makeText(context, "clicked show selection", Toast.LENGTH_SHORT).show();
-      showAddLangDialog();
-    }      
-    else 
-    {
-      //Toast.makeText(context, "clicked on lang " + clicked.getHint(), Toast.LENGTH_SHORT).show();
-      boolean toggle = hidden.get(clicked.getHint());
-      hidden.put(clicked.getHint().toString(), !toggle);
-      buildTableView();
-    }      
+    
 
+  }
+
+  private void deleteToken(String token)
+  {
+    data.remove(token);
+    buildTableView();
   }//public void onClick(View p1)
   public void showAddLangDialog()
   {

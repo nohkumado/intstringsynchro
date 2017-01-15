@@ -98,46 +98,46 @@ DialogSelectionListener//, OnEditorActionListener
     {
       Log.d(TAG, "#############################  start ###################################");  
     }
-    
-      //Log.d(TAG,"data : "+data);
+
+    //Log.d(TAG,"data : "+data);
     /*langSpin = (Spinner) findViewById(R.id.lang_selector);
-      
-      ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
-                                                                  android.R.layout.simple_spinner_item, langList);
-      dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-      langSpin.setAdapter(dataAdapter);
-      langSpin.setOnItemSelectedListener(new LangSpinnerItemSelected());
 
-      addLang = (Button) findViewById(R.id.addLangBut);
-      addLang.setOnClickListener(this);
+     ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,
+     android.R.layout.simple_spinner_item, langList);
+     dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+     langSpin.setAdapter(dataAdapter);
+     langSpin.setOnItemSelectedListener(new LangSpinnerItemSelected());
 
-      addToken = (Button) findViewById(R.id.addTokBut);
-      addToken.setOnClickListener(this);
-*/
-      openProject  = (Button) findViewById(R.id.addProjBut);
-      openProject.setOnClickListener(this);
+     addLang = (Button) findViewById(R.id.addLangBut);
+     addLang.setOnClickListener(this);
 
-      moveUpBut   = (ImageButton) findViewById(R.id.moveUpBut);
-      moveUpBut.setOnClickListener(this);
+     addToken = (Button) findViewById(R.id.addTokBut);
+     addToken.setOnClickListener(this);
+     */
+    openProject  = (Button) findViewById(R.id.addProjBut);
+    openProject.setOnClickListener(this);
 
-      saveBut = (ImageButton) findViewById(R.id.saveBut);
-      saveBut.setOnClickListener(this);
-      //tokenList = new ArrayList<>();
-      //tokenTable = (ListView) findViewById(R.id.stringListView);
-      //tokenTable = (TableLayout) findViewById(R.id.table);
-      //tokenTable.setBackground(getResources().getDrawable(R.drawable.border);
-      //stringDataAdapter = new StringEntryAdapter(this, data);
-      //tokenTable.setAdapter(stringDataAdapter);
-      if (actProjectPath != null && actProjectPath.length() > 0 && data.size() <= 0) 
-        onSelectedFilePaths(new String[] {actProjectPath + "/values"});
+    moveUpBut   = (ImageButton) findViewById(R.id.moveUpBut);
+    moveUpBut.setOnClickListener(this);
+
+    saveBut = (ImageButton) findViewById(R.id.saveBut);
+    saveBut.setOnClickListener(this);
+    //tokenList = new ArrayList<>();
+    //tokenTable = (ListView) findViewById(R.id.stringListView);
+    //tokenTable = (TableLayout) findViewById(R.id.table);
+    //tokenTable.setBackground(getResources().getDrawable(R.drawable.border);
+    //stringDataAdapter = new StringEntryAdapter(this, data);
+    //tokenTable.setAdapter(stringDataAdapter);
+    if (actProjectPath != null && actProjectPath.length() > 0 && data.size() <= 0) 
+      onSelectedFilePaths(new String[] {actProjectPath + "/values"});
   }//onCreate
 
   /*public String getLang()
-  {
-    if (langSpin != null) return String.valueOf(langSpin.getSelectedItem());
-    return("default");
-  }//public String getLang()
-*/
+   {
+   if (langSpin != null) return String.valueOf(langSpin.getSelectedItem());
+   return("default");
+   }//public String getLang()
+   */
 
   @Override
   public void onClick(View p1)
@@ -325,5 +325,11 @@ DialogSelectionListener//, OnEditorActionListener
   {
     return actProjectPath;
   }
-
+  
+  public void broadcastIntent(View view)
+  {
+    Intent intent = new Intent();
+    intent.setAction("com.nohkumado.EDIT_STRINGXML");
+    sendBroadcast(intent);
+  }
 }
