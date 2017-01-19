@@ -13,17 +13,18 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <receiver android:name="IntStringReceiver">
-
+        <receiver android:name=".IntStringReceiver" android:exported="true"  android:enabled="true">
             <intent-filter>
-                <action android:name="com.nohkumado.EDIT_STRINGXML">
-                </action>
+                <action android:name="com.nohkumado.intstringsynchro.DEL_STRINGXML"/>
+                <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
-
+            <intent-filter>
+                <action android:name="com.nohkumado.intstringsynchro.ADD_STRINGXML"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
         </receiver>
     </application>
 

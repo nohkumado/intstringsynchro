@@ -21,9 +21,10 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
   private static final String TAG="SXF";
   protected ArrayList<String> langList;
   protected TreeMapTable<String,StringEntry> data;
-  protected Pattern simple = Pattern.compile("([a-z]{2})");
-  protected Pattern complete = Pattern.compile("([a-z]{2})\\-r([a-zA-Z]{2})");
-  protected Pattern iso = Pattern.compile("([a-z]{2})\\-([a-zA-Z]{2})");
+  LangNameNormalizer normalizer = new LangNameNormalizer();
+  //protected Pattern simple = Pattern.compile("([a-z]{2})");
+  //protected Pattern complete = Pattern.compile("([a-z]{2})\\-r([a-zA-Z]{2})");
+  //protected Pattern iso = Pattern.compile("([a-z]{2})\\-([a-zA-Z]{2})");
   protected  HashMap<String,Boolean> hidden = new HashMap<>();
 
   //protected ArrayList<StringEntry> rest;
@@ -141,7 +142,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
 
     title.removeAllViews();
 
-    title.addView(createImageButton("",android.R.drawable.ic_delete));
+    title.addView(createImageButton("", android.R.drawable.ic_delete));
     title.addView(createButton(context.getResources().getString(R.string.table_tok), "token"));
     //title.addView(createButton(context.getResources().getString(R.string.fallback), "default"));
     for (String lang: langList)
@@ -165,17 +166,22 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     tokenTable.removeAllViews();
     buildTitleRow();
 
-    for (String token : data)
+    synchronized (data)
     {
-      //Log.d(TAG, "add rest stuff for " + token + " vla " + entry.getValue());
-      StringEntry someContent = data.get(token, "default");//.get(lang);
-      if (someContent != null)
+
+      for (String token : data)
       {
-        if (someContent instanceof PluralEntry) createPluralTable(token);
-        else if (someContent instanceof ArrayEntry)  createArrayTable(token, (ArrayEntry) someContent);
-        else if (someContent instanceof StringEntry) createStringRow(token);
-      }// if (someContent != null)
-    }//for (String token : data)
+        //Log.d(TAG, "add rest stuff for " + token + " vla " + entry.getValue());
+        StringEntry someContent = data.get(token, "default");//.get(lang);
+        if (someContent != null)
+        {
+          if (someContent instanceof PluralEntry) createPluralTable(token);
+          else if (someContent instanceof ArrayEntry)  createArrayTable(token, (ArrayEntry) someContent);
+          else if (someContent instanceof StringEntry) createStringRow(token);
+        }// if (someContent != null)
+      }//for (String token : data)
+
+    }
     tokenTable.invalidate();
   }//buildTableView
   /**
@@ -294,7 +300,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
 
     newRow.setBackgroundColor(Color.parseColor("#b7eeff"));
     newRow.setLayoutParams(llp);
-    newRow.addView(createImageButton(token,android.R.drawable.ic_delete));
+    newRow.addView(createImageButton(token, android.R.drawable.ic_delete));
     newRow.addView(createTextView(llp, token, "token"));
 
     //newRow.addView(createTokenField(token));
@@ -368,7 +374,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     llp.setMargins(0, 0, 2, 0);//2px right-margin
     newRow.setBackgroundColor(Color.parseColor("#abe666"));
     newRow.setLayoutParams(llp);
-    newRow.addView(createImageButton(token,android.R.drawable.ic_delete));
+    newRow.addView(createImageButton(token, android.R.drawable.ic_delete));
 
     //newRow.addView(createTokenField(token));
 
@@ -403,7 +409,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
       newRow.setLayoutParams(llp);
       newRow.addView(createTextView(llp, "", ""));//del but
       newRow.addView(createTextView(llp, "", ""));//token
-      
+
     }
     //and an empty row
     newRow = new TableRow(context);
@@ -429,7 +435,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     newRow.setBackground(context.getDrawable(R.drawable.border));
     newRow.setLayoutParams(llp);
     //newRow.addView(createTokenField(token));
-    newRow.addView(createImageButton(token,android.R.drawable.ic_delete));
+    newRow.addView(createImageButton(token, android.R.drawable.ic_delete));
 
     //newRow.addView(createTokenField(token));
 
@@ -477,11 +483,11 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     tv.setHint(hint);
     return tv;
   }
-  private DelTokImageButton createImageButton(String name,int icon_id)
+  private DelTokImageButton createImageButton(String name, int icon_id)
   {
     TableRow.LayoutParams llp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
     llp.setMargins(0, 0, 2, 0);//2px right-margin
-    DelTokImageButton tv = new DelTokImageButton(name,context);
+    DelTokImageButton tv = new DelTokImageButton(name, context);
     tv.setImageResource(icon_id);
     tv.setPadding(0, 0, 4, 3);
     tv.setOnClickListener(this);
@@ -523,7 +529,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
       DelTokImageButton tv = (DelTokImageButton) p1;
       deleteToken(tv.getToken());
     }
-    
+
 
   }
 
@@ -561,6 +567,25 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
       return;
     }
 
+    sanitized = normalizer.normalizeLangName(sanitized);
+
+    if (!langList.contains(sanitized))
+    {
+      //langList.add(sanitized);
+      //Toast.makeText(context, "Added lang, " + sanitized, Toast.LENGTH_SHORT).show();
+      addNewLang(sanitized);
+      buildTableView();
+    }
+    else if (hidden.get(sanitized) != null)
+    {
+      boolean status = hidden.get(sanitized);
+      hidden.put(sanitized, !status);
+      buildTableView();
+    }//else 
+  }//
+
+  /*private String normalizeLangName(String sanitized)
+  {
     Matcher m = complete.matcher(sanitized);
     String lang = "", region = "";
     if (m.find())
@@ -588,7 +613,8 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
         {
           Toast.makeText(context, "Can't extract lang from " + sanitized + " valid examples: de, de-DE or de-rDE!", Toast.LENGTH_SHORT).show();
         }
-      }
+      }//
+      
     }
 
     //if (inputText.length() > 2) sanitized = inputText.substring(0, 2);
@@ -598,21 +624,8 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
       sanitized = lang + "-r" + region;
     }
     else sanitized = lang;
-
-    if (!langList.contains(sanitized))
-    {
-      //langList.add(sanitized);
-      //Toast.makeText(context, "Added lang, " + sanitized, Toast.LENGTH_SHORT).show();
-      addNewLang(sanitized);
-      buildTableView();
-    }
-    else if (hidden.get(sanitized) != null)
-    {
-      boolean status = hidden.get(sanitized);
-      hidden.put(sanitized, !status);
-      buildTableView();
-    }
-  }
+    return sanitized;
+  }*/
 
   @Override
   public void onFinishAddTokenDialog(StringEntry input)

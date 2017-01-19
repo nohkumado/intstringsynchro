@@ -80,8 +80,7 @@ public class SaveStringXmlTask extends AsyncTask<String,Integer,Void>
   protected void onPostExecute(Void result)
   {
     super.onPostExecute(result);
-    String msg = context.getResources().getString(R.string.files_saved);
-    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+    context.filesSaved();
     
   }//List<StringEntry> loadStringsXmlFile(String aFile)
 

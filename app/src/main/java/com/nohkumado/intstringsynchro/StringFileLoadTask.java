@@ -7,8 +7,6 @@ import org.xmlpull.v1.*;
 
 public class StringFileLoadTask extends AsyncTask<StringFile,Integer,Void>
 {
-
-
   //protected HashMap<String, ArrayList<StringEntry>> rest;
   protected TreeMapTable<String,StringEntry> data;
   

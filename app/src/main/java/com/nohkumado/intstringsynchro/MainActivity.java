@@ -28,9 +28,11 @@ DialogSelectionListener//, OnEditorActionListener
   //protected Spinner langSpin;
   protected Button openProject;//addLang, addToken, 
   protected ImageButton moveUpBut,saveBut;
-  protected String actProjectPath = "";
+
   protected ArrayList<String> langList;
   protected TreeMapTable<String,StringEntry> data;
+  protected String actProjectPath = "";
+  protected int mode;
   //protected ArrayList<StringEntry> rest;
   //protected TreeMapTable<String,StringEntry> rest;
 
@@ -43,18 +45,32 @@ DialogSelectionListener//, OnEditorActionListener
   //private static final int PROJECT_CHOOSED = 99;
 
   private static final String TAG="MA";
-
+  public static final int MODE_ADD=1;
+  public static final int MODE_DEL=2;
+  public static final int MODE_UNKNOWN=3;
   //protected Pattern simple = Pattern.compile("([a-z]{2})");
   //protected Pattern complete = Pattern.compile("([a-z]{2})\\-r([a-zA-Z]{2})");
   //protected Pattern iso = Pattern.compile("([a-z]{2})\\-([a-zA-Z]{2})");
 
   protected StringXmlTableFrag tokenTable;
 
+  private Bundle intentArgs;
+
+  public final int MISSING_PATH = 10;
+  public final int MISSING_MODE = 11;
+  public final int MISSING_VALUE = 12;
+  public final int MISSING_TOKEN = 13;
+
+  public final String ERROR = "com.nohkumado.intstringsynchro.ERROR";
+  public final String ACTION = "com.nohkumado.intstringsynchro.ACTION";
+  
 
   public MainActivity()
   {
 
   }
+
+
   /**
    *   onCreate
    * @arg savedInstanceState
@@ -64,6 +80,65 @@ DialogSelectionListener//, OnEditorActionListener
   {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main);
+    SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(this);
+    if (prefs.contains("actprojectpath")) 
+    {
+      actProjectPath = prefs.getString("actprojectpath", "");
+    }
+    // Get the intent that started this activity
+    Intent intent = getIntent();
+
+
+    // Figure out what to do based on the intent type
+    if (intent != null && !intent.getAction().equals(Intent.ACTION_MAIN))
+    {
+      Uri data = intent.getData();
+      Intent returnInt = new Intent();
+      returnInt.setAction(ACTION);
+      ArrayList<String> sb = new ArrayList<>();
+      ArrayList<Integer> error_codes = new ArrayList<>();
+
+      Log.d(TAG, "received intent " + intent + " of action " + intent.getAction() + " of type " + intent.getType());
+
+      //check validity of send data
+      Bundle args = intent.getExtras();
+      if (checkIntentArgs(args, sb, error_codes))
+      {
+        Log.d(TAG, "has data " + intent.getData() + " of type " + intent.getType());
+        String farPath = args.getString("path");
+        String farmode = args.getString("mode");
+        switch (farmode)
+        {
+          case("add"):
+            mode = MODE_ADD;
+            intentArgs = args;
+            onSelectedFilePaths(new String[] {farPath + "/values"});
+            break;
+          case("del"):
+            mode = MODE_DEL;
+            onSelectedFilePaths(new String[] {farPath + "/values"});
+            break;
+          case "edit":
+          case "list":
+            break;
+          default:
+            error_codes.add(MODE_UNKNOWN);
+            sb.add(getResources().getString(R.string.mode_unknown));
+        }//switch
+      }//if (checkIntentArgs(args, returnInt))
+
+      if (error_codes.size() > 0)
+      {
+        returnInt.setAction(ERROR);
+        returnInt.putExtra("codes", error_codes);
+        returnInt.putExtra("msg", sb); 
+        // Create intent to deliver some kind of result data
+        //Intent result = new Intent("com.example.RESULT_ACTION", Uri.parse("content://result_uri"));
+        setResult(Activity.RESULT_CANCELED, returnInt);
+        finish();
+      }//if (error_codes.size() > 0)
+    }//if (intent != null && !intent.getAction().equals(Intent.ACTION_MAIN))  
+
 
     // find the retained fragment on activity restarts
     FragmentManager fm = getFragmentManager();
@@ -82,13 +157,6 @@ DialogSelectionListener//, OnEditorActionListener
     }
     data = tokenTable.getData();
     langList = tokenTable.getLangList();
-
-    SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(this);
-    if (prefs.contains("actprojectpath")) 
-    {
-      actProjectPath = prefs.getString("actprojectpath", "");
-
-    }
 
     if (savedInstanceState != null)
     {
@@ -130,6 +198,37 @@ DialogSelectionListener//, OnEditorActionListener
     //tokenTable.setAdapter(stringDataAdapter);
     if (actProjectPath != null && actProjectPath.length() > 0 && data.size() <= 0) 
       onSelectedFilePaths(new String[] {actProjectPath + "/values"});
+  }
+
+  private boolean checkIntentArgs(Bundle args, ArrayList<String> sb, ArrayList<Integer> error_codes)
+  {
+    if (args.getString("path") == null)
+    {
+      error_codes.add(MISSING_PATH);
+      sb.add(getResources().getString(R.string.missing_path));
+    }
+    if (args.getString("mode") == null)
+    {
+      error_codes.add(MISSING_MODE);
+      sb.add(getResources().getString(R.string.missing_mode));
+    }
+    else
+    {
+      if (args.getString("mode").equals("add") && args.getString("value") == null)
+      {
+        error_codes.add(MISSING_VALUE);
+        sb.add(getResources().getString(R.string.missing_value));
+
+      }
+    }
+    if (args.getString("token") == null)
+    {
+      error_codes.add(MISSING_TOKEN);
+      sb.add(getResources().getString(R.string.missing_token));
+    }
+    if (error_codes.size() > 0) 
+      return false;
+    return true;
   }//onCreate
 
   /*public String getLang()
@@ -138,6 +237,99 @@ DialogSelectionListener//, OnEditorActionListener
    return("default");
    }//public String getLang()
    */
+  public void checkAndLoadFiles(String[] p1)
+  {
+    //Log.d(TAG,"select file "+data);
+    ArrayList<StringFile> toLoad = new ArrayList<StringFile>(); 
+    StringBuilder error = new StringBuilder();
+    if (p1.length == 1)
+    {
+      actProjectPath = p1[0];
+      File resValuesDir = new File(actProjectPath);
+      if (resValuesDir.exists())
+      {
+        boolean found = false;
+        for (String aFile: resValuesDir.list())
+        {
+          if ("strings.xml".equals(aFile))
+          {
+            //TODO for later ArrayList<String> list = new ArrayList(Arrays.asList(getResources().getStringArray(R.array.strings)));//where R.array.strings is a reference to your resource
+            //Toast.makeText(this, "found strings.xml", Toast.LENGTH_LONG).show();
+            found = true;
+            toLoad.add(new StringFile(resValuesDir, aFile, "default"));
+            //loadStringsXmlFile(new File(resValuesDir, aFile), "default");
+
+            break;
+          }
+        }
+        if (found)
+        {
+          //ok we have the right directory
+          File resDir = new File(resValuesDir, "../");
+
+          //save the actual value of the path
+          SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(this);
+          if (prefs.contains("actprojectpath")) actProjectPath = prefs.getString("actprojectpath", "");
+
+          SharedPreferences.Editor editor = prefs.edit();
+          try
+          {
+            editor.putString("actprojectpath", resDir.getCanonicalPath());
+          }
+          catch (IOException e)
+          {
+            Log.e(TAG, "coouldn't set path to " + resDir.getAbsolutePath());
+          }
+          editor.apply();
+          final Pattern p = Pattern.compile("values-[a-z\\-]{2,}");
+          //select allready selected languages
+          String[] files = resDir.list(new FilenameFilter() {
+              @Override
+              public boolean accept(File dir, String name)
+              {
+                Matcher m = p.matcher(name);
+                return m.find();
+                //return name.matches("values-\\[a-z\\-]{2,}");
+              }
+            });
+          //Log.d(TAG, "checking parent directory " + Arrays.toString(files));
+          Pattern onlyLang = Pattern.compile("^values-(.*)$");
+          for (String aLang : files)
+          {
+            //Log.d(TAG, "checking alternate " + aLang);
+            Matcher mlang = onlyLang.matcher(aLang);
+            if (mlang.find())
+            {
+              String sanitized = mlang.group(1);
+              tokenTable.addNewLang(sanitized);
+              StringFile resLangFile = new StringFile(resDir, aLang + "/strings.xml", sanitized);
+
+              if (resLangFile.exists()) toLoad.add(resLangFile);
+              //loadStringsXmlFile(resLangFile, sanitized);    
+            }
+            else Log.e(TAG, "wrng pattern " + mlang);
+
+          }
+        }
+        else
+          error.append("no strings.xml found in").append(actProjectPath);
+
+      }
+      else
+        error.append("Dir not found: " + actProjectPath);
+    }
+    else
+      error.append("select the values dir");
+
+    if (error.toString().length() > 0) Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show();
+    if (toLoad.size() > 0)
+    {
+      //for (StringFile aFile: toLoad)
+      //  Log.d(TAG, "about to load :" + aFile.toString() + " of " + aFile.lang());
+      StringFileLoadTask task = new StringFileLoadTask(data, this);
+      task.execute(toLoad.toArray(new StringFile[toLoad.size()]));
+    }
+  }//  public void onSelectedFilePaths(String[] p1)
 
   @Override
   public void onClick(View p1)
@@ -235,20 +427,23 @@ DialogSelectionListener//, OnEditorActionListener
           //ok we have the right directory
           File resDir = new File(resValuesDir, "../");
 
-          //save the actual value of the path
-          SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(this);
-          if (prefs.contains("actprojectpath")) actProjectPath = prefs.getString("actprojectpath", "");
+          if (mode <= 0)
+          {
+            //save the actual value of the path
+            SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(this);
+            if (prefs.contains("actprojectpath")) actProjectPath = prefs.getString("actprojectpath", "");
 
-          SharedPreferences.Editor editor = prefs.edit();
-          try
-          {
-            editor.putString("actprojectpath", resDir.getCanonicalPath());
+            SharedPreferences.Editor editor = prefs.edit();
+            try
+            {
+              editor.putString("actprojectpath", resDir.getCanonicalPath());
+            }
+            catch (IOException e)
+            {
+              Log.e(TAG, "coouldn't set path to " + resDir.getAbsolutePath());
+            }
+            editor.apply();
           }
-          catch (IOException e)
-          {
-            Log.e(TAG, "coouldn't set path to " + resDir.getAbsolutePath());
-          }
-          editor.apply();
           final Pattern p = Pattern.compile("values-[a-z\\-]{2,}");
           //select allready selected languages
           String[] files = resDir.list(new FilenameFilter() {
@@ -304,7 +499,36 @@ DialogSelectionListener//, OnEditorActionListener
    */
   public void buildTableView()
   {
-    tokenTable.buildTableView();
+    if (mode > 0)
+    {
+      switch (mode)
+      {
+        case(MODE_ADD):
+          LangNameNormalizer normalizer = new LangNameNormalizer();
+
+          String langCand = null;
+          for (String key: intentArgs.keySet())
+          {
+            if (key.equals("value")) langCand = "default";
+            else if (key.startsWith("value")) langCand = normalizer.normalizeLangName(key.replace("value-", ""));
+            else langCand = null; //ignoring the rest
+
+            if (langCand != null)
+            {
+              String token = intentArgs.getString("token");
+              StringEntry newEntry = new StringEntry(token, intentArgs.get(key).toString());
+              data.set(token, langCand, newEntry);
+            }
+          }//for(String key: intentArgs.keySet())
+          break;
+        case(MODE_DEL):
+          data.remove(intentArgs.getString("token"));
+          break;
+      }
+      saveFiles();
+    }
+    else
+      tokenTable.buildTableView();
   }//public void buildTableView()
 
   /**
@@ -325,11 +549,24 @@ DialogSelectionListener//, OnEditorActionListener
   {
     return actProjectPath;
   }
-  
+
   public void broadcastIntent(View view)
   {
     Intent intent = new Intent();
     intent.setAction("com.nohkumado.EDIT_STRINGXML");
     sendBroadcast(intent);
   }
+
+  public void filesSaved()
+  {
+    if (mode > 0)
+    {
+      Intent returnInt = new Intent();
+      returnInt.setAction(ACTION);
+      // Create intent to deliver some kind of result data
+        //Intent result = new Intent("com.example.RESULT_ACTION", Uri.parse("content://result_uri"));
+        setResult(Activity.RESULT_OK, returnInt);
+        finish();
+      }//if (error_codes.size() > 0)
+  }// if (mode > 0)
 }
