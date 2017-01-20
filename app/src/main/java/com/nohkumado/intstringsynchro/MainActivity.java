@@ -60,10 +60,12 @@ DialogSelectionListener//, OnEditorActionListener
   public final int MISSING_MODE = 11;
   public final int MISSING_VALUE = 12;
   public final int MISSING_TOKEN = 13;
+  public final int PATH_INVALID = 14;
+  public final int MODE_INVALID = 15;
 
   public final String ERROR = "com.nohkumado.intstringsynchro.ERROR";
   public final String ACTION = "com.nohkumado.intstringsynchro.ACTION";
-  
+
 
   public MainActivity()
   {
@@ -87,24 +89,41 @@ DialogSelectionListener//, OnEditorActionListener
     }
     // Get the intent that started this activity
     Intent intent = getIntent();
+    //testing edit
+    intent.setAction("LIST");
+    intent.putExtra("mode", "edit");
+    //intent.putExtra("path","/at/timbouktou");//wrong
+    intent.putExtra("path", "AppProjects/IntStringSynchro/app/src/main/res");//relative
+    //intent.putExtra("path","/storage/emulated/0/AppProjects/IntStringSynchro/app/src/main/res");//absolute
+
+    //testing add
+    //intent.setAction("ADD");
+
+    //testing remove
+    //intent.putExtra("mode","add");
+
+    Log.d(TAG, "received intent of action " + intent.getAction() + " vs " + Intent.ACTION_MAIN);
 
 
     // Figure out what to do based on the intent type
-    if (intent != null && !intent.getAction().equals(Intent.ACTION_MAIN))
+    if (!intent.getAction().equals(Intent.ACTION_MAIN))
     {
-      Uri data = intent.getData();
+      //Log.d(TAG,"got called by an intent");
+      //Uri data = intent.getData();
       Intent returnInt = new Intent();
       returnInt.setAction(ACTION);
       ArrayList<String> sb = new ArrayList<>();
       ArrayList<Integer> error_codes = new ArrayList<>();
 
       Log.d(TAG, "received intent " + intent + " of action " + intent.getAction() + " of type " + intent.getType());
-
+      Toast.makeText(this, "received intent " + intent + " of action " + intent.getAction() + " of type " + intent.getType(), Toast.LENGTH_LONG).show();
       //check validity of send data
       Bundle args = intent.getExtras();
       if (checkIntentArgs(args, sb, error_codes))
       {
         Log.d(TAG, "has data " + intent.getData() + " of type " + intent.getType());
+        Toast.makeText(this, "has data " + intent.getData() + " of type " + intent.getType(), Toast.LENGTH_LONG).show();
+
         String farPath = args.getString("path");
         String farmode = args.getString("mode");
         switch (farmode)
@@ -119,26 +138,53 @@ DialogSelectionListener//, OnEditorActionListener
             onSelectedFilePaths(new String[] {farPath + "/values"});
             break;
           case "edit":
-          case "list":
+            File tstit;
+            if (farPath.startsWith("/")) tstit = new File(farPath); 
+            else  tstit = new File(Environment.getExternalStorageDirectory(),  farPath); 
+            if (tstit.exists())
+            {
+              Log.d(TAG, "path exists! " + tstit.getAbsolutePath());
+              try
+              {
+                farPath = tstit.getCanonicalPath();
+              }
+              catch (IOException e)
+              { Log.e(TAG, "something went wrong extracting the path from " + tstit.getAbsolutePath());}
+
+              tstit = new File(tstit.getAbsoluteFile(), "values/strings.xml");
+              if (tstit.exists())
+              {
+                actProjectPath = farPath;
+                Log.d(TAG, "path points to default strings.xml " + tstit.getAbsolutePath());
+              }
+              else
+              {
+                error_codes.add(PATH_INVALID);
+                sb.add(tstit.getAbsolutePath() + " " + getResources().getString(R.string.missing_xml));
+                bailOut(returnInt, error_codes, sb);
+              }
+            }
+            else 
+            {
+              error_codes.add(PATH_INVALID);
+              sb.add(tstit.getAbsolutePath() + " " + getResources().getString(R.string.cd_does_not_exist));
+              bailOut(returnInt, error_codes, sb);
+            }
             break;
           default:
             error_codes.add(MODE_UNKNOWN);
             sb.add(getResources().getString(R.string.mode_unknown));
+            bailOut(returnInt, error_codes, sb);
         }//switch
+        //just to test if we are able to bail out...
+        //bailOut(returnInt, error_codes, sb);
       }//if (checkIntentArgs(args, returnInt))
-
-      if (error_codes.size() > 0)
+      else
       {
-        returnInt.setAction(ERROR);
-        returnInt.putExtra("codes", error_codes);
-        returnInt.putExtra("msg", sb); 
-        // Create intent to deliver some kind of result data
-        //Intent result = new Intent("com.example.RESULT_ACTION", Uri.parse("content://result_uri"));
-        setResult(Activity.RESULT_CANCELED, returnInt);
-        finish();
+        bailOut(returnInt, error_codes, sb);
       }//if (error_codes.size() > 0)
     }//if (intent != null && !intent.getAction().equals(Intent.ACTION_MAIN))  
-
+    else Log.d(TAG, "got called standalone ");
 
     // find the retained fragment on activity restarts
     FragmentManager fm = getFragmentManager();
@@ -197,38 +243,68 @@ DialogSelectionListener//, OnEditorActionListener
     //stringDataAdapter = new StringEntryAdapter(this, data);
     //tokenTable.setAdapter(stringDataAdapter);
     if (actProjectPath != null && actProjectPath.length() > 0 && data.size() <= 0) 
+    {
+      Log.d(TAG, "calling load on " + actProjectPath + "/values");
       onSelectedFilePaths(new String[] {actProjectPath + "/values"});
+    }
+
+  }
+
+  private void bailOut(Intent returnInt, ArrayList<Integer> error_codes, ArrayList<String> sb)
+  {
+    Toast.makeText(this, "we have errors, bailing out", Toast.LENGTH_LONG).show();
+
+    returnInt.setAction(ERROR);
+    returnInt.putExtra("codes", error_codes);
+    returnInt.putExtra("msg", sb); 
+    // Create intent to deliver some kind of result data
+    //Intent result = new Intent("com.example.RESULT_ACTION", Uri.parse("content://result_uri"));
+
+    setResult(Activity.RESULT_CANCELED, returnInt);
+    Log.d(TAG, "we have errors, bailing out " + returnInt + " ext:" + returnInt.getExtras());
+
+    finish();
   }
 
   private boolean checkIntentArgs(Bundle args, ArrayList<String> sb, ArrayList<Integer> error_codes)
   {
+    boolean result = true;
+    if (args == null) return false;
     if (args.getString("path") == null)
     {
       error_codes.add(MISSING_PATH);
       sb.add(getResources().getString(R.string.missing_path));
+      result = false; //critical
     }
     if (args.getString("mode") == null)
     {
       error_codes.add(MISSING_MODE);
       sb.add(getResources().getString(R.string.missing_mode));
+      result = false; //critical
     }
     else
     {
-      if (args.getString("mode").equals("add") && args.getString("value") == null)
+      if (!args.getString("mode").matches("edit|add|del"))
+      {
+        error_codes.add(MODE_INVALID);
+        sb.add(getResources().getString(R.string.mode_unknown));
+        result = false;    
+      }
+      else if (args.getString("mode").equals("add") && args.getString("value") == null)
       {
         error_codes.add(MISSING_VALUE);
         sb.add(getResources().getString(R.string.missing_value));
-
+        result = false; 
       }
     }
-    if (args.getString("token") == null)
+    //toto;
+    if (args.getString("token") == null && args.getString("mode") != null && !args.getString("mode").equals("edit"))
     {
       error_codes.add(MISSING_TOKEN);
       sb.add(getResources().getString(R.string.missing_token));
+      result = false;
     }
-    if (error_codes.size() > 0) 
-      return false;
-    return true;
+    return result;
   }//onCreate
 
   /*public String getLang()
@@ -564,9 +640,23 @@ DialogSelectionListener//, OnEditorActionListener
       Intent returnInt = new Intent();
       returnInt.setAction(ACTION);
       // Create intent to deliver some kind of result data
-        //Intent result = new Intent("com.example.RESULT_ACTION", Uri.parse("content://result_uri"));
-        setResult(Activity.RESULT_OK, returnInt);
-        finish();
-      }//if (error_codes.size() > 0)
+      //Intent result = new Intent("com.example.RESULT_ACTION", Uri.parse("content://result_uri"));
+      setResult(Activity.RESULT_OK, returnInt);
+      finish();
+    }//if (error_codes.size() > 0)
   }// if (mode > 0)
+  @Override
+  public void onBackPressed()
+  {
+    super.onBackPressed();
+    if (mode > 0)
+    {
+      Intent returnInt = new Intent();
+      returnInt.setAction(ACTION);
+      // Create intent to deliver some kind of result data
+      //Intent result = new Intent("com.example.RESULT_ACTION", Uri.parse("content://result_uri"));
+      setResult(Activity.RESULT_OK, returnInt);
+      finish();
+    }//if (error_codes.size() > 0)
+  }
 }
