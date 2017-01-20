@@ -1,5 +1,6 @@
 package com.nohkumado.intstringsynchro;
 import android.os.*;
+import android.util.*;
 import com.nohkumado.nohutils.collection.*;
 import java.io.*;
 import java.util.*;
@@ -12,10 +13,13 @@ public class StringFileLoadTask extends AsyncTask<StringFile,Integer,Void>
   
   protected MainActivity context;
 
+  public static final String TAG = "SFL";
+
   public StringFileLoadTask(TreeMapTable<String,StringEntry> data, MainActivity context)
   {
     this.data = data;
     this.context = context;
+    
   }
 
   @Override
@@ -30,6 +34,7 @@ public class StringFileLoadTask extends AsyncTask<StringFile,Integer,Void>
 
   protected void loadStringsXmlFile(StringFile aFile)
   {
+    Log.d(TAG,"loading "+aFile.getAbsolutePath());
     String langTok = aFile.lang();
     ArrayList<StringEntry> entries = new ArrayList<>(); 
     //XmlPullParser parser =  Xml.newPullParser();

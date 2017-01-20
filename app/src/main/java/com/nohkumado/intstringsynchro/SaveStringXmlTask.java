@@ -12,12 +12,14 @@ public class SaveStringXmlTask extends AsyncTask<String,Integer,Void>
 
   protected TreeMapTable<String,StringEntry> data;
   protected MainActivity context;
+  String savePath;
 
   public SaveStringXmlTask(TreeMapTable<String,StringEntry> rest, 
-                            MainActivity context)
+                            MainActivity context, String path)
   {
     this.data = rest;
     this.context = context;
+    savePath = path;
   }
 
   @Override
@@ -25,7 +27,7 @@ public class SaveStringXmlTask extends AsyncTask<String,Integer,Void>
   {
     boolean result = true;
     StringBuilder sb ;
-
+    if(savePath == null || savePath.length() <= 0) savePath = context.getProjectPath(); 
     for (String lang : p1)
     {
       //Log.d(TAG, "printing for lang : " + lang);
@@ -48,8 +50,9 @@ public class SaveStringXmlTask extends AsyncTask<String,Integer,Void>
       sb.append("</resources>");
 
       File saveFile;
-      if(lang.equals("default")) saveFile = new File(context.getProjectPath(), "values/strings.xml");
-      else saveFile = new File(context.getProjectPath(), "values-" + lang + "/strings.xml");
+      if(lang.equals("default")) saveFile = new File(savePath, "values/strings.xml");
+      else saveFile = new File(savePath, "values-" + lang + "/strings.xml");
+      Log.d(TAG,"saveFile = "+saveFile.getAbsolutePath());
       saveFile.mkdirs();
       
       //File saveFile = new File(context.getExternalFilesDir(null), "strings-" + lang + ".xml");
