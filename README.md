@@ -16,6 +16,8 @@ thanks to https://android-arsenal.com/details/1/3950 for the diretory picker
 BTW to validate a field you have to hit the enter key, otherwise the input is not taken, even if it is still written there
 its a "feature" at least on my kbd the IME_ACTION_DONE is not triggered when i hit the TAB key...
 
+# include it into your own code
+
 to use it include the instringsynchro jar into your path, add the 
 
 
@@ -39,85 +41,28 @@ an in MainActivity create do:
       fm.beginTransaction().add(tokenTable, "data").replace(R.id.table, tokenTable).commit();
     }
 
+# call it through intent
 
+    //testing edit
+    //intent.setAction("EDIT");
+    //intent.putExtra("mode", "edit");
+    //intent.putExtra("path","/at/timbouktou");//wrong
+    //intent.putExtra("path", "AppProjects/IntStringSynchro/app/src/main/res");//relative
+    //intent.putExtra("path","/storage/emulated/0/AppProjects/IntStringSynchro/app/src/main/res");//absolute
 
-    Receiver:
-
-    <?xml version="1.0" encoding="utf-8"?>
-    <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        package="com.nohkumado.intstringsynchro" >
-
-        <application
-            android:allowBackup="true"
-            android:icon="@drawable/ic_launcher"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme"
-            android:resizeableActivity = "true">
-            <activity
-                android:name=".MainActivity"
-                android:label="@string/app_name" >
-                <intent-filter>
-                    <action android:name="android.intent.action.MAIN" />
-                    <category android:name="android.intent.category.LAUNCHER" />
-                </intent-filter>
-            </activity>
-            <receiver android:name=".IntStringReceiver" android:exported="true"  android:enabled="true">
-                <intent-filter>
-                    <action android:name="com.nohkumado.intstringsynchro.EDIT_STRINGXML"/>
-                    <category android:name="android.intent.category.DEFAULT"/>
-                </intent-filter>
-                <intent-filter>
-                    <action android:name="com.nohkumado.intstringsynchro.ADD_STRINGXML"/>
-                    <action android:name="com.nohkumado.intstringsynchro.DEL_STRINGXML"/>
-                    <category android:name="android.intent.category.DEFAULT"/>
-                    <data android:mimeType="text/plain"/>
-                </intent-filter>
-            </receiver>
-        </application>
-    </manifest>
-
-    package com.nohkumado.intstringsynchro;
-    import android.content.*;
-    import android.widget.*;
-    import android.util.*;
-
-    public class IntStringReceiver extends BroadcastReceiver
-    {
-      public static final String TAG = "Receiver";
-      @Override
-      public void onReceive(Context context, Intent intent)
-      {
-        Toast.makeText(context, "Intent Detected:"+intent.getAction(), Toast.LENGTH_LONG).show();
-
-        switch (intent.getAction())
-        {
-          case "com.nohkumado.intstringsynchro.EDIT_STRINGXML":
-            {
-              Intent intentStartMainActivity = new Intent(context, MainActivity.class);
-              intentStartMainActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-              context.startActivity(intentStartMainActivity);
-              break;
-            }
-          case("com.nohkumado.intstringsynchro.ADD_STRINGXML"):
-            {
-              Toast.makeText(context, "add token "+intent.getExtras(), Toast.LENGTH_LONG).show();
-              break;
-            }
-          case("com.nohkumado.intstringsynchro.DEL_STRINGXML"):
-            {
-              Toast.makeText(context, "del token "+intent.getExtras(), Toast.LENGTH_LONG).show();
-              break;
-            }
-          default:
-            {
-              Toast.makeText(context, "no idea what to do with  "+intent, Toast.LENGTH_LONG).show();
-              Log.d(TAG,"no idea what to do with  "+intent);
-            }//default
-        }//    switch (intent.getAction())
-      }//  public void onReceive(Context context, Intent intent)
-    }//class
-
-    Tester:
+    //testing add
+    //intent.setAction("ADD");
+    //intent.putExtra("path", "AppProjects/IntStringSynchro/app/src/main/res");//relative
+    //intent.putExtra("mode", "add");
+    //intent.putExtra("token", "testit");
+    //intent.putExtra("value", "a test");
+    //intent.putExtra("value-de", "ein Test");
+    //testing remove
+    //intent.setAction("DEL");
+    //intent.putExtra("path", "AppProjects/IntStringSynchro/app/src/main/res");//relative
+    //intent.putExtra("mode", "del");
+    //intent.putExtra("token", "testit");
+    
 
     package com.nohkumado.istester;
 

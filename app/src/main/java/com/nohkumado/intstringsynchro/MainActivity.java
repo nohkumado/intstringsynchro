@@ -32,7 +32,7 @@ DialogSelectionListener//, OnEditorActionListener
   protected ArrayList<String> langList;
   protected TreeMapTable<String,StringEntry> data;
   protected String actProjectPath = "";
-  protected int mode;
+  protected int mode = -1;
   //protected ArrayList<StringEntry> rest;
   //protected TreeMapTable<String,StringEntry> rest;
 
@@ -90,7 +90,7 @@ DialogSelectionListener//, OnEditorActionListener
     // Get the intent that started this activity
     Intent intent = getIntent();
     //testing edit
-    //intent.setAction("LIST");
+    //intent.setAction("EDIT");
     //intent.putExtra("mode", "edit");
     //intent.putExtra("path","/at/timbouktou");//wrong
     //intent.putExtra("path", "AppProjects/IntStringSynchro/app/src/main/res");//relative
@@ -104,12 +104,12 @@ DialogSelectionListener//, OnEditorActionListener
     //intent.putExtra("value", "a test");
     //intent.putExtra("value-de", "ein Test");
     //testing remove
-    intent.setAction("DEL");
-    intent.putExtra("path", "AppProjects/IntStringSynchro/app/src/main/res");//relative
-    intent.putExtra("mode", "del");
-    intent.putExtra("token", "testit");
+    //intent.setAction("DEL");
+    //intent.putExtra("path", "AppProjects/IntStringSynchro/app/src/main/res");//relative
+    //intent.putExtra("mode", "del");
+    //intent.putExtra("token", "testit");
     
-    Log.d(TAG, "received intent of action " + intent.getAction() + " vs " + Intent.ACTION_MAIN);
+    //Log.d(TAG, "received intent of action " + intent.getAction() + " vs " + Intent.ACTION_MAIN);
 
 
     // Figure out what to do based on the intent type
@@ -124,21 +124,29 @@ DialogSelectionListener//, OnEditorActionListener
       ArrayList<String> sb = new ArrayList<>();
       ArrayList<Integer> error_codes = new ArrayList<>();
 
-      Log.d(TAG, "received intent " + intent + " of action " + intent.getAction() + " of type " + intent.getType()+" "+intent.getExtras());
+      //Log.d(TAG, "received intent " + intent + " of action " + intent.getAction() + " of type " + intent.getType()+" "+intent.getExtras());
       //Toast.makeText(this, "received intent " + intent + " of action " + intent.getAction() + " of type " + intent.getType(), Toast.LENGTH_LONG).show();
       //check validity of send data
       Bundle args = intent.getExtras();
+      
+      String farmode = "";
+      if(args != null)
+      {
+        farmode = args.getString("mode");
+        if(farmode == null || farmode.length() <= 0) farmode = intent.getAction();
+        farmode = farmode.toLowerCase().trim();
+        args.putString("mode",farmode);
+      }
+      
       if (checkIntentArgs(args, sb, error_codes))
       {
         //Log.d(TAG, "has data " + intent.getData() + " of type " + intent.getType());
        // Toast.makeText(this, "has data " + intent.getData() + " of type " + intent.getType(), Toast.LENGTH_LONG).show();
 
         String farPath = args.getString("path");
-        String farmode = args.getString("mode");
-        
         
         farPath = checkPath(farPath, error_codes, sb, returnInt);
-        Log.d(TAG,"farpath now "+farPath);
+        //Log.d(TAG,"farpath now "+farPath);
         actProjectPath = farPath;
         
         switch (farmode)
@@ -169,7 +177,7 @@ DialogSelectionListener//, OnEditorActionListener
         bailOut(returnInt, error_codes, sb);
       }//if (error_codes.size() > 0)
     }//if (intent != null && !intent.getAction().equals(Intent.ACTION_MAIN))  
-    else Log.d(TAG, "got called standalone ");
+    //else Log.d(TAG, "got called standalone ");
 
     // find the retained fragment on activity restarts
     FragmentManager fm = getFragmentManager();
@@ -229,7 +237,7 @@ DialogSelectionListener//, OnEditorActionListener
     //tokenTable.setAdapter(stringDataAdapter);
     if (actProjectPath != null && actProjectPath.length() > 0 && data.size() <= 0) 
     {
-      Log.d(TAG, "calling load on " + actProjectPath + "/values");
+      //Log.d(TAG, "calling load on " + actProjectPath + "/values");
       onSelectedFilePaths(new String[] {actProjectPath + "/values"});
     }
 
@@ -682,7 +690,7 @@ DialogSelectionListener//, OnEditorActionListener
   public void onBackPressed()
   {
     super.onBackPressed();
-    if (mode > 0)
+    if (getIntent() != null && !getIntent().getAction().equals(Intent.ACTION_MAIN))
     {
       Intent returnInt = new Intent();
       returnInt.setAction(ACTION);
@@ -692,5 +700,8 @@ DialogSelectionListener//, OnEditorActionListener
       Log.d(TAG,"normal end of back on intent call "+returnInt+" "+returnInt.getExtras()); 
       finish();
     }//if (error_codes.size() > 0)
+    else
+      Log.d(TAG,"standalino back"); 
+    
   }
 }
