@@ -97,15 +97,18 @@ DialogSelectionListener//, OnEditorActionListener
     //intent.putExtra("path","/storage/emulated/0/AppProjects/IntStringSynchro/app/src/main/res");//absolute
 
     //testing add
-    intent.setAction("ADD");
-    intent.putExtra("path", "AppProjects/IntStringSynchro/app/src/main/res");//relative
-    intent.putExtra("mode", "add");
-    intent.putExtra("token", "testit");
-    intent.putExtra("value", "a test");
-    intent.putExtra("value-de", "ein Test");
+    //intent.setAction("ADD");
+    //intent.putExtra("path", "AppProjects/IntStringSynchro/app/src/main/res");//relative
+    //intent.putExtra("mode", "add");
+    //intent.putExtra("token", "testit");
+    //intent.putExtra("value", "a test");
+    //intent.putExtra("value-de", "ein Test");
     //testing remove
-    //intent.putExtra("mode","add");
-
+    intent.setAction("DEL");
+    intent.putExtra("path", "AppProjects/IntStringSynchro/app/src/main/res");//relative
+    intent.putExtra("mode", "del");
+    intent.putExtra("token", "testit");
+    
     Log.d(TAG, "received intent of action " + intent.getAction() + " vs " + Intent.ACTION_MAIN);
 
 
@@ -143,11 +146,11 @@ DialogSelectionListener//, OnEditorActionListener
           case("add"):
             mode = MODE_ADD;
             intentArgs = args;
-            
             onSelectedFilePaths(new String[] {farPath + "/values"});
             break;
           case("del"):
             mode = MODE_DEL;
+            intentArgs = args;
             onSelectedFilePaths(new String[] {farPath + "/values"});
             break;
           case "edit":
