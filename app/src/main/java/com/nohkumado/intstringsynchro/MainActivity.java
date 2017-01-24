@@ -163,6 +163,7 @@ DialogSelectionListener//, OnEditorActionListener
             break;
           case "edit":
             actProjectPath = farPath;
+            //TODO check if token is present, center on it and set the focus into it
             break;
           default:
             error_codes.add(MODE_UNKNOWN);

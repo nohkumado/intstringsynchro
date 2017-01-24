@@ -236,7 +236,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     {
       String posHint = v.getHint().toString();
       String[] pos = posHint.split(":");
-      //Log.d(TAG, "change[" + pos[0] + ":" + pos[1] + "] text " + v.getText().toString());
+      Log.d(TAG, "change[" + pos[0] + ":" + pos[1] + "] text " + v.getText().toString());
       if (pos.length == 2)
       {
         StringEntry aEntry = new StringEntry(pos[0], v.getText().toString());
@@ -409,7 +409,6 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
       newRow.setLayoutParams(llp);
       newRow.addView(createTextView(llp, "", ""));//del but
       newRow.addView(createTextView(llp, "", ""));//token
-
     }
     //and an empty row
     newRow = new TableRow(context);

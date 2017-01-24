@@ -65,6 +65,7 @@ public class DialogFragAddToken  extends DialogFragment implements OnEditorActio
         {
           case 1:
             input = new ArrayEntry(mEditText.getText().toString().trim());
+            ((ArrayEntry)input).array.add(dEditText.getText().toString().trim());
             break;
           case 2:
             input = new PluralEntry(mEditText.getText().toString().trim());
