@@ -686,6 +686,8 @@ DialogSelectionListener//, OnEditorActionListener
       Log.d(TAG,"headless save end "+returnInt+" "+returnInt.getExtras());
       finish();
     }//if (error_codes.size() > 0)
+    else
+      Toast.makeText(this, getResources().getString(R.string.files_saved)+" "+actProjectPath, Toast.LENGTH_SHORT).show();
   }// if (mode > 0)
   @Override
   public void onBackPressed()

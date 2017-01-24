@@ -14,7 +14,7 @@ import java.util.*;
  */
 public class ArrayEntry extends StringEntry
 {
-  protected ArrayList<String> array;
+  private ArrayList<String> array;
 
   public ArrayEntry(String n)
   {
@@ -27,6 +27,13 @@ public class ArrayEntry extends StringEntry
     else array = new ArrayList<>();
     
   }
+
+  public void remove(int line)
+  {
+    array.remove(line);
+  }
+
+  
   @Override
   public String toString()
   {
@@ -45,4 +52,27 @@ public class ArrayEntry extends StringEntry
     return sb.toString();
   }
 
-}
+  public void set(int num, String msg)
+  {
+    while(num >= array.size()) array.add("");
+
+    array.set(num, msg);
+  }
+
+  public void add(String msg)
+  {
+    array.add(msg);
+  }
+
+  public int size()
+  {
+   if(array != null)  return array.size();
+   return -1;
+  }
+  public String get(int line)
+  {
+    if(array != null) return array.get(line);
+    return null;
+  }
+  
+}//class

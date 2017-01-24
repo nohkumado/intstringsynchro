@@ -59,13 +59,12 @@ public class DialogFragAddToken  extends DialogFragment implements OnEditorActio
       //AddTokenDialogListener activity = (AddTokenDialogListener) getActivity();
       if(listener != null)
       {
-        
         StringEntry input = null;
         switch (spinner.getSelectedItemPosition())
         {
           case 1:
             input = new ArrayEntry(mEditText.getText().toString().trim());
-            ((ArrayEntry)input).array.add(dEditText.getText().toString().trim());
+            ((ArrayEntry)input).add(dEditText.getText().toString().trim());
             break;
           case 2:
             input = new PluralEntry(mEditText.getText().toString().trim());

@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+   <string-array name="aaaaa">
+      <item>gnm</item>
+      <item>pff</item>
+   </string-array>
    <string name="actual_language">Actual</string>
    <string name="add_lang">Add Lang</string>
    <string name="add_project">Add Project</string>
@@ -20,8 +24,8 @@
    <plurals name="numberOfSongsAvailable">
       <item quantity="few">%d songs avaiable.</item>
       <item quantity="one">One Song available.</item>
-      <item quantity="other">%d songs available.</item>
       <item quantity="zero">No Songs available</item>
+      <item quantity="other">%d songs available.</item>
    </plurals>
    <string name="open_stringxml">open a string.xml file of a project</string>
    <string name="stored_langs">pre-loaded</string>

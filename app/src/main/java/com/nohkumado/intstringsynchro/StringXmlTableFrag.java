@@ -230,13 +230,16 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
   @Override
   public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
   {
-    //Log.d(TAG, "Editor action! " + event + "  id" + actionId);
+    String content = v.getText().toString().trim();
+    Log.d(TAG, "Editor action! " + event + "  id" + actionId + " " + content);
 
     if (EditorInfo.IME_ACTION_DONE == actionId || (event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER))
     {
-      String posHint = v.getHint().toString();
+      String posHint = v.getHint().toString().trim();
       String[] pos = posHint.split(":");
-      Log.d(TAG, "change[" + pos[0] + ":" + pos[1] + "] text " + v.getText().toString());
+      Log.d(TAG, "change[" + pos[0] + ":" + pos[1] + "] text " + content);
+      Toast.makeText(context, "change[" + pos[0] + ":" + pos[1] + "] text " + content, Toast.LENGTH_SHORT).show();
+
       if (pos.length == 2)
       {
         StringEntry aEntry = new StringEntry(pos[0], v.getText().toString());
@@ -246,26 +249,32 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
       {
         try
         {
+          String token = pos[0];
+          String lang = pos[1];
+
           int num =  Integer.parseInt(pos[2]);  
           //numeric
-          //Log.d(TAG, "adding array");
-          ArrayEntry aEntry = (ArrayEntry) data.get(pos[0], pos[1]);
+          Log.d(TAG, "adding array");
+          ArrayEntry aEntry = (ArrayEntry) data.get(token, lang);
           if (aEntry == null)
           {
-            aEntry = new ArrayEntry(pos[0]);
-            data.set(pos[0], pos[1], aEntry);
+            aEntry = new ArrayEntry(token);
+            data.set(token, lang, aEntry);
           }
+          aEntry.set(num, v.getText().toString().trim());
+          Toast.makeText(context, "setting on  " + aEntry + " " + num + " to " + content, Toast.LENGTH_SHORT).show();
+          buildTableView();
 
-          int diff = num - aEntry.array.size();
+          /*int diff = num - aEntry.array.size();
 
-          if (diff >= 0)
-          {
-            for (int i = 0; i <= diff; i++) aEntry.array.add("");
-            aEntry.array.set(num, v.getText().toString());
-            buildTableView();
-          }
-          else aEntry.array.set(num, v.getText().toString());
-
+           if (diff >= 0)
+           {
+           for (int i = 0; i <= diff; i++) aEntry.array.add("");
+           aEntry.array.set(num, v.getText().toString());
+           buildTableView();
+           }
+           else aEntry.array.set(num, v.getText().toString());
+           */
         }
         catch (NumberFormatException e)
         {
@@ -367,26 +376,33 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
   private void createArrayTable(String token, ArrayEntry toDisp)
   {
     //Log.d(TAG, "create arraytable tok:" + token + " vs " + toDisp);
-    TableRow newRow = new TableRow(context);
-    newRow.setBackground(context.getDrawable(R.drawable.border));
-
-    TableRow.LayoutParams llp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
-    llp.setMargins(0, 0, 2, 0);//2px right-margin
-    newRow.setBackgroundColor(Color.parseColor("#abe666"));
-    newRow.setLayoutParams(llp);
-    newRow.addView(createImageButton(token, android.R.drawable.ic_delete));
-
-    //newRow.addView(createTokenField(token));
-
-    TextView tv = createTextView(llp, token, "token");
-    newRow.addView(tv);
     //tv.invalidate();
     //Log.d(TAG, "added view " + tv.getText());
 
     //Log.d(TAG, "array :" + someContent);
+    TableRow newRow;
     int line;
-    for (line = 0; line < toDisp.array.size(); line++)
+    for (line = 0; line <= toDisp.size(); line++)
     {
+      newRow = new TableRow(context);
+      newRow.setBackground(context.getDrawable(R.drawable.border));
+
+      TableRow.LayoutParams llp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
+      llp.setMargins(0, 0, 2, 0);//2px right-margin
+      newRow.setBackgroundColor(Color.parseColor("#abe666"));
+      newRow.setLayoutParams(llp);
+      if (line == 0)
+        newRow.addView(createImageButton(token, android.R.drawable.ic_delete));
+      else
+        newRow.addView(createImageButton(token + ":" + line, android.R.drawable.ic_delete));
+
+      //newRow.addView(createTokenField(token));
+      TextView tv;
+      if (line == 0)
+        tv = createTextView(llp, token, "token");
+      else tv = createTextView(llp, "", "");
+      newRow.addView(tv);
+
       for (String lang : langList)
       {
         if (hidden.get(lang))  continue;
@@ -394,34 +410,16 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
         if (data.get(token, lang) != null)
         {
           ArrayEntry rec = (ArrayEntry) data.get(token, lang);
-          if (rec.array.size() > line)
+          if (rec.size() > line)
           {
-            newRow.addView(createEditView(llp, rec.array.get(line), token + ":" + lang + ":" + line));
+            newRow.addView(createEditView(llp, rec.get(line), token + ":" + lang + ":" + line));
           }
           else newRow.addView(createEditView(llp, "", token + ":" + lang + ":" + line));
         }
         else newRow.addView(createEditView(llp, "", token + ":" + lang + ":" + line));
       }
       tokenTable.addView(newRow);
-      newRow = new TableRow(context);
-      newRow.setBackground(context.getDrawable(R.drawable.border));
-      newRow.setBackgroundColor(Color.parseColor("#abe666"));
-      newRow.setLayoutParams(llp);
-      newRow.addView(createTextView(llp, "", ""));//del but
-      newRow.addView(createTextView(llp, "", ""));//token
     }
-    //and an empty row
-    newRow = new TableRow(context);
-    newRow.setBackground(context.getDrawable(R.drawable.border));
-    newRow.setBackgroundColor(Color.parseColor("#abe666"));
-    newRow.setLayoutParams(llp);
-    newRow.addView(createTextView(llp, "", ""));
-    for (String lang : langList)
-    {
-      if (hidden.get(lang))  continue;
-      newRow.addView(createEditView(llp, "", token + ":" + lang + ":" + line));
-    }
-    tokenTable.addView(newRow);
   }//  private void createArrayTable(String token)
 
 
@@ -526,11 +524,34 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     else if (p1 instanceof DelTokImageButton)
     {
       DelTokImageButton tv = (DelTokImageButton) p1;
-      deleteToken(tv.getToken());
-    }
-
-
-  }
+      String token = tv.getToken();
+      if (token.contains(":"))
+      {
+        String[] pos = token.split(":");
+        token = pos[0];
+        try
+        {
+          int line = Integer.parseInt(pos[1]);
+          for (String lang: langList)
+          {
+            StringEntry aE = data.get(token, lang);
+            if (aE != null && aE instanceof ArrayEntry)
+            {
+              ArrayEntry rec = (ArrayEntry) aE;
+              rec.remove(line);
+            }
+          }
+          //Toast.makeText(context, "removed line  " + line + " of " + token, Toast.LENGTH_SHORT).show();
+        }//try
+        catch (NumberFormatException e)
+        {
+          Toast.makeText(context, "couldn't extract linenum out of  " + tv.getToken(), Toast.LENGTH_SHORT).show();
+        }//catch
+      }//if (token.contains(":"))
+      else deleteToken(tv.getToken());
+      buildTableView();
+    }//else if (p1 instanceof DelTokImageButton)
+  }//public void onClick(View p1)
 
   private void deleteToken(String token)
   {
@@ -584,47 +605,47 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
   }//
 
   /*private String normalizeLangName(String sanitized)
-  {
-    Matcher m = complete.matcher(sanitized);
-    String lang = "", region = "";
-    if (m.find())
-    {
-      lang = m.group(1).toLowerCase();
-      region = m.group(2).toUpperCase();
-    }
-    else
-    {
-      m = iso.matcher(sanitized);
-      if (m.find())
-      {
-        lang = m.group(1).toLowerCase();
-        region = m.group(2).toUpperCase();
-      }
-      else
-      {
-        m = simple.matcher(sanitized);
-        if (m.find())
-        {
-          sanitized = sanitized.substring(0, 2);
-          lang = sanitized.toLowerCase();
-        }
-        else
-        {
-          Toast.makeText(context, "Can't extract lang from " + sanitized + " valid examples: de, de-DE or de-rDE!", Toast.LENGTH_SHORT).show();
-        }
-      }//
-      
-    }
+   {
+   Matcher m = complete.matcher(sanitized);
+   String lang = "", region = "";
+   if (m.find())
+   {
+   lang = m.group(1).toLowerCase();
+   region = m.group(2).toUpperCase();
+   }
+   else
+   {
+   m = iso.matcher(sanitized);
+   if (m.find())
+   {
+   lang = m.group(1).toLowerCase();
+   region = m.group(2).toUpperCase();
+   }
+   else
+   {
+   m = simple.matcher(sanitized);
+   if (m.find())
+   {
+   sanitized = sanitized.substring(0, 2);
+   lang = sanitized.toLowerCase();
+   }
+   else
+   {
+   Toast.makeText(context, "Can't extract lang from " + sanitized + " valid examples: de, de-DE or de-rDE!", Toast.LENGTH_SHORT).show();
+   }
+   }//
 
-    //if (inputText.length() > 2) sanitized = inputText.substring(0, 2);
-    //sanitized = sanitized.toLowerCase();
-    if (region.length() > 0)
-    {
-      sanitized = lang + "-r" + region;
-    }
-    else sanitized = lang;
-    return sanitized;
-  }*/
+   }
+
+   //if (inputText.length() > 2) sanitized = inputText.substring(0, 2);
+   //sanitized = sanitized.toLowerCase();
+   if (region.length() > 0)
+   {
+   sanitized = lang + "-r" + region;
+   }
+   else sanitized = lang;
+   return sanitized;
+   }*/
 
   @Override
   public void onFinishAddTokenDialog(StringEntry input)
