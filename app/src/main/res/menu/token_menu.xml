@@ -1,0 +1,12 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <item
+        android:id="@+id/token_delete"
+        android:title="@string/token_delete"/>
+    <item
+        android:id="@+id/token_copy"
+        android:title="@string/token_copy"/>
+    <item
+        android:id="@+id/token_rename"
+        android:title="@string/token_rename"/>
+</menu>

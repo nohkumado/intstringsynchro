@@ -55,22 +55,22 @@ public class DialogFragAddLang extends DialogFragment implements OnEditorActionL
     {
       if(hidden.get(lang) != null && hidden.get(lang) == true) list.add(lang);
     }
-    
+
     ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(getActivity(),
                                                                 android.R.layout.simple_spinner_item, list);
     dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    
-    
-    
+
+
+
     spin = (Spinner)view.findViewById(R.id.stored_lang_spin);
     spin.setAdapter(dataAdapter);
 
     okButton = (ImageButton) view.findViewById(R.id.addlang_ok);
     okButton.setOnClickListener(this);
-    
+
     return view;
   }//createView
-
+  
   @Override
   public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
   {

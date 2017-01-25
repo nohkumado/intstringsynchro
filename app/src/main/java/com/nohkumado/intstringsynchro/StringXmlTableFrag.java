@@ -3,6 +3,7 @@ import android.app.*;
 import android.content.res.*;
 import android.graphics.*;
 import android.os.*;
+import android.text.*;
 import android.util.*;
 import android.view.*;
 import android.view.View.*;
@@ -11,12 +12,11 @@ import android.widget.*;
 import android.widget.TextView.*;
 import com.nohkumado.nohutils.collection.*;
 import java.util.*;
-import java.util.regex.*;
 
 import android.view.View.OnClickListener;
 
 public class StringXmlTableFrag extends Fragment implements OnEditorActionListener, OnClickListener,
-DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListener
+DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListener, DialogTokenMenu.TokenDialogListener
 {
   private static final String TAG="SXF";
   protected ArrayList<String> langList;
@@ -142,7 +142,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
 
     title.removeAllViews();
 
-    title.addView(createImageButton("", android.R.drawable.ic_delete));
+    //title.addView(createImageButton("", android.R.drawable.ic_delete));
     title.addView(createButton(context.getResources().getString(R.string.table_tok), "token"));
     //title.addView(createButton(context.getResources().getString(R.string.fallback), "default"));
     for (String lang: langList)
@@ -200,6 +200,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     tv.setBackground(getResources().getDrawable(R.drawable.border));
     tv.setPadding(0, 0, 4, 3);
     tv.setHint(hintTxt);
+    tv.setOnClickListener(this);
     return tv;
   }//createTextView
   /**
@@ -217,6 +218,10 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     tv.setBackground(getResources().getDrawable(R.drawable.border));
     tv.setPadding(0, 0, 4, 3);
     tv.setHint(hintTxt);
+    tv.setSingleLine(false);
+    //tv.setInputType(EditText.
+    //tv.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
+    tv.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
     tv.setOnEditorActionListener(this);
     return tv;
   }//createEditView
@@ -231,7 +236,8 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
   public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
   {
     String content = v.getText().toString().trim();
-    Log.d(TAG, "Editor action! " + event + "  id" + actionId + " " + content);
+    String cleaned = TextUtils.htmlEncode(content);
+    Log.d(TAG, "Editor action! " + event + "  id" + actionId + " " + content + " clean *" + cleaned + "'");
 
     if (EditorInfo.IME_ACTION_DONE == actionId || (event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER))
     {
@@ -309,7 +315,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
 
     newRow.setBackgroundColor(Color.parseColor("#b7eeff"));
     newRow.setLayoutParams(llp);
-    newRow.addView(createImageButton(token, android.R.drawable.ic_delete));
+    //newRow.addView(createImageButton(token, android.R.drawable.ic_delete));
     newRow.addView(createTextView(llp, token, "token"));
 
     //newRow.addView(createTokenField(token));
@@ -391,16 +397,16 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
       llp.setMargins(0, 0, 2, 0);//2px right-margin
       newRow.setBackgroundColor(Color.parseColor("#abe666"));
       newRow.setLayoutParams(llp);
-      if (line == 0)
-        newRow.addView(createImageButton(token, android.R.drawable.ic_delete));
-      else
-        newRow.addView(createImageButton(token + ":" + line, android.R.drawable.ic_delete));
+      //if (line == 0)
+      //  newRow.addView(createImageButton(token, android.R.drawable.ic_delete));
+      //else
+      //  newRow.addView(createImageButton(token + ":" + line, android.R.drawable.ic_delete));
 
       //newRow.addView(createTokenField(token));
       TextView tv;
       if (line == 0)
         tv = createTextView(llp, token, "token");
-      else tv = createTextView(llp, "", "");
+      else tv = createTextView(llp, "", token+":"+line);
       newRow.addView(tv);
 
       for (String lang : langList)
@@ -432,7 +438,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     newRow.setBackground(context.getDrawable(R.drawable.border));
     newRow.setLayoutParams(llp);
     //newRow.addView(createTokenField(token));
-    newRow.addView(createImageButton(token, android.R.drawable.ic_delete));
+    //newRow.addView(createImageButton(token, android.R.drawable.ic_delete));
 
     //newRow.addView(createTokenField(token));
 
@@ -480,16 +486,16 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     tv.setHint(hint);
     return tv;
   }
-  private DelTokImageButton createImageButton(String name, int icon_id)
-  {
-    TableRow.LayoutParams llp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
-    llp.setMargins(0, 0, 2, 0);//2px right-margin
-    DelTokImageButton tv = new DelTokImageButton(name, context);
-    tv.setImageResource(icon_id);
-    tv.setPadding(0, 0, 4, 3);
-    tv.setOnClickListener(this);
-    return tv;
-  }
+  /* private DelTokImageButton createImageButton(String name, int icon_id)
+   {
+   TableRow.LayoutParams llp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
+   llp.setMargins(0, 0, 2, 0);//2px right-margin
+   DelTokImageButton tv = new DelTokImageButton(name, context);
+   tv.setImageResource(icon_id);
+   tv.setPadding(0, 0, 4, 3);
+   tv.setOnClickListener(this);
+   return tv;
+   }*/
 
 
   /**
@@ -521,36 +527,48 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
         buildTableView();
       } 
     }//if Button
-    else if (p1 instanceof DelTokImageButton)
+    /*else if (p1 instanceof DelTokImageButton)
+     {
+     DelTokImageButton tv = (DelTokImageButton) p1;
+     String token = tv.getToken();
+     if (token.contains(":"))
+     {
+     String[] pos = token.split(":");
+     token = pos[0];
+     try
+     {
+     int line = Integer.parseInt(pos[1]);
+     for (String lang: langList)
+     {
+     StringEntry aE = data.get(token, lang);
+     if (aE != null && aE instanceof ArrayEntry)
+     {
+     ArrayEntry rec = (ArrayEntry) aE;
+     rec.remove(line);
+     }
+     }
+     //Toast.makeText(context, "removed line  " + line + " of " + token, Toast.LENGTH_SHORT).show();
+     }//try
+     catch (NumberFormatException e)
+     {
+     Toast.makeText(context, "couldn't extract linenum out of  " + tv.getToken(), Toast.LENGTH_SHORT).show();
+     }//catch
+     }//if (token.contains(":"))
+     else deleteToken(tv.getToken());
+     buildTableView();
+     }//else if (p1 instanceof DelTokImageButton)
+     */
+    else if (p1 instanceof TextView)
     {
-      DelTokImageButton tv = (DelTokImageButton) p1;
-      String token = tv.getToken();
-      if (token.contains(":"))
-      {
-        String[] pos = token.split(":");
-        token = pos[0];
-        try
-        {
-          int line = Integer.parseInt(pos[1]);
-          for (String lang: langList)
-          {
-            StringEntry aE = data.get(token, lang);
-            if (aE != null && aE instanceof ArrayEntry)
-            {
-              ArrayEntry rec = (ArrayEntry) aE;
-              rec.remove(line);
-            }
-          }
-          //Toast.makeText(context, "removed line  " + line + " of " + token, Toast.LENGTH_SHORT).show();
-        }//try
-        catch (NumberFormatException e)
-        {
-          Toast.makeText(context, "couldn't extract linenum out of  " + tv.getToken(), Toast.LENGTH_SHORT).show();
-        }//catch
-      }//if (token.contains(":"))
-      else deleteToken(tv.getToken());
-      buildTableView();
-    }//else if (p1 instanceof DelTokImageButton)
+      //Toast.makeText(context, "hit token " + ((TextView)p1).getText(), Toast.LENGTH_SHORT).show();
+      String token = ((TextView)p1).getText().toString();
+      if(token == null || token.length()<= 0) token =  ((TextView)p1).getHint().toString();
+      DialogTokenMenu tokenActionDia = new DialogTokenMenu(getActivity(), p1, token);
+      tokenActionDia.setTokenDialogListener(this);
+      tokenActionDia.getMenuInflater().inflate(R.menu.token_menu, tokenActionDia.getMenu());
+      tokenActionDia.setOnMenuItemClickListener(tokenActionDia);
+      tokenActionDia.show();
+    }
   }//public void onClick(View p1)
 
   private void deleteToken(String token)
@@ -657,5 +675,51 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     buildTableView();
     //if(stringDataAdapter != null) stringDataAdapter.notifyDataSetChanged();
   }
+  public void onFinishTokenDialog(String token, String action)
+  {
+    //Toast.makeText(context, "Asked Token " + token + " mode= " + action, Toast.LENGTH_SHORT).show();
+    //Log.d(TAG,"Added Token, " + input.token +" val= "+input);
+    //data.set(input.token, "default", input);
+    switch (action)
+    {
+      case "delete": 
+
+        if (token.contains(":"))
+        {
+          String[] pos = token.split(":");
+          token = pos[0];
+          try
+          {
+            int line = Integer.parseInt(pos[1]);
+            for (String lang: langList)
+            {
+              StringEntry aE = data.get(token, lang);
+              if (aE != null && aE instanceof ArrayEntry)
+              {
+                ArrayEntry rec = (ArrayEntry) aE;
+                rec.remove(line);
+              }
+            }
+            //Toast.makeText(context, "removed line  " + line + " of " + token, Toast.LENGTH_SHORT).show();
+          }//try
+          catch (NumberFormatException e)
+          {
+            Toast.makeText(context, "couldn't extract linenum out of  " + token, Toast.LENGTH_SHORT).show();
+          }//catch
+        }//if (token.contains(":"))
+        else deleteToken(token);
+        break;
+      case "rename":
+        Toast.makeText(context, "rename of "+token+" not yet supported  ", Toast.LENGTH_SHORT).show();
+        break;
+      case "copy":
+        Toast.makeText(context, "copy  "+token+" not yet supported  ", Toast.LENGTH_SHORT).show();
+        break;
+    }//    switch (action)
+
+
+    buildTableView();
+
+  }//public void onFinishTokenDialog(String inputText)
 
 }//class
