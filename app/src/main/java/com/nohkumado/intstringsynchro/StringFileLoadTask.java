@@ -9,38 +9,41 @@ import org.xmlpull.v1.*;
  * @author Noh Kuma Do <nohkumado at gmail dot com>
  * @licence GLP v3
  * @version  "%I%, %G%",
- * 
+ *
+ * AsyncTask to Load the ressource files without impacting the UI-thread 
  */
-
 public class StringFileLoadTask extends AsyncTask<StringFile,Integer,Void>
 {
-  //protected HashMap<String, ArrayList<StringEntry>> rest;
+  /** the table data */
   protected TreeMapTable<String,StringEntry> data;
-  
+  /** the context */
   protected MainActivity context;
-
+  /** needed for Log.d */
   public static final String TAG = "SFL";
-
+  /**
+   * CTOR
+   */
   public StringFileLoadTask(TreeMapTable<String,StringEntry> data, MainActivity context)
   {
     this.data = data;
     this.context = context;
-    
-  }
 
+  }//CTOR
+  /**
+   * the worker thread code
+   */
   @Override
   protected Void doInBackground(StringFile[] p1)
   {
-    for (StringFile aFile: p1)
-    {
-      loadStringsXmlFile(aFile);
-    }
+    for (StringFile aFile: p1) loadStringsXmlFile(aFile);
     return null;
-  }
-
+  }//protected Void doInBackground(StringFile[] p1)
+  /**
+   * load one xml file and parse it
+   */
   protected void loadStringsXmlFile(StringFile aFile)
   {
-    Log.d(TAG,"loading "+aFile.getAbsolutePath());
+    Log.d(TAG, "loading " + aFile.getAbsolutePath());
     String langTok = aFile.lang();
     ArrayList<StringEntry> entries = new ArrayList<>(); 
     //XmlPullParser parser =  Xml.newPullParser();
@@ -50,7 +53,7 @@ public class StringFileLoadTask extends AsyncTask<StringFile,Integer,Void>
     {
       stream = new FileInputStream(aFile);
       entries = parser.parse(stream);
-    }
+    }//try
     catch (XmlPullParserException e)
     {}
     catch (IOException e)
@@ -64,22 +67,20 @@ public class StringFileLoadTask extends AsyncTask<StringFile,Integer,Void>
         try
         {
           stream.close();
-        }
+        }//try
         catch (IOException e)
         {}
-      }
-    }
+      }//if (stream != null)
+    }//finally
     for (StringEntry anEntry: entries) data.set(anEntry.token, langTok, anEntry);
-
-    //if(stringDataAdapter != null) stringDataAdapter.notifyDataSetChanged();
-  }
-
+  }//protected void loadStringsXmlFile(StringFile aFile)
+  /** 
+   * finished, time to call the callback
+   */
   @Override
   protected void onPostExecute(Void result)
   {
     super.onPostExecute(result);
     context.buildTableView();
-  }//List<StringEntry> loadStringsXmlFile(String aFile)
-
-
-}//class StringFileLoadTask
+  }//protected void onPostExecute(Void result)
+}//public class StringFileLoadTask extends AsyncTask<StringFile,Integer,Void>
