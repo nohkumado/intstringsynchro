@@ -1,6 +1,12 @@
 package com.nohkumado.intstringsynchro;
 import java.io.*;
 import java.net.*;
+/**
+ * @author Noh Kuma Do <nohkumado at gmail dot com>
+ * @licence GLP v3
+ * @version  "%I%, %G%",
+ * 
+ */
 
 public class StringFile extends File
 {

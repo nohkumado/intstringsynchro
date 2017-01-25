@@ -2,6 +2,11 @@ package com.nohkumado.intstringsynchro;
 
 import java.util.*;
 /**
+ * @author Noh Kuma Do <nohkumado at gmail dot com>
+ * @licence GLP v3
+ * @version  "%I%, %G%",
+ * 
+ 
  Representation of a string ressource of type array 
 
  example 

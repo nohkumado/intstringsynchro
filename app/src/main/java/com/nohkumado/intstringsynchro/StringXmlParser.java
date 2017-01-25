@@ -5,6 +5,12 @@ import java.io.*;
 import java.util.*;
 import org.xmlpull.v1.*;
 import org.apache.http.entity.*;
+/**
+ * @author Noh Kuma Do <nohkumado at gmail dot com>
+ * @licence GLP v3
+ * @version  "%I%, %G%",
+ * 
+ */
 
 public class StringXmlParser
 {

@@ -5,6 +5,12 @@ import android.util.*;
 import android.widget.*;
 import com.nohkumado.nohutils.collection.*;
 import java.io.*;
+/**
+ * @author Noh Kuma Do <nohkumado at gmail dot com>
+ * @licence GLP v3
+ * @version  "%I%, %G%",
+ * 
+ */
 
 public class SaveStringXmlTask extends AsyncTask<String,Integer,Void>
 {

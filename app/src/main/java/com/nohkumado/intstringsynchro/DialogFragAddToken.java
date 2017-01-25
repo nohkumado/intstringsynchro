@@ -8,6 +8,12 @@ import android.view.inputmethod.*;
 import android.widget.*;
 import android.widget.TextView.*;
 
+/**
+ * @author Noh Kuma Do <nohkumado at gmail dot com>
+ * @licence GLP v3
+ * @version  "%I%, %G%",
+ * 
+ */
 public class DialogFragAddToken  extends DialogFragment implements OnEditorActionListener
 {
 

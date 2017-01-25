@@ -2,7 +2,12 @@ package com.nohkumado.intstringsynchro;
 import android.content.*;
 import android.widget.*;
 import android.util.*;
-
+/**
+ * @author Noh Kuma Do <nohkumado at gmail dot com>
+ * @licence GLP v3
+ * @version  "%I%, %G%",
+ * 
+*/
 public class IntStringReceiver extends BroadcastReceiver
 {
   public static final String TAG = "Receiver";

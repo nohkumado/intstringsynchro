@@ -15,6 +15,12 @@ import java.util.*;
 
 
 import android.view.View.OnClickListener;
+/**
+ * @author Noh Kuma Do <nohkumado at gmail dot com>
+ * @licence GLP v3
+ * @version  "%I%, %G%",
+ * 
+ */
 
 public class StringXmlTableFrag extends Fragment implements OnEditorActionListener, OnClickListener,
 DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListener, DialogTokenMenu.TokenDialogListener

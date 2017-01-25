@@ -21,7 +21,12 @@ import java.util.regex.*;
 import org.xmlpull.v1.*;
 
 import android.view.View.OnClickListener;
-
+/**
+ * @author Noh Kuma Do <nohkumado at gmail dot com>
+ * @licence GLP v3
+ * @version  "%I%, %G%",
+ * 
+ */
 public class MainActivity extends Activity implements OnClickListener, 
 DialogSelectionListener//, OnEditorActionListener
 {

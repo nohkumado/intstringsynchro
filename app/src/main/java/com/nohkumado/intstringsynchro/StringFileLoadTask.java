@@ -5,6 +5,12 @@ import com.nohkumado.nohutils.collection.*;
 import java.io.*;
 import java.util.*;
 import org.xmlpull.v1.*;
+/**
+ * @author Noh Kuma Do <nohkumado at gmail dot com>
+ * @licence GLP v3
+ * @version  "%I%, %G%",
+ * 
+ */
 
 public class StringFileLoadTask extends AsyncTask<StringFile,Integer,Void>
 {

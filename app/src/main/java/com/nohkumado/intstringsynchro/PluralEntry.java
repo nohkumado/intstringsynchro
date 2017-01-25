@@ -2,6 +2,12 @@ package com.nohkumado.intstringsynchro;
 
 import android.util.*;
 import java.util.*;
+/**
+ * @author Noh Kuma Do <nohkumado at gmail dot com>
+ * @licence GLP v3
+ * @version  "%I%, %G%",
+ * 
+ */
 
 public class PluralEntry extends StringEntry
 {

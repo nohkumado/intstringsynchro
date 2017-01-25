@@ -4,7 +4,12 @@ import android.content.*;
 import android.os.*;
 import android.view.*;
 import android.widget.*;
-
+/**
+ * @author Noh Kuma Do <nohkumado at gmail dot com>
+ * @licence GLP v3
+ * @version  "%I%, %G%",
+ * 
+*/
 public class DialogTokenMenu extends PopupMenu implements PopupMenu.OnMenuItemClickListener
 {
 

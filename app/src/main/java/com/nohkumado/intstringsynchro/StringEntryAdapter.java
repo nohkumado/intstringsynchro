@@ -5,6 +5,12 @@ import android.util.*;
 import android.view.*;
 import android.widget.*;
 import com.nohkumado.nohutils.collection.*;
+/**
+ * @author Noh Kuma Do <nohkumado at gmail dot com>
+ * @licence GLP v3
+ * @version  "%I%, %G%",
+ * 
+ */
 
 public class StringEntryAdapter extends BaseAdapter
 {
