@@ -7,41 +7,43 @@ import java.util.*;
  * @licence GLP v3
  * @version  "%I%, %G%",
  * 
+ * code representation of the string ressource plural
  */
-
 public class PluralEntry extends StringEntry
 {
-  private static final String TAG="Plur";
-  protected HashMap<String,StringEntry> hashmap;
-
+  private static final String TAG="Plur"; /** needed for Log.d */
+  protected HashMap<String,StringEntry> hashmap; /** the map for the different plural strings */
+/** CTOR */
   public PluralEntry(String n)
   {
     this(n, null);
-  }
+  }//public PluralEntry(String n)
+  /** CTOR */
   public PluralEntry(String n, HashMap<String,StringEntry> a)
   {
     super(n, "");
     if(a != null) hashmap = a;
     else hashmap = new HashMap<>();
-  }
+  }//public PluralEntry(String n, HashMap<String,StringEntry> a)
+  /**
+  * make a string representation, for pretty printing
+  */
   @Override
   public String toString()
   {
     StringBuilder  sb = new StringBuilder();
     sb.append("Plural[").append(token).append("]");
-      
     if (hashmap != null) sb.append(hashmap.toString());
-
     return sb.toString();
-  }
+  }//public String toString()
   /**
+  * create the xml representation, the stuff needed to write into strings.xml
    example 
    <plurals name="numberOfSongsAvailable">
    <item quantity="one">Znaleziono %d piosenkę.</item>
    <item quantity="few">Znaleziono %d piosenki.</item>
    <item quantity="other">Znaleziono %d piosenek.</item>
    </plurals>
-
    */
   public String toXml(String indent)
   {
@@ -51,5 +53,5 @@ public class PluralEntry extends StringEntry
       sb.append(indent).append(indent).append("<item quantity=\"").append(quant).append("\">").append(hashmap.get(quant).text).append("</item>\n");
     sb.append(indent).append("</plurals>\n");
     return sb.toString();
-  }
-}
+  }//public String toXml(String indent)
+}//public class PluralEntry extends StringEntry
