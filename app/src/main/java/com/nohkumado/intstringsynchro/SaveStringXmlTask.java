@@ -9,31 +9,33 @@ import java.io.*;
  * @author Noh Kuma Do <nohkumado at gmail dot com>
  * @licence GLP v3
  * @version  "%I%, %G%",
- * 
+ *
+ * the class that saves the table data into the different ressource files 
+ * asynctask as to not inpound I/O onto the main UI thread...
  */
-
 public class SaveStringXmlTask extends AsyncTask<String,Integer,Void>
 {
-  private static final String TAG="SaveF";
+  private static final String TAG="SaveF"; /** needed for Log.d */
 
-  protected TreeMapTable<String,StringEntry> data;
-  protected MainActivity context;
-  String savePath;
-
-  public SaveStringXmlTask(TreeMapTable<String,StringEntry> rest, 
-                            MainActivity context, String path)
+  protected TreeMapTable<String,StringEntry> data; /** the tabular data */
+  protected MainActivity context; /** callback */
+  String savePath; /** the path to save to */
+  /** CTOR */
+  public SaveStringXmlTask(TreeMapTable<String,StringEntry> rest, MainActivity context, String path)
   {
     this.data = rest;
     this.context = context;
     savePath = path;
-  }
-
+  }//public SaveStringXmlTask(TreeMapTable<String,StringEntry> rest, MainActivity context, String path)
+  /**
+   * the worker thread
+   */
   @Override
   protected Void doInBackground(String[] p1)
   {
     boolean result = true;
     StringBuilder sb ;
-    if(savePath == null || savePath.length() <= 0) savePath = context.getProjectPath(); 
+    if (savePath == null || savePath.length() <= 0) savePath = context.getProjectPath(); 
     for (String lang : p1)
     {
       //Log.d(TAG, "printing for lang : " + lang);
@@ -44,23 +46,15 @@ public class SaveStringXmlTask extends AsyncTask<String,Integer,Void>
       {
         StringEntry msg = data.get(token, lang);
         if (msg != null) sb.append(msg.toXml(indent));  
-      }
-//      ArrayList<StringEntry> otherStrucs = rest.get(lang);
-//      if (otherStrucs != null)
-//      {
-//        for (StringEntry record : otherStrucs)
-//        {
-//          sb.append(record.toXml(indent));  
-//        }  
-//      }
+      }//for (String token : data)
       sb.append("</resources>");
 
       File saveFile;
-      if(lang.equals("default")) saveFile = new File(savePath, "values/strings.xml");
+      if (lang.equals("default")) saveFile = new File(savePath, "values/strings.xml");
       else saveFile = new File(savePath, "values-" + lang + "/strings.xml");
-      Log.d(TAG,"saveFile = "+saveFile.getAbsolutePath());
+      Log.d(TAG, "saveFile = " + saveFile.getAbsolutePath());
       saveFile.mkdirs();
-      
+
       //File saveFile = new File(context.getExternalFilesDir(null), "strings-" + lang + ".xml");
       try
       {
@@ -69,7 +63,7 @@ public class SaveStringXmlTask extends AsyncTask<String,Integer,Void>
         os.write(sb.toString());
         os.close();
         //Log.d(TAG,"wroten file "+saveFile);
-      }
+      }//try
       catch (FileNotFoundException e)
       {
         Log.e(TAG, "file not found :" + e);
@@ -77,21 +71,17 @@ public class SaveStringXmlTask extends AsyncTask<String,Integer,Void>
       catch (IOException f)
       {
         Log.e(TAG, "IO ex :" + f);
-      }
-      //Log.d(TAG, "done writing ");
-
-
-    }
+      }//catch (IOException f)
+    }//for (String lang : p1)
     return null;
   }//save
-
+  /**
+   * the worker thread finished, now lets call the callback
+   */
   @Override
   protected void onPostExecute(Void result)
   {
     super.onPostExecute(result);
     context.filesSaved();
-    
-  }//List<StringEntry> loadStringsXmlFile(String aFile)
-
-
+  }//protected void onPostExecute(Void result)
 }//class StringFileLoadTask
