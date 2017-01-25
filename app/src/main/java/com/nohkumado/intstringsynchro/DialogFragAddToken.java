@@ -12,31 +12,37 @@ import android.widget.TextView.*;
  * @author Noh Kuma Do <nohkumado at gmail dot com>
  * @licence GLP v3
  * @version  "%I%, %G%",
- * 
+ *
+ * dialog to add a new token 
  */
 public class DialogFragAddToken  extends DialogFragment implements OnEditorActionListener
 {
-
+  /** the spinner of the type of token to add */
   private Spinner spinner;
   /**
-  * an interface to be able to pass back the data
-  */
+   * an interface to be able to pass back the data
+   */
   public interface AddTokenDialogListener
   {
     void onFinishAddTokenDialog(StringEntry input);
-  }
-  
-  public static final String TAG = "TokFrag";
+  }//public interface AddTokenDialogListener
 
-  private DialogFragAddToken.AddTokenDialogListener listener;
- 
-  private EditText mEditText,dEditText;
+  public static final String TAG = "TokFrag";/** log d necessity */
 
+  private DialogFragAddToken.AddTokenDialogListener listener; /** the callback */
+
+  private EditText mEditText,dEditText; /** token field, default value field */
+  /**
+   * CTOR
+   * Empty constructor required for DialogFragment
+   */
   public DialogFragAddToken()
   {
-    // Empty constructor required for DialogFragment
+    // 
   }
-
+  /**
+   * create view
+   */
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState)
@@ -54,7 +60,9 @@ public class DialogFragAddToken  extends DialogFragment implements OnEditorActio
     spinner = (Spinner) view.findViewById(R.id.type_spin);    
     return view;
   }//createView
-
+  /**
+   * catch the enter key hits on the edittext
+   */
   @Override
   public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
   {
@@ -63,7 +71,7 @@ public class DialogFragAddToken  extends DialogFragment implements OnEditorActio
     {
       // Return input text to activity
       //AddTokenDialogListener activity = (AddTokenDialogListener) getActivity();
-      if(listener != null)
+      if (listener != null)
       {
         StringEntry input = null;
         switch (spinner.getSelectedItemPosition())
@@ -75,25 +83,26 @@ public class DialogFragAddToken  extends DialogFragment implements OnEditorActio
           case 2:
             input = new PluralEntry(mEditText.getText().toString().trim());
             break;
-            default:
-            Log.e(TAG,"spinner has unknown case: "+spinner.getSelectedItemPosition());
+          default:
+            Log.e(TAG, "spinner has unknown case: " + spinner.getSelectedItemPosition());
           case 0:
-            input = new StringEntry(mEditText.getText().toString().trim(),dEditText.getText().toString().trim());
+            input = new StringEntry(mEditText.getText().toString().trim(), dEditText.getText().toString().trim());
             break;
-            
-        }
-         
+        }//switch (spinner.getSelectedItemPosition())
+
         listener.onFinishAddTokenDialog(input);
-        
-      }
+      }//if (listener != null)
+
       this.dismiss();
       return true;
-    }
+    }//if (EditorInfo.IME_ACTION_DONE == actionId || (event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER))
     return false;
-  }
-  
+  }//public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
+  /**
+   * add the listener
+   */
   public void setAddTokenDialogListener(AddTokenDialogListener listCand)
   {
     listener = listCand;
-  }
-}
+  }//public void setAddTokenDialogListener(AddTokenDialogListener listCand)
+}//public class DialogFragAddToken  extends DialogFragment implements OnEditorActionListener
