@@ -1,42 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="aaaaa">
-        <item>gnm</item>
-        <item>pff</item>
-    </string-array>
-    <string name="actual_language">Actual</string>
-    <string name="token_delete">delete</string>
-    <string name="token_copy">copy</string>
-    <string name="token_rename">rename</string>
-    <string name="token_cancel">cancel</string>
-    <string name="add_lang">Add Lang</string>
-    <string name="add_project">Add Project</string>
-    <string name="add_tok">Add Token</string>
-    <string name="app_name">IntStringSynchro</string>
-    <string name="choose_type">Choose ressource type</string>
-    <string name="def_val">default value</string>
-    <string name="fallback">default</string>
-    <string name="files_loaded">files loaded</string>
-    <string name="files_saved">files saved</string>
-    <string name="missing_mode">missing mode, allowed: add, del, list,edit</string>
-    <string name="missing_path">give a path to the string ressources to be modified</string>
-    <string name="missing_token">missing token, specify a international string name</string>
-    <string name="missing_value">missing (default) value</string>
-    <string name="missing_xml">string.xml not found, specify the res directory, without values or string.xml</string>
-    <string name="mode_unknown">unknown mode, allowed: add, del, list,edit</string>
-    <string name="none">none</string>
-    <plurals name="numberOfSongsAvailable">
-        <item quantity="few">%d songs avaiable.</item>
-        <item quantity="one">One Song available.</item>
-        <item quantity="zero">No Songs available</item>
-        <item quantity="other">%d songs available.</item>
-    </plurals>
-    <string name="open_stringxml">open a string.xml file of a project</string>
-    <string name="stored_langs">pre-loaded</string>
-    <string-array name="string_res_type_array">
-        <item>string</item>
-        <item>array</item>
-        <item>plural</item>
-    </string-array>
-    <string name="table_tok">Token / langs</string>
+   <string name="actual_language">Actual</string>
+   <string name="add_lang">Add Lang</string>
+   <string name="add_project">Add Project</string>
+   <string name="add_tok">Add Token</string>
+   <string name="app_name">IntStringSynchro</string>
+   <string name="choose_type">Choose ressource type</string>
+   <string name="def_val">default value</string>
+   <string name="fallback">default</string>
+   <string name="files_loaded">files loaded</string>
+   <string name="files_saved">files saved</string>
+   <string name="missing_mode">missing mode, allowed: add, del, list,edit</string>
+   <string name="missing_path">give a path to the string ressources to be modified</string>
+   <string name="missing_token">missing token, specify a international string name</string>
+   <string name="missing_value">missing (default) value</string>
+   <string name="missing_xml">string.xml not found, specify the res directory, without values or string.xml</string>
+   <string name="mode_unknown">unknown mode, allowed: add, del, list,edit</string>
+   <string name="none">none</string>
+   <plurals name="numberOfSongsAvailable">
+      <item quantity="few">%d songs avaiable.</item>
+      <item quantity="one">One Song available.</item>
+      <item quantity="other">%d songs available.</item>
+      <item quantity="zero">No Songs available</item>
+   </plurals>
+   <string name="open_stringxml">open a string.xml file of a project</string>
+   <string name="stored_langs">pre-loaded</string>
+   <string-array name="string_res_type_array">
+      <item>string</item>
+      <item>array</item>
+      <item>plural</item>
+   </string-array>
+   <string name="table_tok">Token / langs</string>
+   <string name="token_cancel">cancel</string>
+   <string name="token_copy">copy</string>
+   <string name="token_delete">delete</string>
+   <string name="token_rename">rename</string>
 </resources>

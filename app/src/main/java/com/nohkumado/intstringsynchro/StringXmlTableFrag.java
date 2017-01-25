@@ -210,8 +210,20 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
    * @param hint
    * @return the build up text view
    */
-  private EditText createEditView(TableRow.LayoutParams llp, String someContent, String hintTxt)
+  private TextView createEditView(TableRow.LayoutParams llp, String someContent, String hintTxt)
   {
+    /*
+     TextView tv = new TextView(context);
+     tv.setLayoutParams(llp);
+     tv.setText(someContent);
+     tv.setBackground(getResources().getDrawable(R.drawable.border));
+     tv.setPadding(0, 0, 4, 3);
+     tv.setHint(hintTxt);
+     tv.setOnClickListener(this);
+     tv.setSingleLine(false);
+     tv.setWidth(0);
+     */
+
     EditText tv = new EditText(context);
     tv.setLayoutParams(llp);
     tv.setText(someContent);
@@ -219,10 +231,12 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     tv.setPadding(0, 0, 4, 3);
     tv.setHint(hintTxt);
     tv.setSingleLine(false);
+    tv.setWidth(0);
     //tv.setInputType(EditText.
     //tv.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
     tv.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
     tv.setOnEditorActionListener(this);
+
     return tv;
   }//createEditView
   /**
@@ -309,7 +323,8 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     TableRow newRow = new TableRow(context);
     newRow.setBackground(context.getDrawable(R.drawable.border));
 
-    TableRow.LayoutParams llp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT);
+    TableRow.LayoutParams llp = new TableRow.LayoutParams(
+      TableRow.LayoutParams.WRAP_CONTENT, TableRow.LayoutParams.WRAP_CONTENT, 1f);
     llp.setMargins(0, 0, 2, 0);//2px right-margin
     String[] quant = new String[] {"zero","one","two","few","many","other"};
 
@@ -334,7 +349,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
       newRow.setBackground(context.getDrawable(R.drawable.border));
       newRow.setBackgroundColor(Color.parseColor("#b7eeff"));
       newRow.setLayoutParams(llp);
-      newRow.addView(createTextView(llp, "", ""));//del but
+      //newRow.addView(createTextView(llp, "", ""));//del but
       TextView tv = createTextView(llp, quantity, "");//token but
       tv.setGravity(Gravity.RIGHT);
       newRow.addView(tv);
@@ -406,7 +421,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
       TextView tv;
       if (line == 0)
         tv = createTextView(llp, token, "token");
-      else tv = createTextView(llp, "", token+":"+line);
+      else tv = createTextView(llp, "", "token:" + token + ":" + line);
       newRow.addView(tv);
 
       for (String lang : langList)
@@ -561,14 +576,27 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     else if (p1 instanceof TextView)
     {
       //Toast.makeText(context, "hit token " + ((TextView)p1).getText(), Toast.LENGTH_SHORT).show();
-      String token = ((TextView)p1).getText().toString();
-      if(token == null || token.length()<= 0) token =  ((TextView)p1).getHint().toString();
-      DialogTokenMenu tokenActionDia = new DialogTokenMenu(getActivity(), p1, token);
-      tokenActionDia.setTokenDialogListener(this);
-      tokenActionDia.getMenuInflater().inflate(R.menu.token_menu, tokenActionDia.getMenu());
-      tokenActionDia.setOnMenuItemClickListener(tokenActionDia);
-      tokenActionDia.show();
-    }
+      if ("token".equals(((TextView)p1).getHint().toString()))
+      {
+        String token = ((TextView)p1).getText().toString();
+        if (token == null || token.length() <= 0) token =  ((TextView)p1).getHint().toString();
+        Toast.makeText(context, "hit token " + token, Toast.LENGTH_SHORT).show();
+
+        DialogTokenMenu tokenActionDia = new DialogTokenMenu(getActivity(), p1, token);
+        tokenActionDia.setTokenDialogListener(this);
+        tokenActionDia.getMenuInflater().inflate(R.menu.token_menu, tokenActionDia.getMenu());
+        tokenActionDia.setOnMenuItemClickListener(tokenActionDia);
+        tokenActionDia.show();
+      }
+      else
+      {
+        String token = ((TextView)p1).getText().toString();
+        Toast.makeText(context, "hit text " + token, Toast.LENGTH_SHORT).show();
+
+      }//else
+
+    }//else if (p1 instanceof TextView)
+
   }//public void onClick(View p1)
 
   private void deleteToken(String token)
@@ -710,10 +738,10 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
         else deleteToken(token);
         break;
       case "rename":
-        Toast.makeText(context, "rename of "+token+" not yet supported  ", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "rename of " + token + " not yet supported  ", Toast.LENGTH_SHORT).show();
         break;
       case "copy":
-        Toast.makeText(context, "copy  "+token+" not yet supported  ", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "copy  " + token + " not yet supported  ", Toast.LENGTH_SHORT).show();
         break;
     }//    switch (action)
 
