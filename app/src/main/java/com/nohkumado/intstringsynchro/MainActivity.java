@@ -115,6 +115,8 @@ DialogSelectionListener//, OnEditorActionListener
     // Figure out what to do based on the intent type
     if (!intent.getAction().equals(Intent.ACTION_MAIN))
     {
+      Toast.makeText(this, "headless mode " + intent + " of action " + intent.getAction() + " of type " + intent.getType(), Toast.LENGTH_LONG).show();
+      
         data = new TreeMapTable<>(); //headless mode!! 
         langList = new ArrayList<>();
       //Log.d(TAG,"got called by an intent");
@@ -125,7 +127,7 @@ DialogSelectionListener//, OnEditorActionListener
       ArrayList<Integer> error_codes = new ArrayList<>();
 
       //Log.d(TAG, "received intent " + intent + " of action " + intent.getAction() + " of type " + intent.getType()+" "+intent.getExtras());
-      //Toast.makeText(this, "received intent " + intent + " of action " + intent.getAction() + " of type " + intent.getType(), Toast.LENGTH_LONG).show();
+      Toast.makeText(this, "received intent " + intent + " of action " + intent.getAction() + " of type " + intent.getType(), Toast.LENGTH_LONG).show();
       //check validity of send data
       Bundle args = intent.getExtras();
       
@@ -179,7 +181,8 @@ DialogSelectionListener//, OnEditorActionListener
       }//if (error_codes.size() > 0)
     }//if (intent != null && !intent.getAction().equals(Intent.ACTION_MAIN))  
     //else Log.d(TAG, "got called standalone ");
-
+    else  Toast.makeText(this, "called from launcher " + intent + " of action " + intent.getAction() + " of type " + intent.getType(), Toast.LENGTH_LONG).show();
+    
     // find the retained fragment on activity restarts
     FragmentManager fm = getFragmentManager();
     tokenTable = (StringXmlTableFrag) fm.findFragmentByTag("data");
@@ -283,7 +286,7 @@ DialogSelectionListener//, OnEditorActionListener
 
   private void bailOut(Intent returnInt, ArrayList<Integer> error_codes, ArrayList<String> sb)
   {
-    Toast.makeText(this, "we have errors, bailing out", Toast.LENGTH_LONG).show();
+    Toast.makeText(this, "we have errors, bailing out :"+sb, Toast.LENGTH_LONG).show();
 
     returnInt.setAction(ERROR);
     returnInt.putExtra("codes", error_codes);

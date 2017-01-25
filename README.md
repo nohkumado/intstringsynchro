@@ -2,19 +2,20 @@
 A small android helper to keep the string.xml ressources in sync 
 between translations
 
-at the moment i found 2 projects that try to chaieve this, but both are 
+at the moment i found 2 projects that try to achieve this, but both are 
 directed to commercial translators, who want to translate the stuff 
 that wasn't translated, want time accounting and that sort of stuff...
 
 as a dev, i just want a table with the available tokens and see where a
 translation is missing...
 
-just starting BTW...
-
 thanks to https://android-arsenal.com/details/1/3950 for the diretory picker
+it is buggy, since it can't backnavigate once a path was given, but it works reasonably well
 
 BTW to validate a field you have to hit the enter key, otherwise the input is not taken, even if it is still written there
 its a "feature" at least on my kbd the IME_ACTION_DONE is not triggered when i hit the TAB key...
+You are responsible on what you write into, NO CHECKING on the data is done, so beware!!
+
 
 # include it into your own code
 
@@ -30,7 +31,7 @@ protected StringXmlTableFrag tokenTable;
 
 an in MainActivity create do:
 
-   // find the retained fragment on activity restarts
+    // find the retained fragment on activity restarts
     FragmentManager fm = getFragmentManager();
     tokenTable = (StringXmlTableFrag) fm.findFragmentByTag("data");
     // create the fragment and data the first time
@@ -63,6 +64,10 @@ an in MainActivity create do:
     //intent.putExtra("mode", "del");
     //intent.putExtra("token", "testit");
     
+    
+at the moment it is possible to call the app that way, the add and rm work, but my tester never got 
+neither the error messages nor the result intent, so if anyone spots whats going wrong here....  
+the test project:  
 
     package com.nohkumado.istester;
 

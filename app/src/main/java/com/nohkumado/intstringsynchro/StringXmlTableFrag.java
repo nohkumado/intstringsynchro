@@ -13,6 +13,7 @@ import android.widget.TextView.*;
 import com.nohkumado.nohutils.collection.*;
 import java.util.*;
 
+
 import android.view.View.OnClickListener;
 
 public class StringXmlTableFrag extends Fragment implements OnEditorActionListener, OnClickListener,
@@ -257,8 +258,8 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     {
       String posHint = v.getHint().toString().trim();
       String[] pos = posHint.split(":");
-      Log.d(TAG, "change[" + pos[0] + ":" + pos[1] + "] text " + content);
-      Toast.makeText(context, "change[" + pos[0] + ":" + pos[1] + "] text " + content, Toast.LENGTH_SHORT).show();
+      //Log.d(TAG, "change[" + pos[0] + ":" + pos[1] + "] text " + content);
+      //Toast.makeText(context, "change[" + pos[0] + ":" + pos[1] + "] text " + content, Toast.LENGTH_SHORT).show();
 
       if (pos.length == 2)
       {
@@ -282,7 +283,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
             data.set(token, lang, aEntry);
           }
           aEntry.set(num, v.getText().toString().trim());
-          Toast.makeText(context, "setting on  " + aEntry + " " + num + " to " + content, Toast.LENGTH_SHORT).show();
+          //Toast.makeText(context, "setting on  " + aEntry + " " + num + " to " + content, Toast.LENGTH_SHORT).show();
           buildTableView();
 
           /*int diff = num - aEntry.array.size();
@@ -580,7 +581,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
       {
         String token = ((TextView)p1).getText().toString();
         if (token == null || token.length() <= 0) token =  ((TextView)p1).getHint().toString();
-        Toast.makeText(context, "hit token " + token, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(context, "hit token " + token, Toast.LENGTH_SHORT).show();
 
         DialogTokenMenu tokenActionDia = new DialogTokenMenu(getActivity(), p1, token);
         tokenActionDia.setTokenDialogListener(this);
@@ -590,8 +591,8 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
       }
       else
       {
-        String token = ((TextView)p1).getText().toString();
-        Toast.makeText(context, "hit text " + token, Toast.LENGTH_SHORT).show();
+        //String token = ((TextView)p1).getText().toString();
+        //Toast.makeText(context, "hit text " + token, Toast.LENGTH_SHORT).show();
 
       }//else
 

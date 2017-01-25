@@ -20,8 +20,8 @@
    <plurals name="numberOfSongsAvailable">
       <item quantity="few">%d songs avaiable.</item>
       <item quantity="one">One Song available.</item>
-      <item quantity="other">%d songs available.</item>
       <item quantity="zero">No Songs available</item>
+      <item quantity="other">%d songs available.</item>
    </plurals>
    <string name="open_stringxml">open a string.xml file of a project</string>
    <string name="stored_langs">pre-loaded</string>
