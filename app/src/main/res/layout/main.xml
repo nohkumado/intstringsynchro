@@ -47,12 +47,19 @@
 			android:layout_width="wrap_content"
         android:src="@android:drawable/arrow_up_float"
 			android:id="@+id/moveUpBut"/>
-      <ImageButton
+     
+  <ImageButton
           android:layout_height="wrap_content"
           android:layout_width="wrap_content"
           android:src="@android:drawable/ic_menu_save"
           android:id="@+id/saveBut"/>
-      
+ 
+      <ImageButton
+          android:layout_height="wrap_content"
+          android:layout_width="wrap_content"
+          android:src="@drawable/ic_help_white_24dp"
+          android:id="@+id/helpBut"/>
+            
 	</LinearLayout>
 
 	<TableLayout

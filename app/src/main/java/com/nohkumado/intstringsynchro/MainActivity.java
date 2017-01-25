@@ -27,7 +27,7 @@ DialogSelectionListener//, OnEditorActionListener
 {
   //protected Spinner langSpin;
   protected Button openProject;//addLang, addToken, 
-  protected ImageButton moveUpBut,saveBut;
+  protected ImageButton moveUpBut,saveBut, helpBut;
 
   protected ArrayList<String> langList;
   protected TreeMapTable<String,StringEntry> data;
@@ -66,10 +66,10 @@ DialogSelectionListener//, OnEditorActionListener
   public final String ERROR = "com.nohkumado.intstringsynchro.ERROR";
   public final String ACTION = "com.nohkumado.intstringsynchro.ACTION";
 
+  private static final String manualUrl = "https://sites.google.com/site/nohkumado/home/projects/intstringsynchro";
 
   public MainActivity()
   {
-
   }
 
 
@@ -233,6 +233,11 @@ DialogSelectionListener//, OnEditorActionListener
 
     saveBut = (ImageButton) findViewById(R.id.saveBut);
     saveBut.setOnClickListener(this);
+    
+    helpBut = (ImageButton) findViewById(R.id.helpBut);
+    helpBut.setOnClickListener(this);
+
+    
     //tokenList = new ArrayList<>();
     //tokenTable = (ListView) findViewById(R.id.stringListView);
     //tokenTable = (TableLayout) findViewById(R.id.table);
@@ -470,6 +475,12 @@ DialogSelectionListener//, OnEditorActionListener
     {
       saveFiles();
     }
+    else if (p1 == helpBut)
+    {
+      Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(manualUrl));
+      startActivity(browserIntent);
+    }
+    
 
 
   }//public void onClick(View p1)
