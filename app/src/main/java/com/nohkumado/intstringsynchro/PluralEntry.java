@@ -13,7 +13,7 @@ public class PluralEntry extends StringEntry
 {
   private static final String TAG="Plur"; /** needed for Log.d */
   protected HashMap<String,StringEntry> hashmap; /** the map for the different plural strings */
-/** CTOR */
+  /** CTOR */
   public PluralEntry(String n)
   {
     this(n, null);
@@ -22,12 +22,12 @@ public class PluralEntry extends StringEntry
   public PluralEntry(String n, HashMap<String,StringEntry> a)
   {
     super(n, "");
-    if(a != null) hashmap = a;
+    if (a != null) hashmap = a;
     else hashmap = new HashMap<>();
   }//public PluralEntry(String n, HashMap<String,StringEntry> a)
   /**
-  * make a string representation, for pretty printing
-  */
+   * make a string representation, for pretty printing
+   */
   @Override
   public String toString()
   {
@@ -37,7 +37,7 @@ public class PluralEntry extends StringEntry
     return sb.toString();
   }//public String toString()
   /**
-  * create the xml representation, the stuff needed to write into strings.xml
+   * create the xml representation, the stuff needed to write into strings.xml
    example 
    <plurals name="numberOfSongsAvailable">
    <item quantity="one">Znaleziono %d piosenkę.</item>
