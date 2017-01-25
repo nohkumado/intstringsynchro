@@ -6,15 +6,19 @@ import java.util.regex.*;
  * @licence GLP v3
  * @version  "%I%, %G%",
  * 
+ * normalize the language ressource, we have a language part and a region part
+ * in eISO format or android format, this tries to parse any sense in the incoming string 
+ * and spits an android lang string
  */
-
 public class LangNameNormalizer
 {
-  protected Pattern simple = Pattern.compile("([a-z]{2})");
-  protected Pattern complete = Pattern.compile("([a-z]{2})\\-r([a-zA-Z]{2})");
-  protected Pattern iso = Pattern.compile("([a-z]{2})\\-([a-zA-Z]{2})");
-  
+  protected Pattern simple = Pattern.compile("([a-z]{2})"); /** 2 char lang field */
+  protected Pattern complete = Pattern.compile("([a-z]{2})\\-r([a-zA-Z]{2})");/** android style */
+  protected Pattern iso = Pattern.compile("([a-z]{2})\\-([a-zA-Z]{2})");/** iso style */
 
+  /** 
+   * normalize the incoming string and spit it back
+   */
   public String normalizeLangName(String sanitized)
   {
     Matcher m = complete.matcher(sanitized);
@@ -40,20 +44,12 @@ public class LangNameNormalizer
           sanitized = sanitized.substring(0, 2);
           lang = sanitized.toLowerCase();
         }//if
-        else
-        {
-          sanitized = null;
-        }//else
+        else sanitized = null;
       }//else
     }//else
 
-    //if (inputText.length() > 2) sanitized = inputText.substring(0, 2);
-    //sanitized = sanitized.toLowerCase();
-    if (region.length() > 0)
-    {
-      sanitized = lang + "-r" + region;
-    }
+    if (region.length() > 0) sanitized = lang + "-r" + region;
     else sanitized = lang;
     return sanitized;
   }//private String normalizeLangName(String sanitized)
-}//class
+}//public class LangNameNormalizer
