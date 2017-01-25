@@ -2,6 +2,8 @@
 A small android helper to keep the string.xml ressources in sync 
 between translations
 
+a start for a manual: https://sites.google.com/site/nohkumado/home/projects/intstringsynchro
+
 at the moment i found 2 projects that try to achieve this, but both are 
 directed to commercial translators, who want to translate the stuff 
 that wasn't translated, want time accounting and that sort of stuff...
