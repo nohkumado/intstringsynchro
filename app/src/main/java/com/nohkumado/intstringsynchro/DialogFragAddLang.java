@@ -3,11 +3,14 @@ package com.nohkumado.intstringsynchro;
 import android.app.*;
 import android.os.*;
 import android.view.*;
+import android.view.View.*;
 import android.view.inputmethod.*;
 import android.widget.*;
 import android.widget.TextView.*;
-import com.nohkumado.intstringsynchro.*;
+import com.nohkumado.nohutils.collection.*;
 import java.util.*;
+
+import android.view.View.OnClickListener;
 /**
  * @author Noh Kuma Do <nohkumado at gmail dot com>
  * @licence GLP v3
@@ -27,7 +30,7 @@ public class DialogFragAddLang extends DialogFragment implements OnEditorActionL
     void onFinishAddLangDialog(String inputText);
   }
   private AddLangDialogListener listener; /**the callback, when finished result is pushed there */
-  private ArrayList<String> langList; /** list of avilable languages */
+  private TreeMapTable<String,StringEntry> data; /** list of avilable languages */
   private HashMap<String, Boolean> hidden; /** list of hidden/visible languages */
   private Spinner spin; /** spinner to choose the var type */
   private ImageButton okButton; /** hit this when you are finished */
@@ -45,9 +48,9 @@ public class DialogFragAddLang extends DialogFragment implements OnEditorActionL
    * @param langs the list of languages
    * @param the map of cols to show
    */
-  public void setData(ArrayList<String> availableLangs, HashMap<String, Boolean> notDisplayed)
+  public void setData(TreeMapTable<String,StringEntry> data, HashMap<String, Boolean> notDisplayed)
   {
-    langList = availableLangs;
+    this.data = data;
     hidden = notDisplayed;
   }
   /**
@@ -68,8 +71,9 @@ public class DialogFragAddLang extends DialogFragment implements OnEditorActionL
 
     ArrayList<String> list = new ArrayList<String>();
     list.add(getActivity().getResources().getString(R.string.none));
-    for (String lang : langList)
+    for (Map.Entry<Integer,String> keyVal: data.header().entrySet())
     {
+      String lang = keyVal.getValue();
       if (hidden.get(lang) != null && hidden.get(lang) == true) list.add(lang);
     }
 

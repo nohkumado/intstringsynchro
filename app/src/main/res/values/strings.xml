@@ -10,6 +10,7 @@
    <string name="fallback">default</string>
    <string name="files_loaded">files loaded</string>
    <string name="files_saved">files saved</string>
+   <string name="headless">IntStringSynchro</string>
    <string name="missing_mode">missing mode, allowed: add, del, list,edit</string>
    <string name="missing_path">give a path to the string ressources to be modified</string>
    <string name="missing_token">missing token, specify a international string name</string>

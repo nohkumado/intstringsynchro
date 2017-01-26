@@ -16,6 +16,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".IntStringSynchro"
+            android:label="@string/headless" 
+            android:theme="@android:style/Theme.NoDisplay"
+            >
+            <intent-filter>
+                <action android:name="ADD" />
+                <category android:name="android.intent.category.EMBED" />
+            </intent-filter>
+        </activity>
         <receiver android:name=".IntStringReceiver" android:exported="true"  android:enabled="true">
             <intent-filter>
                 <action android:name="com.nohkumado.intstringsynchro.DEL_STRINGXML"/>
@@ -27,5 +37,4 @@
             </intent-filter>
         </receiver>
     </application>
-
 </manifest>

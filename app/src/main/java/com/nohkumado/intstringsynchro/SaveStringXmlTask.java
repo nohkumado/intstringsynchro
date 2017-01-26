@@ -1,10 +1,11 @@
 package com.nohkumado.intstringsynchro;
 
+import android.app.*;
 import android.os.*;
 import android.util.*;
-import android.widget.*;
 import com.nohkumado.nohutils.collection.*;
 import java.io.*;
+import java.util.*;
 /**
  * @author Noh Kuma Do <nohkumado at gmail dot com>
  * @licence GLP v3
@@ -18,10 +19,10 @@ public class SaveStringXmlTask extends AsyncTask<String,Integer,Void>
   private static final String TAG="SaveF"; /** needed for Log.d */
 
   protected TreeMapTable<String,StringEntry> data; /** the tabular data */
-  protected MainActivity context; /** callback */
+  protected Activity context; /** callback */
   String savePath; /** the path to save to */
   /** CTOR */
-  public SaveStringXmlTask(TreeMapTable<String,StringEntry> rest, MainActivity context, String path)
+  public SaveStringXmlTask(TreeMapTable<String,StringEntry> rest, Activity context, String path)
   {
     this.data = rest;
     this.context = context;
@@ -35,11 +36,19 @@ public class SaveStringXmlTask extends AsyncTask<String,Integer,Void>
   {
     boolean result = true;
     StringBuilder sb ;
-    if (savePath == null || savePath.length() <= 0) savePath = context.getProjectPath(); 
-    for (String lang : p1)
+    if (savePath == null || savePath.length() <= 0) 
+      if (context instanceof MainActivity)  savePath = ((MainActivity)context).getProjectPath(); 
+    saveData();//for (String lang : p1)
+    return null;
+  }
+
+  public void saveData()
+  {
+    for (Map.Entry<Integer,String> keyVal : data.header().entrySet())
     {
+      String lang = keyVal.getValue();
       //Log.d(TAG, "printing for lang : " + lang);
-      sb = new StringBuilder();
+      StringBuilder sb = new StringBuilder();
       sb.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<resources>\n");
       String indent =  "   ";
       for (String token : data)
@@ -52,7 +61,7 @@ public class SaveStringXmlTask extends AsyncTask<String,Integer,Void>
       File saveFile;
       if (lang.equals("default")) saveFile = new File(savePath, "values/strings.xml");
       else saveFile = new File(savePath, "values-" + lang + "/strings.xml");
-      Log.d(TAG, "saveFile = " + saveFile.getAbsolutePath());
+      //Log.d(TAG, "saveFile = " + saveFile.getAbsolutePath());
       saveFile.mkdirs();
 
       //File saveFile = new File(context.getExternalFilesDir(null), "strings-" + lang + ".xml");
@@ -72,8 +81,7 @@ public class SaveStringXmlTask extends AsyncTask<String,Integer,Void>
       {
         Log.e(TAG, "IO ex :" + f);
       }//catch (IOException f)
-    }//for (String lang : p1)
-    return null;
+    }
   }//save
   /**
    * the worker thread finished, now lets call the callback
@@ -82,6 +90,6 @@ public class SaveStringXmlTask extends AsyncTask<String,Integer,Void>
   protected void onPostExecute(Void result)
   {
     super.onPostExecute(result);
-    context.filesSaved();
+    if (context instanceof MainActivity) ((MainActivity)context).filesSaved();
   }//protected void onPostExecute(Void result)
 }//class StringFileLoadTask
