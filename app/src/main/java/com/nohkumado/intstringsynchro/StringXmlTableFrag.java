@@ -398,6 +398,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     for (Map.Entry<Integer,String> keyVal: data.header().entrySet())
     {
       String lang = keyVal.getValue();
+      if (hidden.get(lang)== null) hidden.put(lang,false);
       if (hidden.get(lang))  continue;
       StringEntry someContent = data.get(token, lang);
       String text = "";

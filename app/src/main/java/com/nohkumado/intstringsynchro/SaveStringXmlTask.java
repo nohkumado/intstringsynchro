@@ -59,10 +59,11 @@ public class SaveStringXmlTask extends AsyncTask<String,Integer,Void>
       sb.append("</resources>");
 
       File saveFile;
-      if (lang.equals("default")) saveFile = new File(savePath, "values/strings.xml");
-      else saveFile = new File(savePath, "values-" + lang + "/strings.xml");
+      if (lang.equals("default")) saveFile = new File(savePath, "values/");
+      else saveFile = new File(savePath, "values-" + lang + "/");
       //Log.d(TAG, "saveFile = " + saveFile.getAbsolutePath());
       saveFile.mkdirs();
+      saveFile = new File(saveFile, "strings.xml");
 
       //File saveFile = new File(context.getExternalFilesDir(null), "strings-" + lang + ".xml");
       try

@@ -1,73 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_height="match_parent"
-	android:layout_width="match_parent"
-	android:orientation="vertical"
-	android:id="@+id/mainLayout">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/mainLayout">
 
-	<LinearLayout
-		android:layout_height="wrap_content"
-		android:layout_width="wrap_content"
-		android:orientation="horizontal"
-		android:id="@+id/titleLine"
-		android:background="@drawable/border">
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/titleLine"
+        android:background="@drawable/border">
 
-		<!--TextView
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:text="@string/actual_language"
-			android:paddingRight="10dp"/>
+        <!--TextView
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="@string/actual_language"
+        android:paddingRight="10dp"/>
 
-		<Spinner
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:id="@+id/lang_selector"/>
+        <Spinner
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id="@+id/lang_selector"/>
 
-		<Button
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:text="@string/add_lang"
-			android:id="@+id/addLangBut"/>
+        <Button
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="@string/add_lang"
+        android:id="@+id/addLangBut"/>
 
-		<Button
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:text="@string/add_tok"
-			android:id="@+id/addTokBut"/-->
+        <Button
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="@string/add_tok"
+        android:id="@+id/addTokBut"/-->
+        <!--Button
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="@string/add_tok"
+            android:id="@+id/addTokBut"/-->
 
-		<Button
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-			android:text="@string/add_project"
-			android:id="@+id/addProjBut"/>
+        <!--Button
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="@string/add_project"
+            android:id="@+id/addProjBut"/-->
 
-		<ImageButton
-			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
-        android:src="@android:drawable/arrow_up_float"
-			android:id="@+id/moveUpBut"/>
-     
-  <ImageButton
-          android:layout_height="wrap_content"
-          android:layout_width="wrap_content"
-          android:src="@android:drawable/ic_menu_save"
-          android:id="@+id/saveBut"/>
- 
-      <ImageButton
-          android:layout_height="wrap_content"
-          android:layout_width="wrap_content"
-          android:src="@drawable/ic_help_white_24dp"
-          android:id="@+id/helpBut"/>
-            
-	</LinearLayout>
+        <ImageButton
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:src="@android:drawable/ic_menu_save"
+            android:id="@+id/saveBut"/>
 
-	<TableLayout
-		android:layout_height="wrap_content"
-		android:layout_width="wrap_content"
-		android:id="@+id/table">
+        <ImageButton
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:src="@drawable/ic_help_white_24dp"
+            android:id="@+id/helpBut"/>
+        <ImageButton
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:src="@android:drawable/arrow_up_float"
+            android:id="@+id/moveUpBut"
+            android:paddingLeft="10dp"/>
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:id="@+id/path_view"
+            android:text="path"
+            />
+    </LinearLayout>
 
-	</TableLayout>
+    <TableLayout
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id="@+id/table">
+
+    </TableLayout>
 
 </LinearLayout>
 

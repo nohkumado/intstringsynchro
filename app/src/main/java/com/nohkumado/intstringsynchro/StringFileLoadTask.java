@@ -84,17 +84,42 @@ public class StringFileLoadTask extends AsyncTask<StringFile,Integer,Void>
   protected void onPostExecute(Void result)
   {
     super.onPostExecute(result);
-    if(context instanceof MainActivity)
+    if (context instanceof MainActivity)
       ((MainActivity)context).buildTableView();
   }//protected void onPostExecute(Void result)
   /**
    * return from the filechooserdialog
    */
-  public ArrayList<StringFile> findStringFiles(String pathToLoad,StringBuilder error)
+  public ArrayList<StringFile> findStringFiles(String pathToLoad, StringBuilder error)
   {
     ArrayList<StringFile> toLoad = new ArrayList<StringFile>(); 
 
+    Log.d(TAG, "findStringFiles in " + pathToLoad);
     File resValuesDir = new File(pathToLoad);
+    //ok check if the xml file was selected and use its parent dir
+    if (pathToLoad.endsWith(".xml"))
+    {
+      resValuesDir =  new File(pathToLoad);
+      resValuesDir = new File(resValuesDir.getAbsolutePath());
+      resValuesDir = resValuesDir.getParentFile();
+      if (resValuesDir == null) resValuesDir = Environment.getExternalStorageDirectory();
+    }
+    else 
+    {
+      ArrayList<File> tmp = new ArrayList<>();
+      tmp.add(resValuesDir);
+      resValuesDir = scanDirs(tmp);
+      if (resValuesDir == null) resValuesDir = Environment.getExternalStorageDirectory();
+    }
+    Log.d(TAG, "got back res dir " + resValuesDir.getAbsolutePath());
+    if (context instanceof MainActivity) ((MainActivity)context).savePathToPrefs(resValuesDir.getAbsolutePath());
+    
+    
+
+
+
+
+
     if (resValuesDir.exists())
     {
       boolean found = false;
@@ -144,6 +169,44 @@ public class StringFileLoadTask extends AsyncTask<StringFile,Integer,Void>
 
     if (error.toString().length() > 0) Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
     return(toLoad);
+  }
+
+  private File scanDirs(ArrayList<File> list)
+  {
+    ArrayList<File> stringsFiles = new ArrayList<>();
+    ArrayList<File> toExplore = new ArrayList<>();
+    for (File aDir: list)
+    {
+      if (aDir.exists() && aDir.isDirectory()) 
+      {
+        for (File aFile: aDir.listFiles())
+        {
+          if (aFile.exists())
+          {
+            if (aFile.getAbsolutePath().endsWith("strings.xml"))  
+            {
+              //here we are... allready there
+              aFile = new File(aFile.getAbsolutePath());
+              aFile = aFile.getParentFile();
+              if (aFile == null) aFile = Environment.getExternalStorageDirectory();
+              stringsFiles.add(aFile);
+            }//if (aFile.getAbsolutePath().endsWith("strings.xml"))  
+            else if (aFile.isDirectory())
+            {
+              File stringF = new File(aFile, "strings.xml");
+              if (stringF.exists()) stringsFiles.add(aFile);
+              else toExplore.add(aFile);
+            }//else if (aFile.isDirectory())
+          }//if (aFile.exists())
+        }//if (aDir.exists() && aDir.isDirectory()) 
+      }//if(aDir.exists() && aDir.isDirectory()) 
+    }
+    if (stringsFiles.size() > 0) return stringsFiles.get(0);//all ok, we have it
+    else
+    {
+      if (toExplore.size() > 0) return scanDirs(toExplore);
+    }
+    return null;
   }//  public void findStringFiles(String[] p1)
 
 }//public class StringFileLoadTask extends AsyncTask<StringFile,Integer,Void>

@@ -31,7 +31,7 @@ import android.view.View.OnClickListener;
 public class MainActivity extends Activity implements OnClickListener, 
 DialogSelectionListener//, OnEditorActionListener
 {
-  protected Button openProject;/** fire up the filebrowser */ 
+  protected Button testBut;/** fire up the filebrowser */ 
   protected ImageButton moveUpBut,saveBut, helpBut; /** different buttons for overall function */
 
   //protected ArrayList<String> langList; /** list of loaded languages */
@@ -59,10 +59,15 @@ DialogSelectionListener//, OnEditorActionListener
   public static final String ACTION = "com.nohkumado.intstringsynchro.ACTION";
   /** the link to the ehm "docu" */
   private static final String manualUrl = "https://sites.google.com/site/nohkumado/home/projects/intstringsynchro";
+
+  public final static int ASK_STRINGMOD = 10;
+
+  private TextView pathView;
   /** CTOR */
   public MainActivity()
   {
   }
+
   /**
    *   onCreate
    * @arg savedInstanceState
@@ -92,12 +97,19 @@ DialogSelectionListener//, OnEditorActionListener
   protected void onCreate(Bundle savedInstanceState)
   {
     super.onCreate(savedInstanceState);
+    if (savedInstanceState != null)
+    {
+      Log.d(TAG, "#############################  restart ###################################");  
+    }
+    else
+    {
+      Log.d(TAG, "#############################  start ###################################");  
+    }
     setContentView(R.layout.main);
     SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(this);
     if (prefs.contains("actprojectpath")) actProjectPath = prefs.getString("actprojectpath", "");
     // Get the intent that started this activity
     Intent intent = getIntent();
-
     //Log.d(TAG, "received intent of action " + intent.getAction() + " vs " + Intent.ACTION_MAIN);
     // Figure out what to do based on the intent type
     if (!intent.getAction().equals(Intent.ACTION_MAIN))
@@ -125,7 +137,7 @@ DialogSelectionListener//, OnEditorActionListener
         args.putString("mode", farmode);
       }//if (args != null)
       //if (checkIntentArgs(args, sb, error_codes))
-      
+
       IntentArgsChecker checker = new IntentArgsChecker(this);
       if (checker.check(args, sb, error_codes))
       {
@@ -135,24 +147,24 @@ DialogSelectionListener//, OnEditorActionListener
         String farPath = args.getString("path");
         PathChecker pCheck = new PathChecker(this);
         farPath = pCheck.check(farPath, error_codes, sb, returnInt);
-        if(farPath == null) bailOut(returnInt, error_codes, sb);
-        
+        if (farPath == null) bailOut(returnInt, error_codes, sb);
+
         //farPath = checkPath(farPath, error_codes, sb, returnInt);
         //Log.d(TAG,"farpath now "+farPath);
         actProjectPath = farPath;
 
         switch (farmode)
         {
-          case("add"):
-            mode = MODE_ADD;
-            intentArgs = args;
-            onSelectedFilePaths(new String[] {farPath + "/values"});
-            break;
-          case("del"):
-            mode = MODE_DEL;
-            intentArgs = args;
-            onSelectedFilePaths(new String[] {farPath + "/values"});
-            break;
+            /*case("add"):
+             mode = MODE_ADD;
+             intentArgs = args;
+             onSelectedFilePaths(new String[] {farPath + "/values"});
+             break;
+             case("del"):
+             mode = MODE_DEL;
+             intentArgs = args;
+             onSelectedFilePaths(new String[] {farPath + "/values"});
+             break;*/
           case "edit":
             actProjectPath = farPath;
             //TODO check if token is present, center on it and set the focus into it
@@ -182,19 +194,7 @@ DialogSelectionListener//, OnEditorActionListener
     data = tokenTable.getData();
     //langList = tokenTable.getLangList();
 
-//    if (savedInstanceState != null)
-//    {
-//      Log.d(TAG, "#############################  restart ###################################");  
-//    }
-//    else
-//    {
-//      Log.d(TAG, "#############################  start ###################################");  
-//    }
-
     //Log.d(TAG,"data : "+data);
-    openProject  = (Button) findViewById(R.id.addProjBut);
-    openProject.setOnClickListener(this);
-
     moveUpBut   = (ImageButton) findViewById(R.id.moveUpBut);
     moveUpBut.setOnClickListener(this);
 
@@ -204,48 +204,55 @@ DialogSelectionListener//, OnEditorActionListener
     helpBut = (ImageButton) findViewById(R.id.helpBut);
     helpBut.setOnClickListener(this);
 
+    //testBut = (Button) findViewById(R.id.addTokBut);
+    //testBut.setOnClickListener(this);
+    
+    pathView = (TextView) findViewById(R.id.path_view);
+    pathView.setText(actProjectPath);
+    pathView.setOnClickListener(this);
     if (actProjectPath != null && actProjectPath.length() > 0 && data.size() <= 0) 
     {
       //Log.d(TAG, "calling load on " + actProjectPath + "/values");
       onSelectedFilePaths(new String[] {actProjectPath + "/values"});
+      pathView.setText(actProjectPath);
     }//if (actProjectPath != null && actProjectPath.length() > 0 && data.size() <= 0) 
   }//protected void onCreate(Bundle savedInstanceState)
   /**
    * check if the path is the path to a res dir, with a values folder inside and there a strings.xml
    */
   /*private String checkPath(String farPath, ArrayList<Integer> error_codes, ArrayList<String> sb, Intent returnInt) 
-  {
-    File tstit;
-    if (farPath.startsWith("/")) tstit = new File(farPath); 
-    else  tstit = new File(Environment.getExternalStorageDirectory(),  farPath); 
-    if (tstit.exists())
-    {
-      //Log.d(TAG, "path exists! " + tstit.getAbsolutePath());
-      try
-      {
-        farPath = tstit.getCanonicalPath();
-      }
-      catch (IOException e)
-      { Log.e(TAG, "something went wrong extracting the path from " + tstit.getAbsolutePath());}
+   {
+   File tstit;
+   if (farPath.startsWith("/")) tstit = new File(farPath); 
+   else  tstit = new File(Environment.getExternalStorageDirectory(),  farPath); 
+   if (tstit.exists())
+   {
+   //Log.d(TAG, "path exists! " + tstit.getAbsolutePath());
+   try
+   {
+   farPath = tstit.getCanonicalPath();
+   }
+   catch (IOException e)
+   { Log.e(TAG, "something went wrong extracting the path from " + tstit.getAbsolutePath());}
 
-      tstit = new File(tstit.getAbsoluteFile(), "values/strings.xml");
-      if (tstit.exists()) return farPath;
-      else
-      {
-        error_codes.add(PATH_INVALID);
-        sb.add(tstit.getAbsolutePath() + " " + getResources().getString(R.string.missing_xml));
-        bailOut(returnInt, error_codes, sb);
-      }//else
-    }//if (tstit.exists())
-    else 
-    {
-      error_codes.add(PATH_INVALID);
-      sb.add(tstit.getAbsolutePath() + " " + getResources().getString(R.string.cd_does_not_exist));
-      bailOut(returnInt, error_codes, sb);
-    }//else
-    return farPath;
-  }//private String checkPath(String farPath, ArrayList<Integer> error_codes, ArrayList<String> sb, Intent returnInt) 
-  */
+   tstit = new File(tstit.getAbsoluteFile(), "values/strings.xml");
+   if (tstit.exists()) return farPath;
+   else
+   {
+   error_codes.add(PATH_INVALID);
+   sb.add(tstit.getAbsolutePath() + " " + getResources().getString(R.string.missing_xml));
+   bailOut(returnInt, error_codes, sb);
+   }//else
+   }//if (tstit.exists())
+   else 
+   {
+   error_codes.add(PATH_INVALID);
+   sb.add(tstit.getAbsolutePath() + " " + getResources().getString(R.string.cd_does_not_exist));
+   bailOut(returnInt, error_codes, sb);
+   }//else
+   return farPath;
+   }//private String checkPath(String farPath, ArrayList<Integer> error_codes, ArrayList<String> sb, Intent returnInt) 
+   */
   /**
    * bailout
    * something bad happened, lets leave it at that...
@@ -268,45 +275,45 @@ DialogSelectionListener//, OnEditorActionListener
    * check out if the arguments given with the intent match what we expect...
    */
   /*private boolean checkIntentArgs(Bundle args, ArrayList<String> sb, ArrayList<Integer> error_codes)
-  {
-    boolean result = true;
-    if (args == null) return false;
-    if (args.getString("path") == null)
-    {
-      error_codes.add(MISSING_PATH);
-      sb.add(getResources().getString(R.string.missing_path));
-      result = false; //critical
-    }//if (args.getString("path") == null)
-    if (args.getString("mode") == null)
-    {
-      error_codes.add(MISSING_MODE);
-      sb.add(getResources().getString(R.string.missing_mode));
-      result = false; //critical
-    }//if (args.getString("mode") == null)
-    else
-    {
-      if (!args.getString("mode").matches("edit|add|del"))
-      {
-        error_codes.add(MODE_INVALID);
-        sb.add(getResources().getString(R.string.mode_unknown));
-        result = false;    
-      }//if (!args.getString("mode").matches("edit|add|del"))
-      else if (args.getString("mode").equals("add") && args.getString("value") == null)
-      {
-        error_codes.add(MISSING_VALUE);
-        sb.add(getResources().getString(R.string.missing_value));
-        result = false; 
-      }//else if (args.getString("mode").equals("add") && args.getString("value") == null)
-    }//else
-    if (args.getString("token") == null && args.getString("mode") != null && !args.getString("mode").equals("edit"))
-    {
-      error_codes.add(MISSING_TOKEN);
-      sb.add(getResources().getString(R.string.missing_token));
-      result = false;
-    }//if (args.getString("token") == null && args.getString("mode") != null && !args.getString("mode").equals("edit"))
-    return result;
-  }//private boolean checkIntentArgs(Bundle args, ArrayList<String> sb, ArrayList<Integer> error_codes)
-*/
+   {
+   boolean result = true;
+   if (args == null) return false;
+   if (args.getString("path") == null)
+   {
+   error_codes.add(MISSING_PATH);
+   sb.add(getResources().getString(R.string.missing_path));
+   result = false; //critical
+   }//if (args.getString("path") == null)
+   if (args.getString("mode") == null)
+   {
+   error_codes.add(MISSING_MODE);
+   sb.add(getResources().getString(R.string.missing_mode));
+   result = false; //critical
+   }//if (args.getString("mode") == null)
+   else
+   {
+   if (!args.getString("mode").matches("edit|add|del"))
+   {
+   error_codes.add(MODE_INVALID);
+   sb.add(getResources().getString(R.string.mode_unknown));
+   result = false;    
+   }//if (!args.getString("mode").matches("edit|add|del"))
+   else if (args.getString("mode").equals("add") && args.getString("value") == null)
+   {
+   error_codes.add(MISSING_VALUE);
+   sb.add(getResources().getString(R.string.missing_value));
+   result = false; 
+   }//else if (args.getString("mode").equals("add") && args.getString("value") == null)
+   }//else
+   if (args.getString("token") == null && args.getString("mode") != null && !args.getString("mode").equals("edit"))
+   {
+   error_codes.add(MISSING_TOKEN);
+   sb.add(getResources().getString(R.string.missing_token));
+   result = false;
+   }//if (args.getString("token") == null && args.getString("mode") != null && !args.getString("mode").equals("edit"))
+   return result;
+   }//private boolean checkIntentArgs(Bundle args, ArrayList<String> sb, ArrayList<Integer> error_codes)
+   */
   /**
    * check if the files are there and load them
    */
@@ -401,7 +408,7 @@ DialogSelectionListener//, OnEditorActionListener
   @Override
   public void onClick(View p1)
   {
-    if (p1 == openProject)  
+    if (p1 == pathView)  
     {
       //Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
       //intent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -412,18 +419,83 @@ DialogSelectionListener//, OnEditorActionListener
     else if (p1 == moveUpBut)
     {
       File actDir = new File(actProjectPath, "../");
-      try
+      if (actDir.canRead())
       {
-        actProjectPath = actDir.getCanonicalPath();
-      }
-      catch (IOException e)
-      {}
+        try
+        {
+          actProjectPath = actDir.getCanonicalPath();
+        }
+        catch (IOException e)
+        {
+          actProjectPath =  tryToFindADefaultDir();
+        }//catch (IOException e)  
+      }//if (actDir.canRead())
+      else actProjectPath =  tryToFindADefaultDir();
+      pathView.setText(actProjectPath);
     }//else if (p1 == moveUpBut)
     else if (p1 == saveBut) saveFiles();
     else if (p1 == helpBut)
     {
       Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(manualUrl));
       startActivity(browserIntent);
+    }
+    else if (p1 == testBut)
+    {
+
+      String tstpathToProject = "AppProjects/IntStringIntentTester/app/src/main/res";
+
+      //IntStringSynchro testit = new IntStringSynchro();
+      //testit.onCreate(savedInstanceState);
+
+
+      Intent callIt = new Intent(this, IntStringSynchro.class);
+      //callIt.setClassName("com.nohkumado.intstringsynchro", "IntStringSynchro");
+      callIt.addCategory("android.intent.category.EMBED");
+      callIt.setAction("ADD");
+      //call.setClassName("com.nohkumado.intstringsynchro","IntStringSynchro");
+
+      //Intent callIt = new Intent(name);
+      //callIt.setPackage("com.nohkumado.intstringsynchro");
+      callIt.putExtra("token", "testtoto");
+      callIt.putExtra("value", "titi");
+      callIt.putExtra("value-de", "tata");
+      callIt.setAction("ADD");
+      callIt.putExtra("path", tstpathToProject);//relative
+      //intent.putExtra("mode", "add");
+      //intent.putExtra("value", "a test");
+      //intent.putExtra("value-de", "ein Test");
+      Log.d(TAG, "sending intent " + callIt + " " + callIt.getExtras());
+
+      try
+      {
+        //sendBroadcast(callIt);
+        //startActivity(callIt);
+        startActivityForResult(callIt, ASK_STRINGMOD);
+      }
+      catch (ActivityNotFoundException e)
+      {
+        Toast.makeText(this, "no available activity " + callIt, Toast.LENGTH_SHORT).show();
+      }
+    }
+  }
+
+  private String tryToFindADefaultDir()
+  {
+    String state = Environment.getExternalStorageState();
+
+    if (Environment.MEDIA_MOUNTED.equals(state))
+    {
+      // We can read and write the media
+      return Environment.getExternalStorageDirectory().getAbsolutePath();
+    }
+    else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state))
+    {
+      // We can only read the media
+      return Environment.getExternalStorageDirectory().getAbsolutePath();
+    }
+    else
+    {
+      return getExternalFilesDir(null).getAbsolutePath();
     }
   }//public void onClick(View p1)
   /**
@@ -466,116 +538,118 @@ DialogSelectionListener//, OnEditorActionListener
   @Override
   public void onSelectedFilePaths(String[] p1)
   {
-    ArrayList<StringFile> toLoad = null;
+    ArrayList<StringFile> toLoad = new ArrayList<>();
     StringBuilder error = new StringBuilder();
     StringFileLoadTask task = new StringFileLoadTask(data, this);
-    if (p1.length == 1) toLoad = task.findStringFiles(p1[0],error);
+    if (p1.length > 0) toLoad = task.findStringFiles(p1[0], error);
     else error.append("select the values dir");
     if (toLoad.size() > 0)
     {
-      savePathToPrefs(p1);
+      //savePathToPrefs(p1[0]);
       task.execute(toLoad.toArray(new StringFile[toLoad.size()]));
     }//if (toLoad.size() > 0)
-    
-/*    
-    String pathToLoad;
-    ArrayList<StringFile> toLoad = new ArrayList<StringFile>(); 
-    StringBuilder error = new StringBuilder();
-    if (p1.length == 1)
-    {
-      pathToLoad = p1[0];
-      File resValuesDir = new File(pathToLoad);
-      if (resValuesDir.exists())
-      {
-        boolean found = false;
-        for (String aFile: resValuesDir.list())
-        {
-          if ("strings.xml".equals(aFile))
-          {
-            //TODO for later ArrayList<String> list = new ArrayList(Arrays.asList(getResources().getStringArray(R.array.strings)));//where R.array.strings is a reference to your resource
-            found = true;
-            toLoad.add(new StringFile(resValuesDir, aFile, "default"));
-            break;
-          }//if ("strings.xml".equals(aFile))
-        }//for (String aFile: resValuesDir.list())
-        if (found)
-        {
-          //ok we have the right directory
-          File resDir = new File(resValuesDir, "../");
 
-          if (mode <= 0)
-          {
-            //save the actual value of the path
-            SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(this);
-            if (prefs.contains("actprojectpath")) pathToLoad = prefs.getString("actprojectpath", "");
+    /*    
+     String pathToLoad;
+     ArrayList<StringFile> toLoad = new ArrayList<StringFile>(); 
+     StringBuilder error = new StringBuilder();
+     if (p1.length == 1)
+     {
+     pathToLoad = p1[0];
+     File resValuesDir = new File(pathToLoad);
+     if (resValuesDir.exists())
+     {
+     boolean found = false;
+     for (String aFile: resValuesDir.list())
+     {
+     if ("strings.xml".equals(aFile))
+     {
+     //TODO for later ArrayList<String> list = new ArrayList(Arrays.asList(getResources().getStringArray(R.array.strings)));//where R.array.strings is a reference to your resource
+     found = true;
+     toLoad.add(new StringFile(resValuesDir, aFile, "default"));
+     break;
+     }//if ("strings.xml".equals(aFile))
+     }//for (String aFile: resValuesDir.list())
+     if (found)
+     {
+     //ok we have the right directory
+     File resDir = new File(resValuesDir, "../");
 
-            SharedPreferences.Editor editor = prefs.edit();
-            try
-            {
-              editor.putString("actprojectpath", resDir.getCanonicalPath());
-            }//try
-            catch (IOException e)
-            {
-              Log.e(TAG, "coouldn't set path to " + resDir.getAbsolutePath());
-            }//catch (IOException e)
-            editor.apply();
-          }//if (mode <= 0)
-          final Pattern p = Pattern.compile("values-[a-z\\-]{2,}");
-          //select allready selected languages
-          String[] files = resDir.list(new FilenameFilter() {
-              @Override
-              public boolean accept(File dir, String name)
-              {
-                Matcher m = p.matcher(name);
-                return m.find();
-                //return name.matches("values-\\[a-z\\-]{2,}");
-              }
-            });
-          //Log.d(TAG, "checking parent directory " + Arrays.toString(files));
-          Pattern onlyLang = Pattern.compile("^values-(.*)$");
-          for (String aLang : files)
-          {
-            //Log.d(TAG, "checking alternate " + aLang);
-            Matcher mlang = onlyLang.matcher(aLang);
-            if (mlang.find())
-            {
-              String sanitized = mlang.group(1);
-              if (tokenTable != null) tokenTable.addNewLang(sanitized);
-              StringFile resLangFile = new StringFile(resDir, aLang + "/strings.xml", sanitized);
+     if (mode <= 0)
+     {
+     //save the actual value of the path
+     SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(this);
+     if (prefs.contains("actprojectpath")) pathToLoad = prefs.getString("actprojectpath", "");
 
-              if (resLangFile.exists()) toLoad.add(resLangFile);
-              //loadStringsXmlFile(resLangFile, sanitized);    
-            }//if (mlang.find())
-            else Log.e(TAG, "wrng pattern " + mlang);
-          }//for (String aLang : files)
-        }//if(found)
-        else error.append("no strings.xml found in").append(pathToLoad);
-      }//if (resValuesDir.exists())
-      else error.append("Dir not found: " + pathToLoad);
-    }//if (p1.length == 1)
-    else error.append("select the values dir");
+     SharedPreferences.Editor editor = prefs.edit();
+     try
+     {
+     editor.putString("actprojectpath", resDir.getCanonicalPath());
+     }//try
+     catch (IOException e)
+     {
+     Log.e(TAG, "coouldn't set path to " + resDir.getAbsolutePath());
+     }//catch (IOException e)
+     editor.apply();
+     }//if (mode <= 0)
+     final Pattern p = Pattern.compile("values-[a-z\\-]{2,}");
+     //select allready selected languages
+     String[] files = resDir.list(new FilenameFilter() {
+     @Override
+     public boolean accept(File dir, String name)
+     {
+     Matcher m = p.matcher(name);
+     return m.find();
+     //return name.matches("values-\\[a-z\\-]{2,}");
+     }
+     });
+     //Log.d(TAG, "checking parent directory " + Arrays.toString(files));
+     Pattern onlyLang = Pattern.compile("^values-(.*)$");
+     for (String aLang : files)
+     {
+     //Log.d(TAG, "checking alternate " + aLang);
+     Matcher mlang = onlyLang.matcher(aLang);
+     if (mlang.find())
+     {
+     String sanitized = mlang.group(1);
+     if (tokenTable != null) tokenTable.addNewLang(sanitized);
+     StringFile resLangFile = new StringFile(resDir, aLang + "/strings.xml", sanitized);
 
-    if (error.toString().length() > 0) Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show();
-    if (toLoad.size() > 0)
-    {
-      StringFileLoadTask task = new StringFileLoadTask(data, this);
-      task.execute(toLoad.toArray(new StringFile[toLoad.size()]));
-    }//if (toLoad.size() > 0)
-    */
+     if (resLangFile.exists()) toLoad.add(resLangFile);
+     //loadStringsXmlFile(resLangFile, sanitized);    
+     }//if (mlang.find())
+     else Log.e(TAG, "wrng pattern " + mlang);
+     }//for (String aLang : files)
+     }//if(found)
+     else error.append("no strings.xml found in").append(pathToLoad);
+     }//if (resValuesDir.exists())
+     else error.append("Dir not found: " + pathToLoad);
+     }//if (p1.length == 1)
+     else error.append("select the values dir");
+
+     if (error.toString().length() > 0) Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show();
+     if (toLoad.size() > 0)
+     {
+     StringFileLoadTask task = new StringFileLoadTask(data, this);
+     task.execute(toLoad.toArray(new StringFile[toLoad.size()]));
+     }//if (toLoad.size() > 0)
+     */
   }
 
-  private void savePathToPrefs(String[] p1)
+  public void savePathToPrefs(String p1)
   {
     if (mode <= 0)
     {
       //save the actual value of the path
       SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(this);
       //if (prefs.contains("actprojectpath")) p1[0] = prefs.getString("actprojectpath", "");
-      File resDir = new File(new File(p1[0]), "../");
+      File resDir = new File(new File(p1), "../");
       SharedPreferences.Editor editor = prefs.edit();
       try
       {
         editor.putString("actprojectpath", resDir.getCanonicalPath());
+        pathView.setText(actProjectPath);
+        Log.d(TAG,"saved path "+resDir.getCanonicalPath()+" to prefs");
       }//try
       catch (IOException e)
       {
@@ -669,12 +743,12 @@ DialogSelectionListener//, OnEditorActionListener
       finish();
     }//if (mode > 0)
     else
-      Toast.makeText(this, getResources().getString(R.string.files_saved) + " '" + actProjectPath+"'", Toast.LENGTH_SHORT).show();
+      Toast.makeText(this, getResources().getString(R.string.files_saved) + " '" + actProjectPath + "'", Toast.LENGTH_SHORT).show();
   }//public void filesSaved()
   /**
-  * when back is pressed we need to catch it, control, if we were called through intent
-  * and if needed send back an answer intent
-  */
+   * when back is pressed we need to catch it, control, if we were called through intent
+   * and if needed send back an answer intent
+   */
   @Override
   public void onBackPressed()
   {
@@ -689,4 +763,28 @@ DialogSelectionListener//, OnEditorActionListener
     }//if (error_codes.size() > 0)
     //else Log.d(TAG, "standalino back"); 
   }//public void onBackPressed()
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data)
+  {
+    StringBuilder sb = new StringBuilder();
+    sb.append("got intent back ");
+    sb.append(data);
+    if (data != null)
+      sb.append(": ").append(data.getExtras());
+    Log.d(TAG,  sb.toString());
+    // Check which request we're responding to
+    if (requestCode == ASK_STRINGMOD) 
+    {
+
+      // Make sure the request was successful
+      if (resultCode == RESULT_OK)
+      {
+        // The user picked a contact.
+        // The Intent's data Uri identifies which contact was selected.
+
+        // Do something with the contact here (bigger example below)
+      }
+    }
+  }
+
 }//public class MainActivity extends Activity implements OnClickListener, 
