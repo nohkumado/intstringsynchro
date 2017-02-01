@@ -11,7 +11,7 @@ import java.util.*;
 public class PathChecker
 {
   private static final String TAG="PC"; /** needed for Log.d */
-  
+
   Activity context;
 
   public PathChecker(Activity context)
@@ -32,18 +32,23 @@ public class PathChecker
       try
       {
         farPath = tstit.getCanonicalPath();
+
+        //TODO maybe we should invoke here the dirscanner
+        if (tstit.getName().endsWith(".xml"))
+        {}
+        else if ("values".equals(tstit.getName())) tstit = new File(tstit.getAbsoluteFile(), "strings.xml");
+        else tstit = new File(tstit.getAbsoluteFile(), "values/strings.xml");
+        if (tstit.exists()) return farPath = tstit.getCanonicalPath();
+        else
+        {
+          error_codes.add(MainActivity.PATH_INVALID);
+          sb.add(tstit.getAbsolutePath() + " " + context.getResources().getString(R.string.missing_xml));
+          return null;
+        }//else
       }
       catch (IOException e)
-      { Log.e(TAG, "something went wrong extracting the path from " + tstit.getAbsolutePath());}
-
-      tstit = new File(tstit.getAbsoluteFile(), "values/strings.xml");
-      if (tstit.exists()) return farPath;
-      else
-      {
-        error_codes.add(MainActivity.PATH_INVALID);
-        sb.add(tstit.getAbsolutePath() + " " + context.getResources().getString(R.string.missing_xml));
-        return null;
-      }//else
+      { Log.e(TAG, "something went wrong extracting the path from " + tstit.getAbsolutePath()); return null;}
+      
     }//if (tstit.exists())
     else 
     {

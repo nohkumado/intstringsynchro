@@ -31,7 +31,8 @@ import android.view.View.OnClickListener;
 public class MainActivity extends Activity implements OnClickListener, 
 DialogSelectionListener//, OnEditorActionListener
 {
-  protected Button testBut;/** fire up the filebrowser */ 
+  //protected Button testBut, resetBut;/** fire up the filebrowser */ 
+  protected Button resetBut;/** reset the path */ 
   protected ImageButton moveUpBut,saveBut, helpBut; /** different buttons for overall function */
 
   //protected ArrayList<String> langList; /** list of loaded languages */
@@ -203,9 +204,13 @@ DialogSelectionListener//, OnEditorActionListener
     helpBut = (ImageButton) findViewById(R.id.helpBut);
     helpBut.setOnClickListener(this);
 
-    testBut = (Button) findViewById(R.id.addTokBut);
-    testBut.setOnClickListener(this);
+    //testBut = (Button) findViewById(R.id.addTokBut);
+    //testBut.setOnClickListener(this);
 
+    resetBut = (Button) findViewById(R.id.reset_path);
+    resetBut.setOnClickListener(this);
+
+    
     pathView = (TextView) findViewById(R.id.path_view);
     pathView.setText(actProjectPath);
     pathView.setOnClickListener(this);
@@ -443,9 +448,15 @@ DialogSelectionListener//, OnEditorActionListener
       Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(manualUrl));
       startActivity(browserIntent);
     }
+    else if (p1 == resetBut)
+    {
+      actProjectPath = tryToFindADefaultDir();
+      savePathToPrefs(actProjectPath);
+      pathView.setText(actProjectPath);
+    }
+    /*
     else if (p1 == testBut)
     {
-
       String tstpathToProject = "AppProjects/IntStringIntentTester/app/src/main/res";
 
       //IntStringSynchro testit = new IntStringSynchro();
@@ -482,7 +493,7 @@ DialogSelectionListener//, OnEditorActionListener
       {
         Toast.makeText(this, "no available activity " + callIt, Toast.LENGTH_SHORT).show();
       }
-    }
+    }*/
   }
 
   private String tryToFindADefaultDir()
