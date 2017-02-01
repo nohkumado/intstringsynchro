@@ -53,19 +53,21 @@ an in MainActivity create do:
     //intent.putExtra("path", "AppProjects/IntStringSynchro/app/src/main/res");//relative
     //intent.putExtra("path","/storage/emulated/0/AppProjects/IntStringSynchro/app/src/main/res");//absolute
 
+    //testing headless mode
+    Intent callIt = new Intent();
+    callIt.setClassName("com.nohkumado.intstringsynchro","IntStringSynchro");
+    callIt.setComponent(new ComponentName("com.nohkumado.intstringsynchro","com.nohkumado.intstringsynchro.IntStringSynchro"));
+    callIt.addCategory("android.intent.category.EMBED");
+    callIt.putExtra("path", pathToProject);//relative
+    //callit.putExtra("path", "AppProjects/IntStringSynchro/app/src/main/res");//relative
+    callit.putExtra("token", "testit");
+
     //testing add
-    //intent.setAction("ADD");
-    //intent.putExtra("path", "AppProjects/IntStringSynchro/app/src/main/res");//relative
-    //intent.putExtra("mode", "add");
-    //intent.putExtra("token", "testit");
-    //intent.putExtra("value", "a test");
-    //intent.putExtra("value-de", "ein Test");
+    callIt.setAction("ADD");
+    callit.putExtra("value", "a test");
+    callit.putExtra("value-de", "ein Test");
     //testing remove
-    //intent.setAction("DEL");
-    //intent.putExtra("path", "AppProjects/IntStringSynchro/app/src/main/res");//relative
-    //intent.putExtra("mode", "del");
-    //intent.putExtra("token", "testit");
-    
+    //callit.setAction("DEL");
     
 at the moment it is possible to call the app that way, the add and rm work, but my tester never got 
 neither the error messages nor the result intent, so if anyone spots whats going wrong here....  

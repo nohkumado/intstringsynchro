@@ -67,7 +67,6 @@ DialogSelectionListener//, OnEditorActionListener
   public MainActivity()
   {
   }
-
   /**
    *   onCreate
    * @arg savedInstanceState
@@ -204,16 +203,21 @@ DialogSelectionListener//, OnEditorActionListener
     helpBut = (ImageButton) findViewById(R.id.helpBut);
     helpBut.setOnClickListener(this);
 
-    //testBut = (Button) findViewById(R.id.addTokBut);
-    //testBut.setOnClickListener(this);
-    
+    testBut = (Button) findViewById(R.id.addTokBut);
+    testBut.setOnClickListener(this);
+
     pathView = (TextView) findViewById(R.id.path_view);
     pathView.setText(actProjectPath);
     pathView.setOnClickListener(this);
-    if (actProjectPath != null && actProjectPath.length() > 0 && data.size() <= 0) 
+    if (actProjectPath == null || actProjectPath.length() <= 0 || tryToFindADefaultDir().equals(actProjectPath))
+    {
+      callProjectSelect(tryToFindADefaultDir() + "/AppProjects");
+    }//if(actProjectPath == null || tryToFindADefaultDir().equals(actProjectPath))
+    else if (actProjectPath != null && actProjectPath.length() > 0 && data.size() <= 0) 
     {
       //Log.d(TAG, "calling load on " + actProjectPath + "/values");
-      onSelectedFilePaths(new String[] {actProjectPath + "/values"});
+      
+      onSelectedFilePaths(new String[] {actProjectPath });
       pathView.setText(actProjectPath);
     }//if (actProjectPath != null && actProjectPath.length() > 0 && data.size() <= 0) 
   }//protected void onCreate(Bundle savedInstanceState)
@@ -447,9 +451,11 @@ DialogSelectionListener//, OnEditorActionListener
       //IntStringSynchro testit = new IntStringSynchro();
       //testit.onCreate(savedInstanceState);
 
-
-      Intent callIt = new Intent(this, IntStringSynchro.class);
-      //callIt.setClassName("com.nohkumado.intstringsynchro", "IntStringSynchro");
+      //Intent callIt = new Intent(this, IntStringSynchro.class);
+      Intent callIt = new Intent();
+      callIt.setClassName("com.nohkumado.intstringsynchro", "IntStringSynchro");
+      //callIt.setComponent(new ComponentName("com.nohkumado.intstringsynchro", "./IntStringSynchro"));
+      callIt.setComponent(new ComponentName("com.nohkumado.intstringsynchro", "com.nohkumado.intstringsynchro.IntStringSynchro"));
       callIt.addCategory("android.intent.category.EMBED");
       callIt.setAction("ADD");
       //call.setClassName("com.nohkumado.intstringsynchro","IntStringSynchro");
@@ -457,7 +463,7 @@ DialogSelectionListener//, OnEditorActionListener
       //Intent callIt = new Intent(name);
       //callIt.setPackage("com.nohkumado.intstringsynchro");
       callIt.putExtra("token", "testtoto");
-      callIt.putExtra("value", "titi");
+      callIt.putExtra("value", "toto");
       callIt.putExtra("value-de", "tata");
       callIt.setAction("ADD");
       callIt.putExtra("path", tstpathToProject);//relative
@@ -540,116 +546,64 @@ DialogSelectionListener//, OnEditorActionListener
   {
     ArrayList<StringFile> toLoad = new ArrayList<>();
     StringBuilder error = new StringBuilder();
+    Log.d(TAG, "onSelected " + Arrays.toString(p1));
     StringFileLoadTask task = new StringFileLoadTask(data, this);
-    if (p1.length > 0) toLoad = task.findStringFiles(p1[0], error);
-    else error.append("select the values dir");
+    DirectoryScanner scanner;
+    if (p1.length > 0) 
+    {
+      scanner = new DirectoryScanner();
+      for(String fName : p1) 
+      {
+        //Log.d(TAG,"calling find string file on "+fName);
+        for(StringFile aFile: scanner.findStringFiles(fName,error)) toLoad.add(aFile);
+      }
+      if(scanner.isAmbiguous())
+      {
+        callProjectSelect(p1);
+        return;
+      }
+      //toLoad = task.findStringFiles(p1[0], error);
+      //callProjectSelect(p1);
+      //Log.e(TAG, "calling on call project, restore after debug " + Arrays.toString(p1)+"\nfiles found "+toLoad);
+    }
+    else error.append("selected the values dir");
+    
     if (toLoad.size() > 0)
     {
-      //savePathToPrefs(p1[0]);
+      Log.d(TAG,"saving "+p1[0]+" "+toLoad.get(0).getParentFile().getParent());
+      savePathToPrefs(toLoad.get(0).getParentFile().getParent());
       task.execute(toLoad.toArray(new StringFile[toLoad.size()]));
     }//if (toLoad.size() > 0)
+  }
 
-    /*    
-     String pathToLoad;
-     ArrayList<StringFile> toLoad = new ArrayList<StringFile>(); 
-     StringBuilder error = new StringBuilder();
-     if (p1.length == 1)
-     {
-     pathToLoad = p1[0];
-     File resValuesDir = new File(pathToLoad);
-     if (resValuesDir.exists())
-     {
-     boolean found = false;
-     for (String aFile: resValuesDir.list())
-     {
-     if ("strings.xml".equals(aFile))
-     {
-     //TODO for later ArrayList<String> list = new ArrayList(Arrays.asList(getResources().getStringArray(R.array.strings)));//where R.array.strings is a reference to your resource
-     found = true;
-     toLoad.add(new StringFile(resValuesDir, aFile, "default"));
-     break;
-     }//if ("strings.xml".equals(aFile))
-     }//for (String aFile: resValuesDir.list())
-     if (found)
-     {
-     //ok we have the right directory
-     File resDir = new File(resValuesDir, "../");
+  public void callProjectSelect(String p1)
+  {
+    callProjectSelect(new String[] {p1});
+  }
 
-     if (mode <= 0)
-     {
-     //save the actual value of the path
-     SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(this);
-     if (prefs.contains("actprojectpath")) pathToLoad = prefs.getString("actprojectpath", "");
-
-     SharedPreferences.Editor editor = prefs.edit();
-     try
-     {
-     editor.putString("actprojectpath", resDir.getCanonicalPath());
-     }//try
-     catch (IOException e)
-     {
-     Log.e(TAG, "coouldn't set path to " + resDir.getAbsolutePath());
-     }//catch (IOException e)
-     editor.apply();
-     }//if (mode <= 0)
-     final Pattern p = Pattern.compile("values-[a-z\\-]{2,}");
-     //select allready selected languages
-     String[] files = resDir.list(new FilenameFilter() {
-     @Override
-     public boolean accept(File dir, String name)
-     {
-     Matcher m = p.matcher(name);
-     return m.find();
-     //return name.matches("values-\\[a-z\\-]{2,}");
-     }
-     });
-     //Log.d(TAG, "checking parent directory " + Arrays.toString(files));
-     Pattern onlyLang = Pattern.compile("^values-(.*)$");
-     for (String aLang : files)
-     {
-     //Log.d(TAG, "checking alternate " + aLang);
-     Matcher mlang = onlyLang.matcher(aLang);
-     if (mlang.find())
-     {
-     String sanitized = mlang.group(1);
-     if (tokenTable != null) tokenTable.addNewLang(sanitized);
-     StringFile resLangFile = new StringFile(resDir, aLang + "/strings.xml", sanitized);
-
-     if (resLangFile.exists()) toLoad.add(resLangFile);
-     //loadStringsXmlFile(resLangFile, sanitized);    
-     }//if (mlang.find())
-     else Log.e(TAG, "wrng pattern " + mlang);
-     }//for (String aLang : files)
-     }//if(found)
-     else error.append("no strings.xml found in").append(pathToLoad);
-     }//if (resValuesDir.exists())
-     else error.append("Dir not found: " + pathToLoad);
-     }//if (p1.length == 1)
-     else error.append("select the values dir");
-
-     if (error.toString().length() > 0) Toast.makeText(this, error.toString(), Toast.LENGTH_LONG).show();
-     if (toLoad.size() > 0)
-     {
-     StringFileLoadTask task = new StringFileLoadTask(data, this);
-     task.execute(toLoad.toArray(new StringFile[toLoad.size()]));
-     }//if (toLoad.size() > 0)
-     */
+  public void callProjectSelect(String[] p1)
+  {
+    Log.d(TAG, "calling scanTask with " + Arrays.toString(p1));
+    DirScanTask scanTask = new DirScanTask(this, p1[0]);  
+    scanTask.execute(p1);
   }
 
   public void savePathToPrefs(String p1)
   {
+    Log.d(TAG,"save prefs "+p1); 
     if (mode <= 0)
     {
       //save the actual value of the path
       SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(this);
       //if (prefs.contains("actprojectpath")) p1[0] = prefs.getString("actprojectpath", "");
-      File resDir = new File(new File(p1), "../");
+      File resDir = new File(new File(p1), "");
       SharedPreferences.Editor editor = prefs.edit();
       try
       {
-        editor.putString("actprojectpath", resDir.getCanonicalPath());
+        actProjectPath = resDir.getCanonicalPath();
+        editor.putString("actprojectpath", actProjectPath);
         pathView.setText(actProjectPath);
-        Log.d(TAG,"saved path "+resDir.getCanonicalPath()+" to prefs");
+        Log.d(TAG, "saved path " + actProjectPath + " to prefs");
       }//try
       catch (IOException e)
       {
@@ -697,7 +651,12 @@ DialogSelectionListener//, OnEditorActionListener
       }//switch (mode)
       saveFiles();
     }//if (mode > 0)
-    else tokenTable.buildTableView();
+    else 
+    {
+      Log.d(TAG, "done loading rebuilding the view "+data.size());
+      pathView.setText(actProjectPath);
+      tokenTable.buildTableView(); 
+    }
   }//public void buildTableView()
   /**
    * @return boolean  if it was a success
@@ -786,5 +745,48 @@ DialogSelectionListener//, OnEditorActionListener
       }
     }
   }
+
+  public void directoriesScanned(ArrayList<StringFile> toLoad)
+  {
+    ArrayList<StringFile> onlyDef = new ArrayList<>();
+
+    //StringBuilder debug = new StringBuilder();
+    StringBuilder debug2 = new StringBuilder();
+
+    //debug.append("scan result");
+    //debug.append("leaving ");
+    Log.d(TAG,"return of dir scan "+toLoad.size());
+    for (StringFile aF: toLoad)
+    {
+      //debug.append(aF.getAbsolutePath()).append("\n");
+      if ("default".equals(aF.lang()))
+      {
+        onlyDef.add(aF.getParentFile());
+        debug2.append(aF.getParentFile().getAbsolutePath()).append("\n");
+      }
+    }
+    //Log.d(TAG, "coming back from scan " + debug);
+    Log.d(TAG, "cleansed " + debug2);
+
+    if (onlyDef.size() <= 0)
+    {
+      actProjectPath = tryToFindADefaultDir();
+      savePathToPrefs(actProjectPath);
+    }
+    else if (onlyDef.size() == 1)
+    {
+      actProjectPath = onlyDef.get(0).getAbsolutePath();
+      savePathToPrefs(actProjectPath);
+    }
+    else
+    {
+      FragmentManager fm = getFragmentManager();
+      DialogFragSelectProject sp = new DialogFragSelectProject();
+      sp.setDialogSelectionListener(this);
+      sp.setData(onlyDef);
+      sp.show(fm, "fragment_sel_proj");
+    }
+  }
+
 
 }//public class MainActivity extends Activity implements OnClickListener, 

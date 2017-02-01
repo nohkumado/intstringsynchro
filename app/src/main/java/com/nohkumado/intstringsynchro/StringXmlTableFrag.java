@@ -155,6 +155,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
    */
   public void buildTableView()
   {
+    Log.d(TAG,"building table "+data.size());
     tokenTable.removeAllViews();
     buildTitleRow();
 
@@ -165,6 +166,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
         StringEntry someContent = data.get(token, "default");//.get(lang);
         if (someContent != null)
         {
+          //Log.d(TAG,"building line for "+token);
           if (someContent instanceof PluralEntry) createPluralTable(token);
           else if (someContent instanceof ArrayEntry)  createArrayTable(token, (ArrayEntry) someContent);
           else if (someContent instanceof StringEntry) createStringRow(token);
@@ -172,6 +174,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
       }//for (String token : data)
     }//synchronized (data)
     tokenTable.invalidate();
+    Log.d(TAG,"done building table");
   }//buildTableView
   /**
    * createTextView

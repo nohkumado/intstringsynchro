@@ -8,6 +8,7 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.*;
 import org.xmlpull.v1.*;
+import org.apache.http.*;
 /**
  * @author Noh Kuma Do <nohkumado at gmail dot com>
  * @licence GLP v3
@@ -38,6 +39,7 @@ public class StringFileLoadTask extends AsyncTask<StringFile,Integer,Void>
   @Override
   protected Void doInBackground(StringFile[] p1)
   {
+    data.clear();
     for (StringFile aFile: p1) loadStringsXmlFile(aFile);
     return null;
   }//protected Void doInBackground(StringFile[] p1)
@@ -84,8 +86,14 @@ public class StringFileLoadTask extends AsyncTask<StringFile,Integer,Void>
   protected void onPostExecute(Void result)
   {
     super.onPostExecute(result);
+    Log.d(TAG,"donw loading, reporting back "+data.size());
     if (context instanceof MainActivity)
-      ((MainActivity)context).buildTableView();
+    {
+      MainActivity mA =  (MainActivity)context;
+
+      mA.buildTableView();
+    }
+      
   }//protected void onPostExecute(Void result)
   /**
    * return from the filechooserdialog
@@ -94,7 +102,7 @@ public class StringFileLoadTask extends AsyncTask<StringFile,Integer,Void>
   {
     ArrayList<StringFile> toLoad = new ArrayList<StringFile>(); 
 
-    Log.d(TAG, "findStringFiles in " + pathToLoad);
+    //Log.d(TAG, "findStringFiles in " + pathToLoad);
     File resValuesDir = new File(pathToLoad);
     //ok check if the xml file was selected and use its parent dir
     if (pathToLoad.endsWith(".xml"))
@@ -108,16 +116,33 @@ public class StringFileLoadTask extends AsyncTask<StringFile,Integer,Void>
     {
       ArrayList<File> tmp = new ArrayList<>();
       tmp.add(resValuesDir);
-      resValuesDir = scanDirs(tmp);
-      if (resValuesDir == null) resValuesDir = Environment.getExternalStorageDirectory();
+      
+      tmp = scanDirs(tmp);
+      if(tmp.size() <= 0) resValuesDir = Environment.getExternalStorageDirectory();
+      else if(tmp.size() == 1) resValuesDir = tmp.get(0);
+      else
+      {
+        //ambigouus path....
+        if(!(context instanceof MainActivity))
+        {
+          resValuesDir = tmp.get(0);
+        }
+        else if(context instanceof MainActivity)
+        {
+          String[] cands = new  String[tmp.size()];
+          int n = 0;
+          for(File aF : tmp) 
+          {
+            cands[n] = aF.getAbsolutePath();
+            n++;
+          }
+          //((MainActivity)context).callProjectSelect(cands);
+          Log.e(TAG,"should call mainactivity load project "+cands);
+        }
+      }
     }
     Log.d(TAG, "got back res dir " + resValuesDir.getAbsolutePath());
     if (context instanceof MainActivity) ((MainActivity)context).savePathToPrefs(resValuesDir.getAbsolutePath());
-    
-    
-
-
-
 
 
     if (resValuesDir.exists())
@@ -170,8 +195,7 @@ public class StringFileLoadTask extends AsyncTask<StringFile,Integer,Void>
     if (error.toString().length() > 0) Toast.makeText(context, error.toString(), Toast.LENGTH_LONG).show();
     return(toLoad);
   }
-
-  private File scanDirs(ArrayList<File> list)
+  private ArrayList<File> scanDirs(ArrayList<File> list)
   {
     ArrayList<File> stringsFiles = new ArrayList<>();
     ArrayList<File> toExplore = new ArrayList<>();
@@ -201,12 +225,13 @@ public class StringFileLoadTask extends AsyncTask<StringFile,Integer,Void>
         }//if (aDir.exists() && aDir.isDirectory()) 
       }//if(aDir.exists() && aDir.isDirectory()) 
     }
-    if (stringsFiles.size() > 0) return stringsFiles.get(0);//all ok, we have it
-    else
+
+    if (toExplore.size() > 0) 
     {
-      if (toExplore.size() > 0) return scanDirs(toExplore);
+      toExplore = scanDirs(toExplore);
+      for (File aF: toExplore) stringsFiles.add(aF);
     }
-    return null;
+    return stringsFiles;//all ok, we have it
   }//  public void findStringFiles(String[] p1)
 
 }//public class StringFileLoadTask extends AsyncTask<StringFile,Integer,Void>

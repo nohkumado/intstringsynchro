@@ -10,6 +10,7 @@ import java.net.*;
  */
 public class StringFile extends File
 {
+  
   /** the lang for which we store this file */
   String lang;
 
@@ -57,4 +58,10 @@ public class StringFile extends File
   {
     return lang;
   }//public String lang()
+  public StringFile getParentFile()
+  {
+    File parent = super.getParentFile();
+    StringFile retVal = new StringFile(parent,"",lang);
+    return retVal;
+  }
 }//public class StringFile extends File

@@ -21,6 +21,7 @@ public class LangNameNormalizer
    */
   public String normalizeLangName(String sanitized)
   {
+    if(sanitized == null) return "";
     Matcher m = complete.matcher(sanitized);
     String lang = "", region = "";
     if (m.find())
