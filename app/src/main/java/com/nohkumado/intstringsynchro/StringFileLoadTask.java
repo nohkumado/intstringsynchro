@@ -48,7 +48,7 @@ public class StringFileLoadTask extends AsyncTask<StringFile,Integer,Void>
    */
   protected void loadStringsXmlFile(StringFile aFile)
   {
-    Log.d(TAG, "loading " + aFile.getAbsolutePath());
+    //Log.d(TAG, "loading " + aFile.getAbsolutePath());
     String langTok = aFile.lang();
     ArrayList<StringEntry> entries = new ArrayList<>(); 
     //XmlPullParser parser =  Xml.newPullParser();
@@ -86,7 +86,7 @@ public class StringFileLoadTask extends AsyncTask<StringFile,Integer,Void>
   protected void onPostExecute(Void result)
   {
     super.onPostExecute(result);
-    Log.d(TAG,"donw loading, reporting back "+data.size());
+    //Log.d(TAG,"donw loading, reporting back "+data.size());
     if (context instanceof MainActivity)
     {
       MainActivity mA =  (MainActivity)context;
@@ -136,12 +136,13 @@ public class StringFileLoadTask extends AsyncTask<StringFile,Integer,Void>
             cands[n] = aF.getAbsolutePath();
             n++;
           }
+          //TODO check if this i sstill relevant
           //((MainActivity)context).callProjectSelect(cands);
-          Log.e(TAG,"should call mainactivity load project "+cands);
+          //Log.e(TAG,"should call mainactivity load project "+cands);
         }
       }
     }
-    Log.d(TAG, "got back res dir " + resValuesDir.getAbsolutePath());
+    //Log.d(TAG, "got back res dir " + resValuesDir.getAbsolutePath());
     if (context instanceof MainActivity) ((MainActivity)context).savePathToPrefs(resValuesDir.getAbsolutePath());
 
 

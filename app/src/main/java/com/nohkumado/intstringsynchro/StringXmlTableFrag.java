@@ -155,7 +155,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
    */
   public void buildTableView()
   {
-    Log.d(TAG,"building table "+data.size());
+    //Log.d(TAG,"building table "+data.size());
     tokenTable.removeAllViews();
     buildTitleRow();
 
@@ -174,7 +174,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
       }//for (String token : data)
     }//synchronized (data)
     tokenTable.invalidate();
-    Log.d(TAG,"done building table");
+    //Log.d(TAG,"done building table");
   }//buildTableView
   /**
    * createTextView

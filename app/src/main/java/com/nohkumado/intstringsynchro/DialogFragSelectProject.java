@@ -92,7 +92,7 @@ public class DialogFragSelectProject extends DialogFragment implements OnItemCli
     String key = ((TextView) view).getText().toString();
     StringFile obj = sorted.get(key);
     Toast.makeText(getActivity(), "hit "+key+"for "+obj.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-    Log.d(TAG,"clicked on "+obj.getAbsolutePath());
+    //Log.d(TAG,"clicked on "+obj.getAbsolutePath());
     callback.onSelectedFilePaths(new String[] {obj.getAbsolutePath()});
     dismiss();
   }

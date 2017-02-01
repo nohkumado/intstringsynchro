@@ -40,7 +40,7 @@ public class IntStringReceiver extends BroadcastReceiver
       default:
         {
           Toast.makeText(context, "no idea what to do with  " + intent, Toast.LENGTH_LONG).show();
-          Log.d(TAG, "no idea what to do with  " + intent);
+          //Log.d(TAG, "no idea what to do with  " + intent);
 
         }//default
     }//    switch (intent.getAction())

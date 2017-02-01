@@ -97,14 +97,14 @@ DialogSelectionListener//, OnEditorActionListener
   protected void onCreate(Bundle savedInstanceState)
   {
     super.onCreate(savedInstanceState);
-    if (savedInstanceState != null)
+    /*if (savedInstanceState != null)
     {
       Log.d(TAG, "#############################  restart ###################################");  
     }
     else
     {
       Log.d(TAG, "#############################  start ###################################");  
-    }
+    }*/
     setContentView(R.layout.main);
     SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(this);
     if (prefs.contains("actprojectpath")) actProjectPath = prefs.getString("actprojectpath", "");
@@ -557,7 +557,7 @@ DialogSelectionListener//, OnEditorActionListener
   {
     ArrayList<StringFile> toLoad = new ArrayList<>();
     StringBuilder error = new StringBuilder();
-    Log.d(TAG, "onSelected " + Arrays.toString(p1));
+    //Log.d(TAG, "onSelected " + Arrays.toString(p1));
     StringFileLoadTask task = new StringFileLoadTask(data, this);
     DirectoryScanner scanner;
     if (p1.length > 0) 
@@ -581,7 +581,7 @@ DialogSelectionListener//, OnEditorActionListener
     
     if (toLoad.size() > 0)
     {
-      Log.d(TAG,"saving "+p1[0]+" "+toLoad.get(0).getParentFile().getParent());
+      //Log.d(TAG,"saving "+p1[0]+" "+toLoad.get(0).getParentFile().getParent());
       savePathToPrefs(toLoad.get(0).getParentFile().getParent());
       task.execute(toLoad.toArray(new StringFile[toLoad.size()]));
     }//if (toLoad.size() > 0)
@@ -594,14 +594,14 @@ DialogSelectionListener//, OnEditorActionListener
 
   public void callProjectSelect(String[] p1)
   {
-    Log.d(TAG, "calling scanTask with " + Arrays.toString(p1));
+    //Log.d(TAG, "calling scanTask with " + Arrays.toString(p1));
     DirScanTask scanTask = new DirScanTask(this, p1[0]);  
     scanTask.execute(p1);
   }
 
   public void savePathToPrefs(String p1)
   {
-    Log.d(TAG,"save prefs "+p1); 
+    //Log.d(TAG,"save prefs "+p1); 
     if (mode <= 0)
     {
       //save the actual value of the path
@@ -614,7 +614,7 @@ DialogSelectionListener//, OnEditorActionListener
         actProjectPath = resDir.getCanonicalPath();
         editor.putString("actprojectpath", actProjectPath);
         pathView.setText(actProjectPath);
-        Log.d(TAG, "saved path " + actProjectPath + " to prefs");
+        //Log.d(TAG, "saved path " + actProjectPath + " to prefs");
       }//try
       catch (IOException e)
       {
@@ -652,11 +652,11 @@ DialogSelectionListener//, OnEditorActionListener
               StringEntry newEntry = new StringEntry(token, intentArgs.get(key).toString());
               data.set(token, langCand, newEntry);
             }//if (langCand != null)
-            else Log.d(TAG, "not a value " + key);
+            //else Log.d(TAG, "not a value " + key);
           }//for(String key: intentArgs.keySet())
           break;
         case(MODE_DEL):
-          Log.d(TAG, "case del");
+          //Log.d(TAG, "case del");
           data.remove(intentArgs.getString("token"));
           break;
       }//switch (mode)
@@ -664,7 +664,7 @@ DialogSelectionListener//, OnEditorActionListener
     }//if (mode > 0)
     else 
     {
-      Log.d(TAG, "done loading rebuilding the view "+data.size());
+      //Log.d(TAG, "done loading rebuilding the view "+data.size());
       pathView.setText(actProjectPath);
       tokenTable.buildTableView(); 
     }
@@ -703,13 +703,13 @@ DialogSelectionListener//, OnEditorActionListener
    */
   public void filesSaved()
   {
-    Log.d(TAG, "files saved");
+    //Log.d(TAG, "files saved");
     if (mode > 0)
     {
       Intent returnInt = new Intent();
       returnInt.setAction(ACTION);
       setResult(Activity.RESULT_OK, returnInt);
-      Log.d(TAG, "headless save end " + returnInt + " " + returnInt.getExtras());
+      //Log.d(TAG, "headless save end " + returnInt + " " + returnInt.getExtras());
       finish();
     }//if (mode > 0)
     else
@@ -736,12 +736,12 @@ DialogSelectionListener//, OnEditorActionListener
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data)
   {
-    StringBuilder sb = new StringBuilder();
-    sb.append("got intent back ");
-    sb.append(data);
-    if (data != null)
-      sb.append(": ").append(data.getExtras());
-    Log.d(TAG,  sb.toString());
+    //StringBuilder sb = new StringBuilder();
+    //sb.append("got intent back ");
+    //sb.append(data);
+    //if (data != null)
+    //  sb.append(": ").append(data.getExtras());
+    //Log.d(TAG,  sb.toString());
     // Check which request we're responding to
     if (requestCode == ASK_STRINGMOD) 
     {
@@ -762,22 +762,22 @@ DialogSelectionListener//, OnEditorActionListener
     ArrayList<StringFile> onlyDef = new ArrayList<>();
 
     //StringBuilder debug = new StringBuilder();
-    StringBuilder debug2 = new StringBuilder();
+    //StringBuilder debug2 = new StringBuilder();
 
     //debug.append("scan result");
     //debug.append("leaving ");
-    Log.d(TAG,"return of dir scan "+toLoad.size());
+    //Log.d(TAG,"return of dir scan "+toLoad.size());
     for (StringFile aF: toLoad)
     {
       //debug.append(aF.getAbsolutePath()).append("\n");
       if ("default".equals(aF.lang()))
       {
         onlyDef.add(aF.getParentFile());
-        debug2.append(aF.getParentFile().getAbsolutePath()).append("\n");
+        //debug2.append(aF.getParentFile().getAbsolutePath()).append("\n");
       }
     }
     //Log.d(TAG, "coming back from scan " + debug);
-    Log.d(TAG, "cleansed " + debug2);
+    //Log.d(TAG, "cleansed " + debug2);
 
     if (onlyDef.size() <= 0)
     {

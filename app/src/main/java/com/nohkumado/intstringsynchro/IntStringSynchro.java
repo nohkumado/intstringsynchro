@@ -65,7 +65,7 @@ public class IntStringSynchro extends Activity
   protected void onCreate(Bundle savedInstanceState)
   {
     super.onCreate(savedInstanceState);
-    Log.d(TAG,"§§§§§§§§§§§§§§§§§§§§§§§§§§§§ headless §§§§§§§§§§§§§§§§§§§§§§§§§");
+    //Log.d(TAG,"§§§§§§§§§§§§§§§§§§§§§§§§§§§§ headless §§§§§§§§§§§§§§§§§§§§§§§§§");
     //setRetainInstance(true);
     // Get the intent that started this activity
     Intent intent = getIntent();
@@ -86,13 +86,13 @@ public class IntStringSynchro extends Activity
     IntentArgsChecker checker = new IntentArgsChecker(this);
     if (checker.check(args, sb, error_codes))
     {
-      Log.d(TAG, "intent is  " + intent.getAction() + " with " + intent.getExtras());
+      //Log.d(TAG, "intent is  " + intent.getAction() + " with " + intent.getExtras());
       // Toast.makeText(this, "has data " + intent.getData() + " of type " + intent.getType(), Toast.LENGTH_LONG).show();
       String farPath = args.getString("path");
       PathChecker pCheck = new PathChecker(this);
       farPath = pCheck.check(farPath, error_codes, sb, returnInt);
       if (farPath == null) bailOut(returnInt, error_codes, sb);
-      Log.d(TAG,"farpath now "+farPath);
+      //Log.d(TAG,"farpath now "+farPath);
       actProjectPath = farPath;
 
       switch (farmode)
@@ -112,7 +112,7 @@ public class IntStringSynchro extends Activity
 
             if (langCand != null)
             {
-              Log.d(TAG, "found langCand " + langCand);
+              //Log.d(TAG, "found langCand " + langCand);
               String token = intentArgs.getString("token");
               StringEntry newEntry = new StringEntry(token, intentArgs.get(key).toString());
               data.set(token, langCand, newEntry);
@@ -131,7 +131,7 @@ public class IntStringSynchro extends Activity
           sb.add(getResources().getString(R.string.mode_unknown));
           bailOut(returnInt, error_codes, sb);
       }//switch
-      Log.d(TAG,"saving");
+      //Log.d(TAG,"saving");
       SaveStringXmlTask task = new SaveStringXmlTask(data, this, farPath);
       task.saveData();
       //just to test if we are able to bail out...
@@ -139,8 +139,8 @@ public class IntStringSynchro extends Activity
     }//if (checkIntentArgs(args, returnInt))
     else bailOut(returnInt, error_codes, sb);
     setResult(Activity.RESULT_OK,returnInt);
-    Log.d(TAG,"set the result"+returnInt+" and finishing");
-    Log.d(TAG,"§§§§§§§§§§§§§§§§§§§§§§§§§§§§ headless end §§§§§§§§§§§§§§§§§§§§§§§§§");
+    //Log.d(TAG,"set the result"+returnInt+" and finishing");
+    //Log.d(TAG,"§§§§§§§§§§§§§§§§§§§§§§§§§§§§ headless end §§§§§§§§§§§§§§§§§§§§§§§§§");
     finish();
   }
 /**
