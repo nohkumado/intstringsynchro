@@ -417,7 +417,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
    */
   public void addNewLang(String sanitized)
   {
-    Log.d(TAG, "asked to add " + sanitized);
+    //Log.d(TAG, "asked to add " + sanitized);
     if (!data.hasCol(sanitized))
     {
       data.addCol(sanitized);
@@ -425,13 +425,13 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
       if (tokenTable == null)
       {
         //not yet initialized
-        Log.d(TAG,"no table to display yet");
+        //Log.d(TAG,"no table to display yet");
         if (tmpLangList == null) tmpLangList = new ArrayList<>();
         tmpLangList.add(sanitized);
         return;
       }
     }//if
-    Log.d(TAG,"calling table view");
+    //Log.d(TAG,"calling table view");
     //else Log.d(TAG, "allready in  " + Arrays.toString(langList.toArray(new String[langList.size()])));
     buildTableView();
   }//addNewLang
@@ -523,12 +523,12 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
   @Override
   public void onFinishAddLangDialog(String inputText)
   {
-    Log.d(TAG, "Add lang: " + inputText);
+    //Log.d(TAG, "Add lang: " + inputText);
     if (inputText == null || inputText.length() <= 0) return;
     String sanitized = inputText.trim();
     if (hidden.get(sanitized) != null)
     {
-      Log.d(TAG, "known lang: " + hidden.get(sanitized));
+      //Log.d(TAG, "known lang: " + hidden.get(sanitized));
       hidden.put(sanitized, false);
       buildTableView();
       return;

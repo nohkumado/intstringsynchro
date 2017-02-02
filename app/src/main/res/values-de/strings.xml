@@ -23,7 +23,7 @@
       <item></item>
       <item>Venus</item>
    </string-array>
-   <string name="reset_path">Pfad zurücksetzen</string>
+   <string name="reset_path">Zurücksetzen</string>
    <string name="sel_proj">Projekt auswählen</string>
    <string name="stored_langs">gespeicherte Sprachen</string>
    <string name="table_tok">Schlüssel/Sprache</string>

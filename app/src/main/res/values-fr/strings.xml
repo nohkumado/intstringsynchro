@@ -23,7 +23,7 @@
       <item>Mercure</item>
       <item>Venus</item>
    </string-array>
-   <string name="reset_path">remise a 0 du chemin</string>
+   <string name="reset_path">remise a 0</string>
    <string name="sel_proj">Choisir un projet</string>
    <string name="stored_langs">langues stockées</string>
    <string name="table_tok">Clef/langue</string>
