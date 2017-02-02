@@ -2,9 +2,32 @@
 <resources>
    <string name="actual_language">Aktuelle</string>
    <string name="add_lang">Sprache hinzufügen</string>
+   <string name="add_project">Projekt hinzufügen</string>
+   <string name="add_tok">Token hinzufügen</string>
+   <string name="app_name">IntStringSynchro</string>
+   <string name="choose_type">Ressource wählen</string>
+   <string name="def_val">Standardwert</string>
+   <string name="fallback">Standardwert</string>
+   <string name="files_loaded">Dateien geladen</string>
+   <string name="files_saved">Dateien gespeichert</string>
+   <string name="headless">ohne UI</string>
+   <string name="missing_mode">Fehlender Modus</string>
+   <string name="missing_path">Fehlender Pfad</string>
+   <string name="missing_token">Fehlendes Schlüsselwort</string>
+   <string name="missing_value">Fehlender Wert</string>
+   <string name="missing_xml">strings.xml nicht gefunden, bitte ein ..res/ Verzeichnis mit einem strings.xml darin angeben!</string>
+   <string name="mode_unknown">unbekannter Modus, add,del, edit erlaubt</string>
    <string name="none">keine</string>
+   <string name="open_stringxml">Bitte ein Projekt mit einer/mehreren strings.xml Datei auswählen</string>
    <string-array name="planets_array">
       <item></item>
       <item>Venus</item>
    </string-array>
+   <string name="reset_path">Pfad zurücksetzen</string>
+   <string name="sel_proj">Projekt auswählen</string>
+   <string name="stored_langs">gespeicherte Sprachen</string>
+   <string name="table_tok">Schlüssel/Sprache</string>
+   <string name="token_cancel">abbrechen</string>
+   <string name="token_copy">kopieren</string>
+   <string name="token_delete">löschen</string>
 </resources>

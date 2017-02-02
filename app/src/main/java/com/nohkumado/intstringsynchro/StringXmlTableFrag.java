@@ -48,7 +48,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     {
       data = new TreeMapTable<>();
       data.addCol("default");
-      hidden.put("default",false);
+      hidden.put("default", false);
     }
 
     /*if (langList == null) 
@@ -65,6 +65,8 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
   {
     this();
     this.context = context;
+  
+ 
   }//CTOR
   /**
    * getter for the lang list
@@ -137,10 +139,10 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     for (Map.Entry<Integer,String> keyVal: data.header().entrySet())
     {
       String lang = keyVal.getValue();
-      if(hidden.get(lang) == null)
+      if (hidden.get(lang) == null)
       {
         //Log.d(TAG,"ehhhm forgot to adde "+lang+" to hidden??");
-        hidden.put(lang,false);
+        hidden.put(lang, false);
       }
       if (!hidden.get(lang))title.addView(createButton(lang, lang));
     }//for (String lang: langList)
@@ -282,7 +284,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
             aEntry = new PluralEntry(pos[0]);
             data.set(pos[0], pos[1], aEntry);
           }//if (aEntry == null)
-          aEntry.hashmap.put(pos[2], new StringEntry(pos[2], v.getText().toString()));
+          aEntry.put(pos[2], v.getText().toString());
         }//catch (NumberFormatException e)
       }//else
       return true;
@@ -333,9 +335,9 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
         {
           PluralEntry rec = (PluralEntry) data.get(token, lang);
           StringEntry line = null;
-          for (String key : rec.hashmap.keySet())
+          for (String key : rec.keySet())
           {
-            StringEntry aline = rec.hashmap.get(key);
+            StringEntry aline = rec.get(key);
             if (aline.token.equals(quantity)) 
             {
               line = aline;
@@ -401,7 +403,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     for (Map.Entry<Integer,String> keyVal: data.header().entrySet())
     {
       String lang = keyVal.getValue();
-      if (hidden.get(lang)== null) hidden.put(lang,false);
+      if (hidden.get(lang) == null) hidden.put(lang, false);
       if (hidden.get(lang))  continue;
       StringEntry someContent = data.get(token, lang);
       String text = "";
@@ -415,7 +417,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
    */
   public void addNewLang(String sanitized)
   {
-    //Log.d(TAG, "asked to add " + sanitized);
+    Log.d(TAG, "asked to add " + sanitized);
     if (!data.hasCol(sanitized))
     {
       data.addCol(sanitized);
@@ -423,11 +425,13 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
       if (tokenTable == null)
       {
         //not yet initialized
+        Log.d(TAG,"no table to display yet");
         if (tmpLangList == null) tmpLangList = new ArrayList<>();
         tmpLangList.add(sanitized);
         return;
       }
     }//if
+    Log.d(TAG,"calling table view");
     //else Log.d(TAG, "allready in  " + Arrays.toString(langList.toArray(new String[langList.size()])));
     buildTableView();
   }//addNewLang
@@ -489,6 +493,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
   private void deleteToken(String token)
   {
     data.remove(token);
+    hidden.remove(token);
     buildTableView();
   }//private void deleteToken(String token)
   /**
@@ -518,30 +523,26 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
   @Override
   public void onFinishAddLangDialog(String inputText)
   {
+    Log.d(TAG, "Add lang: " + inputText);
     if (inputText == null || inputText.length() <= 0) return;
     String sanitized = inputText.trim();
     if (hidden.get(sanitized) != null)
     {
+      Log.d(TAG, "known lang: " + hidden.get(sanitized));
       hidden.put(sanitized, false);
       buildTableView();
       return;
     }//if (hidden.get(sanitized) != null)
 
     sanitized = normalizer.normalizeLangName(sanitized);
-
-    if (!data.hasCol(sanitized))
-    {
-      //langList.add(sanitized);
-      //Toast.makeText(context, "Added lang, " + sanitized, Toast.LENGTH_SHORT).show();
-      addNewLang(sanitized);
-      buildTableView();
-    }//if (!langList.contains(sanitized))
-    else if (hidden.get(sanitized) != null)
+    if (hidden.get(sanitized) != null)
     {
       boolean status = hidden.get(sanitized);
       hidden.put(sanitized, !status);
       buildTableView();
+      return;
     }//else  if (hidden.get(sanitized) != null)
+    addNewLang(sanitized);
   }//public void onFinishAddLangDialog(String inputText)
   /**
    * callback to notify that a token should be added
@@ -595,4 +596,9 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     }//    switch (action)
     buildTableView();
   }//public void onFinishTokenDialog(String inputText)
+  public void clear()
+  {
+    data.clear();
+    hidden.clear();
+  }
 }//public class StringXmlTableFrag extends Fragment

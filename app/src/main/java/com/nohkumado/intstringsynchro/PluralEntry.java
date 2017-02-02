@@ -1,7 +1,7 @@
 package com.nohkumado.intstringsynchro;
 
-import android.util.*;
 import java.util.*;
+import java.util.regex.*;
 /**
  * @author Noh Kuma Do <nohkumado at gmail dot com>
  * @licence GLP v3
@@ -12,7 +12,9 @@ import java.util.*;
 public class PluralEntry extends StringEntry
 {
   private static final String TAG="Plur"; /** needed for Log.d */
-  protected HashMap<String,StringEntry> hashmap; /** the map for the different plural strings */
+  private HashMap<String,StringEntry> hashmap; /** the map for the different plural strings */
+  Pattern availableKEys;
+  
   /** CTOR */
   public PluralEntry(String n)
   {
@@ -24,7 +26,18 @@ public class PluralEntry extends StringEntry
     super(n, "");
     if (a != null) hashmap = a;
     else hashmap = new HashMap<>();
-  }//public PluralEntry(String n, HashMap<String,StringEntry> a)
+  }
+
+  public StringEntry get(String key)
+  {
+    return hashmap.get(key);
+  }
+
+  public Collection keySet()
+  {
+    return hashmap.keySet();
+  }
+
   /**
    * make a string representation, for pretty printing
    */
@@ -54,4 +67,14 @@ public class PluralEntry extends StringEntry
     sb.append(indent).append("</plurals>\n");
     return sb.toString();
   }//public String toXml(String indent)
+  public void put(String key, String value)
+  {
+    if(availableKEys == null) availableKEys = Pattern.compile("zero|one|two|few|many|other");
+    Matcher m = availableKEys.matcher(key);
+    if(m.find())
+    {
+      hashmap.put(key,new StringEntry(key,value));
+    }
+  }//public PluralEntry(String n, HashMap<String,StringEntry> a)
+  
 }//public class PluralEntry extends StringEntry

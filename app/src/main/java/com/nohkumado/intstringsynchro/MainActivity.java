@@ -450,9 +450,11 @@ DialogSelectionListener//, OnEditorActionListener
     }
     else if (p1 == resetBut)
     {
+      tokenTable.clear();
       actProjectPath = tryToFindADefaultDir();
       savePathToPrefs(actProjectPath);
       pathView.setText(actProjectPath);
+      buildTableView();
     }
     /*
     else if (p1 == testBut)
@@ -582,6 +584,7 @@ DialogSelectionListener//, OnEditorActionListener
     if (toLoad.size() > 0)
     {
       //Log.d(TAG,"saving "+p1[0]+" "+toLoad.get(0).getParentFile().getParent());
+      tokenTable.clear();
       savePathToPrefs(toLoad.get(0).getParentFile().getParent());
       task.execute(toLoad.toArray(new StringFile[toLoad.size()]));
     }//if (toLoad.size() > 0)

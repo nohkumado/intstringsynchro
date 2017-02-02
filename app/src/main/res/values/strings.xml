@@ -16,13 +16,13 @@
    <string name="missing_token">missing token, specify a international string name</string>
    <string name="missing_value">missing (default) value</string>
    <string name="missing_xml">string.xml not found, specify the res directory, without values or string.xml</string>
-   <string name="mode_unknown">unknown mode, allowed: add, del, list,edit</string>
+   <string name="mode_unknown">unknown mode, allowed: add, del,edit</string>
    <string name="none">none</string>
    <plurals name="numberOfSongsAvailable">
       <item quantity="few">%d songs avaiable.</item>
       <item quantity="one">One Song available.</item>
-      <item quantity="zero">No Songs available</item>
       <item quantity="other">%d songs available.</item>
+      <item quantity="zero">No Songs available</item>
    </plurals>
    <string name="open_stringxml">select a project or a string.xml file of a project</string>
    <string name="reset_path">reset path</string>

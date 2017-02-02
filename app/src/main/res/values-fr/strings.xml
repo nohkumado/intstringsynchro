@@ -1,9 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
    <string name="actual_language">actuelle</string>
+   <string name="add_lang">rajouter une langue</string>
+   <string name="add_project">rajouter un projet</string>
+   <string name="add_tok">rajouter un mot clé</string>
+   <string name="app_name">IntStringSynchro</string>
+   <string name="choose_type">choix de type de ressource</string>
+   <string name="def_val">valeur par défaut</string>
+   <string name="fallback">valeur par défaut</string>
+   <string name="files_loaded">chargé les fichiers</string>
+   <string name="files_saved">sauvegardé les fichiers</string>
+   <string name="headless">sans IU</string>
+   <string name="missing_mode">mode manquant</string>
+   <string name="missing_path">chemin manquant</string>
+   <string name="missing_token">mot clef manquant</string>
+   <string name="missing_value">valeur manquante</string>
+   <string name="missing_xml">pas trouvé strings.xml, priere de spécifier un chemin vers un projet existant</string>
+   <string name="mode_unknown">mode non reconnu, permis: add,del,edit</string>
    <string name="none">aucune</string>
+   <string name="open_stringxml">Ouvrir un projet avec un/des fichier strings.xml</string>
    <string-array name="planets_array">
       <item>Mercure</item>
       <item>Venus</item>
    </string-array>
+   <string name="reset_path">remise a 0 du chemin</string>
+   <string name="sel_proj">Choisir un projet</string>
+   <string name="stored_langs">langues stockées</string>
+   <string name="table_tok">Clef/langue</string>
+   <string name="token_cancel">interrompre</string>
+   <string name="token_copy">copier</string>
+   <string name="token_delete">effacer</string>
 </resources>

@@ -2,6 +2,7 @@ package com.nohkumado.intstringsynchro;
 
 import android.app.*;
 import android.os.*;
+import android.util.*;
 import android.view.*;
 import android.view.View.*;
 import android.view.inputmethod.*;
@@ -95,7 +96,7 @@ public class DialogFragAddLang extends DialogFragment implements OnEditorActionL
   @Override
   public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
   {
-    //Log.d(TAG,"Editor action! "+event+"  id"+actionId);
+    Log.d(TAG,"Editor action! "+event+"  id"+actionId);
     if (EditorInfo.IME_ACTION_DONE == actionId || (event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER))
     {
       // Return input text to activity
@@ -107,6 +108,7 @@ public class DialogFragAddLang extends DialogFragment implements OnEditorActionL
         else 
           listener.onFinishAddLangDialog(mEditText.getText().toString());
       }//if (listener != null)
+      else Log.d(TAG,"no listener...");
       //AddLangDialogListener activity = (AddLangDialogListener) getActivity();
       this.dismiss();
       return true;

@@ -52,6 +52,7 @@ public class IntStringSynchro extends Activity
    //intent.setAction("ADD");
    //intent.putExtra("path", "AppProjects/IntStringSynchro/app/src/main/res");//relative
    //intent.putExtra("mode", "add");
+   //intent.putExtra("type", "string|array|plural");
    //intent.putExtra("token", "testit");
    //intent.putExtra("value", "a test");
    //intent.putExtra("value-de", "ein Test");
@@ -114,7 +115,26 @@ public class IntStringSynchro extends Activity
             {
               //Log.d(TAG, "found langCand " + langCand);
               String token = intentArgs.getString("token");
-              StringEntry newEntry = new StringEntry(token, intentArgs.get(key).toString());
+              String type = intentArgs.getString("type");
+              if(type == null) type = "string";
+              
+              StringEntry newEntry = null;
+              switch(type)
+              {
+                case "string":
+                  newEntry = new StringEntry(token, intentArgs.get(key).toString());
+                  break;
+                case "array":
+                  newEntry = new ArrayEntry(token);
+                  ((ArrayEntry)newEntry).add(intentArgs.get(key).toString().trim());
+                  break;
+                case "plural":
+                  newEntry = new PluralEntry(token);
+                  ((PluralEntry)newEntry).put("one",intentArgs.get(key).toString().trim());
+                  
+                  break;
+              }
+              
               data.set(token, langCand, newEntry);
             }//if (langCand != null)
           }//for(String key: intentArgs.keySet())

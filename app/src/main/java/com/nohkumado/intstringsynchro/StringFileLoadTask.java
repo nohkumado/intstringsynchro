@@ -39,7 +39,7 @@ public class StringFileLoadTask extends AsyncTask<StringFile,Integer,Void>
   @Override
   protected Void doInBackground(StringFile[] p1)
   {
-    data.clear();
+    //data.clear();
     for (StringFile aFile: p1) loadStringsXmlFile(aFile);
     return null;
   }//protected Void doInBackground(StringFile[] p1)
