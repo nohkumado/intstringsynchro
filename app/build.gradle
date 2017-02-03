@@ -8,8 +8,8 @@ android {
         applicationId "com.nohkumado.intstringsynchro"
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 8
-        versionName "1.8"
+        versionCode 10
+        versionName "1.10"
     }
     buildTypes {
         release {
@@ -20,7 +20,7 @@ android {
 }
 
 dependencies {
-  compile 'com.github.angads25:filepicker:1.0.6'
+  compile 'com.github.angads25:filepicker:1.0.8'
   compile project('::../UtilsApp:nohutils')
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }

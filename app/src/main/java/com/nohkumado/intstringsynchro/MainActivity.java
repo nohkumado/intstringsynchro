@@ -33,7 +33,7 @@ DialogSelectionListener//, OnEditorActionListener
 {
   //protected Button testBut, resetBut;/** fire up the filebrowser */ 
   protected Button resetBut;/** reset the path */ 
-  protected ImageButton moveUpBut,saveBut, helpBut; /** different buttons for overall function */
+  protected ImageButton saveBut, helpBut; /** different buttons for overall function */
 
   //protected ArrayList<String> langList; /** list of loaded languages */
   protected TreeMapTable<String,StringEntry> data; /** the table with the data */
@@ -73,38 +73,19 @@ DialogSelectionListener//, OnEditorActionListener
    * @arg savedInstanceState
    *
    * testet the incoing intent with this:
-   //testing edit
-   //intent.setAction("EDIT");
-   //intent.putExtra("mode", "edit");
-   //intent.putExtra("path","/at/timbouktou");//wrong
-   //intent.putExtra("path", "AppProjects/IntStringSynchro/app/src/main/res");//relative
-   //intent.putExtra("path","/storage/emulated/0/AppProjects/IntStringSynchro/app/src/main/res");//absolute
-
-   //testing add
-   //intent.setAction("ADD");
-   //intent.putExtra("path", "AppProjects/IntStringSynchro/app/src/main/res");//relative
-   //intent.putExtra("mode", "add");
-   //intent.putExtra("token", "testit");
-   //intent.putExtra("value", "a test");
-   //intent.putExtra("value-de", "ein Test");
-   //testing remove
-   //intent.setAction("DEL");
-   //intent.putExtra("path", "AppProjects/IntStringSynchro/app/src/main/res");//relative
-   //intent.putExtra("mode", "del");
-   //intent.putExtra("token", "testit");
    */
   @Override
   protected void onCreate(Bundle savedInstanceState)
   {
     super.onCreate(savedInstanceState);
     /*if (savedInstanceState != null)
-    {
-      Log.d(TAG, "#############################  restart ###################################");  
-    }
-    else
-    {
-      Log.d(TAG, "#############################  start ###################################");  
-    }*/
+     {
+     Log.d(TAG, "#############################  restart ###################################");  
+     }
+     else
+     {
+     Log.d(TAG, "#############################  start ###################################");  
+     }*/
     setContentView(R.layout.main);
     SharedPreferences prefs =  PreferenceManager.getDefaultSharedPreferences(this);
     if (prefs.contains("actprojectpath")) actProjectPath = prefs.getString("actprojectpath", "");
@@ -155,16 +136,6 @@ DialogSelectionListener//, OnEditorActionListener
 
         switch (farmode)
         {
-            /*case("add"):
-             mode = MODE_ADD;
-             intentArgs = args;
-             onSelectedFilePaths(new String[] {farPath + "/values"});
-             break;
-             case("del"):
-             mode = MODE_DEL;
-             intentArgs = args;
-             onSelectedFilePaths(new String[] {farPath + "/values"});
-             break;*/
           case "edit":
             actProjectPath = farPath;
             //TODO check if token is present, center on it and set the focus into it
@@ -195,8 +166,6 @@ DialogSelectionListener//, OnEditorActionListener
     //langList = tokenTable.getLangList();
 
     //Log.d(TAG,"data : "+data);
-    moveUpBut   = (ImageButton) findViewById(R.id.moveUpBut);
-    moveUpBut.setOnClickListener(this);
 
     saveBut = (ImageButton) findViewById(R.id.saveBut);
     saveBut.setOnClickListener(this);
@@ -210,7 +179,7 @@ DialogSelectionListener//, OnEditorActionListener
     resetBut = (Button) findViewById(R.id.reset_path);
     resetBut.setOnClickListener(this);
 
-    
+
     pathView = (TextView) findViewById(R.id.path_view);
     pathView.setText(actProjectPath);
     pathView.setOnClickListener(this);
@@ -221,47 +190,11 @@ DialogSelectionListener//, OnEditorActionListener
     else if (actProjectPath != null && actProjectPath.length() > 0 && data.size() <= 0) 
     {
       //Log.d(TAG, "calling load on " + actProjectPath + "/values");
-      
+
       onSelectedFilePaths(new String[] {actProjectPath });
       pathView.setText(actProjectPath);
     }//if (actProjectPath != null && actProjectPath.length() > 0 && data.size() <= 0) 
   }//protected void onCreate(Bundle savedInstanceState)
-  /**
-   * check if the path is the path to a res dir, with a values folder inside and there a strings.xml
-   */
-  /*private String checkPath(String farPath, ArrayList<Integer> error_codes, ArrayList<String> sb, Intent returnInt) 
-   {
-   File tstit;
-   if (farPath.startsWith("/")) tstit = new File(farPath); 
-   else  tstit = new File(Environment.getExternalStorageDirectory(),  farPath); 
-   if (tstit.exists())
-   {
-   //Log.d(TAG, "path exists! " + tstit.getAbsolutePath());
-   try
-   {
-   farPath = tstit.getCanonicalPath();
-   }
-   catch (IOException e)
-   { Log.e(TAG, "something went wrong extracting the path from " + tstit.getAbsolutePath());}
-
-   tstit = new File(tstit.getAbsoluteFile(), "values/strings.xml");
-   if (tstit.exists()) return farPath;
-   else
-   {
-   error_codes.add(PATH_INVALID);
-   sb.add(tstit.getAbsolutePath() + " " + getResources().getString(R.string.missing_xml));
-   bailOut(returnInt, error_codes, sb);
-   }//else
-   }//if (tstit.exists())
-   else 
-   {
-   error_codes.add(PATH_INVALID);
-   sb.add(tstit.getAbsolutePath() + " " + getResources().getString(R.string.cd_does_not_exist));
-   bailOut(returnInt, error_codes, sb);
-   }//else
-   return farPath;
-   }//private String checkPath(String farPath, ArrayList<Integer> error_codes, ArrayList<String> sb, Intent returnInt) 
-   */
   /**
    * bailout
    * something bad happened, lets leave it at that...
@@ -280,49 +213,6 @@ DialogSelectionListener//, OnEditorActionListener
     //Log.d(TAG, "we have errors, bailing out " + returnInt + " ext:" + returnInt.getExtras());
     finish();
   }//private void bailOut(Intent returnInt, ArrayList<Integer> error_codes, ArrayList<String> sb)
-  /**
-   * check out if the arguments given with the intent match what we expect...
-   */
-  /*private boolean checkIntentArgs(Bundle args, ArrayList<String> sb, ArrayList<Integer> error_codes)
-   {
-   boolean result = true;
-   if (args == null) return false;
-   if (args.getString("path") == null)
-   {
-   error_codes.add(MISSING_PATH);
-   sb.add(getResources().getString(R.string.missing_path));
-   result = false; //critical
-   }//if (args.getString("path") == null)
-   if (args.getString("mode") == null)
-   {
-   error_codes.add(MISSING_MODE);
-   sb.add(getResources().getString(R.string.missing_mode));
-   result = false; //critical
-   }//if (args.getString("mode") == null)
-   else
-   {
-   if (!args.getString("mode").matches("edit|add|del"))
-   {
-   error_codes.add(MODE_INVALID);
-   sb.add(getResources().getString(R.string.mode_unknown));
-   result = false;    
-   }//if (!args.getString("mode").matches("edit|add|del"))
-   else if (args.getString("mode").equals("add") && args.getString("value") == null)
-   {
-   error_codes.add(MISSING_VALUE);
-   sb.add(getResources().getString(R.string.missing_value));
-   result = false; 
-   }//else if (args.getString("mode").equals("add") && args.getString("value") == null)
-   }//else
-   if (args.getString("token") == null && args.getString("mode") != null && !args.getString("mode").equals("edit"))
-   {
-   error_codes.add(MISSING_TOKEN);
-   sb.add(getResources().getString(R.string.missing_token));
-   result = false;
-   }//if (args.getString("token") == null && args.getString("mode") != null && !args.getString("mode").equals("edit"))
-   return result;
-   }//private boolean checkIntentArgs(Bundle args, ArrayList<String> sb, ArrayList<Integer> error_codes)
-   */
   /**
    * check if the files are there and load them
    */
@@ -425,23 +315,6 @@ DialogSelectionListener//, OnEditorActionListener
       //startActivityForResult(intent, PROJECT_CHOOSED);
       showFileChooser();
     }//if (p1 == openProject)  
-    else if (p1 == moveUpBut)
-    {
-      File actDir = new File(actProjectPath, "../");
-      if (actDir.canRead())
-      {
-        try
-        {
-          actProjectPath = actDir.getCanonicalPath();
-        }
-        catch (IOException e)
-        {
-          actProjectPath =  tryToFindADefaultDir();
-        }//catch (IOException e)  
-      }//if (actDir.canRead())
-      else actProjectPath =  tryToFindADefaultDir();
-      pathView.setText(actProjectPath);
-    }//else if (p1 == moveUpBut)
     else if (p1 == saveBut) saveFiles();
     else if (p1 == helpBut)
     {
@@ -457,45 +330,45 @@ DialogSelectionListener//, OnEditorActionListener
       buildTableView();
     }
     /*
-    else if (p1 == testBut)
-    {
-      String tstpathToProject = "AppProjects/IntStringIntentTester/app/src/main/res";
+     else if (p1 == testBut)
+     {
+     String tstpathToProject = "AppProjects/IntStringIntentTester/app/src/main/res";
 
-      //IntStringSynchro testit = new IntStringSynchro();
-      //testit.onCreate(savedInstanceState);
+     //IntStringSynchro testit = new IntStringSynchro();
+     //testit.onCreate(savedInstanceState);
 
-      //Intent callIt = new Intent(this, IntStringSynchro.class);
-      Intent callIt = new Intent();
-      callIt.setClassName("com.nohkumado.intstringsynchro", "IntStringSynchro");
-      //callIt.setComponent(new ComponentName("com.nohkumado.intstringsynchro", "./IntStringSynchro"));
-      callIt.setComponent(new ComponentName("com.nohkumado.intstringsynchro", "com.nohkumado.intstringsynchro.IntStringSynchro"));
-      callIt.addCategory("android.intent.category.EMBED");
-      callIt.setAction("ADD");
-      //call.setClassName("com.nohkumado.intstringsynchro","IntStringSynchro");
+     //Intent callIt = new Intent(this, IntStringSynchro.class);
+     Intent callIt = new Intent();
+     callIt.setClassName("com.nohkumado.intstringsynchro", "IntStringSynchro");
+     //callIt.setComponent(new ComponentName("com.nohkumado.intstringsynchro", "./IntStringSynchro"));
+     callIt.setComponent(new ComponentName("com.nohkumado.intstringsynchro", "com.nohkumado.intstringsynchro.IntStringSynchro"));
+     callIt.addCategory("android.intent.category.EMBED");
+     callIt.setAction("ADD");
+     //call.setClassName("com.nohkumado.intstringsynchro","IntStringSynchro");
 
-      //Intent callIt = new Intent(name);
-      //callIt.setPackage("com.nohkumado.intstringsynchro");
-      callIt.putExtra("token", "testtoto");
-      callIt.putExtra("value", "toto");
-      callIt.putExtra("value-de", "tata");
-      callIt.setAction("ADD");
-      callIt.putExtra("path", tstpathToProject);//relative
-      //intent.putExtra("mode", "add");
-      //intent.putExtra("value", "a test");
-      //intent.putExtra("value-de", "ein Test");
-      Log.d(TAG, "sending intent " + callIt + " " + callIt.getExtras());
+     //Intent callIt = new Intent(name);
+     //callIt.setPackage("com.nohkumado.intstringsynchro");
+     callIt.putExtra("token", "testtoto");
+     callIt.putExtra("value", "toto");
+     callIt.putExtra("value-de", "tata");
+     callIt.setAction("ADD");
+     callIt.putExtra("path", tstpathToProject);//relative
+     //intent.putExtra("mode", "add");
+     //intent.putExtra("value", "a test");
+     //intent.putExtra("value-de", "ein Test");
+     Log.d(TAG, "sending intent " + callIt + " " + callIt.getExtras());
 
-      try
-      {
-        //sendBroadcast(callIt);
-        //startActivity(callIt);
-        startActivityForResult(callIt, ASK_STRINGMOD);
-      }
-      catch (ActivityNotFoundException e)
-      {
-        Toast.makeText(this, "no available activity " + callIt, Toast.LENGTH_SHORT).show();
-      }
-    }*/
+     try
+     {
+     //sendBroadcast(callIt);
+     //startActivity(callIt);
+     startActivityForResult(callIt, ASK_STRINGMOD);
+     }
+     catch (ActivityNotFoundException e)
+     {
+     Toast.makeText(this, "no available activity " + callIt, Toast.LENGTH_SHORT).show();
+     }
+     }*/
   }
 
   private String tryToFindADefaultDir()
@@ -525,8 +398,10 @@ DialogSelectionListener//, OnEditorActionListener
     DialogProperties properties=new DialogProperties();
     properties.selection_mode = DialogConfigs.SINGLE_MODE;
     properties.selection_type = DialogConfigs.DIR_SELECT;
-    if (actProjectPath.length() > 0)  properties.root = new File(actProjectPath);
-    else properties.root = new File(DialogConfigs.DEFAULT_DIR);
+    properties.root = new File(tryToFindADefaultDir());
+
+    if (actProjectPath.length() > 0)  properties.offset = new File(actProjectPath);
+    else properties.offset = new File(DialogConfigs.DEFAULT_DIR);
 
     properties.error_dir = new File(DialogConfigs.DEFAULT_DIR);
     properties.extensions = null;
@@ -565,12 +440,12 @@ DialogSelectionListener//, OnEditorActionListener
     if (p1.length > 0) 
     {
       scanner = new DirectoryScanner();
-      for(String fName : p1) 
+      for (String fName : p1) 
       {
         //Log.d(TAG,"calling find string file on "+fName);
-        for(StringFile aFile: scanner.findStringFiles(fName,error)) toLoad.add(aFile);
+        for (StringFile aFile: scanner.findStringFiles(fName, error)) toLoad.add(aFile);
       }
-      if(scanner.isAmbiguous())
+      if (scanner.isAmbiguous())
       {
         callProjectSelect(p1);
         return;
@@ -580,7 +455,7 @@ DialogSelectionListener//, OnEditorActionListener
       //Log.e(TAG, "calling on call project, restore after debug " + Arrays.toString(p1)+"\nfiles found "+toLoad);
     }
     else error.append("selected the values dir");
-    
+
     if (toLoad.size() > 0)
     {
       //Log.d(TAG,"saving "+p1[0]+" "+toLoad.get(0).getParentFile().getParent());
@@ -736,7 +611,7 @@ DialogSelectionListener//, OnEditorActionListener
     }//if (error_codes.size() > 0)
     //else Log.d(TAG, "standalino back"); 
   }//public void onBackPressed()
-  @Override
+  /*@Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data)
   {
     //StringBuilder sb = new StringBuilder();
@@ -758,7 +633,7 @@ DialogSelectionListener//, OnEditorActionListener
         // Do something with the contact here (bigger example below)
       }
     }
-  }
+  }*/
 
   public void directoriesScanned(ArrayList<StringFile> toLoad)
   {
@@ -801,6 +676,5 @@ DialogSelectionListener//, OnEditorActionListener
       sp.show(fm, "fragment_sel_proj");
     }
   }
-
 
 }//public class MainActivity extends Activity implements OnClickListener, 

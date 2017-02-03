@@ -191,11 +191,19 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     TextView tv = new TextView(context);
     tv.setLayoutParams(llp);
     tv.setText(someContent);
+    setFontSize(tv);
+    
     tv.setBackground(getResources().getDrawable(R.drawable.border));
     tv.setPadding(0, 0, 4, 3);
     tv.setHint(hintTxt);
     tv.setOnClickListener(this);
     return tv;
+  }
+
+  private void setFontSize(TextView tv)
+  {
+    float pixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics());
+    tv.setTextSize(pixels);
   }//createTextView
   /**
    * createEditView
@@ -226,6 +234,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     tv.setHint(hintTxt);
     tv.setSingleLine(false);
     tv.setWidth(0);
+    setFontSize(tv);
     //tv.setInputType(EditText.
     //tv.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
     tv.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
