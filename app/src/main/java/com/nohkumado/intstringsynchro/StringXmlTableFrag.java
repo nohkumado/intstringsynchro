@@ -25,7 +25,7 @@ import android.view.View.OnClickListener;
  * displays the table and handles the events on it
  */
 public class StringXmlTableFrag extends Fragment implements OnEditorActionListener, OnClickListener,
-DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListener, DialogTokenMenu.TokenDialogListener
+DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListener, DialogTokenMenu.TokenDialogListener, DialogArray.ArrayDialogListener
 {
   private static final String TAG="SXF";
   //private ArrayList<String> langList;
@@ -65,8 +65,8 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
   {
     this();
     this.context = context;
-  
- 
+
+
   }//CTOR
   /**
    * getter for the lang list
@@ -192,7 +192,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     tv.setLayoutParams(llp);
     tv.setText(someContent);
     setFontSize(tv);
-    
+
     tv.setBackground(getResources().getDrawable(R.drawable.border));
     tv.setPadding(0, 0, 4, 3);
     tv.setHint(hintTxt);
@@ -482,9 +482,13 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     else if (p1 instanceof TextView)
     {
       //Toast.makeText(context, "hit token " + ((TextView)p1).getText(), Toast.LENGTH_SHORT).show();
-      if ("token".equals(((TextView)p1).getHint().toString()))
+      String token = ((TextView)p1).getHint().toString();
+      if (token == null) token = "";
+      Log.d(TAG,"text '"+((TextView)p1).getText()+"' token '"+token+"'");
+      if ("token".equals(token))
       {
-        String token = ((TextView)p1).getText().toString();
+        Log.d(TAG,"we have array title");
+        token = ((TextView)p1).getText().toString();
         if (token == null || token.length() <= 0) token =  ((TextView)p1).getHint().toString();
 
         DialogTokenMenu tokenActionDia = new DialogTokenMenu(getActivity(), p1, token);
@@ -493,6 +497,18 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
         tokenActionDia.setOnMenuItemClickListener(tokenActionDia);
         tokenActionDia.show();
       }//if ("token".equals(((TextView)p1).getHint().toString()))
+      else if (token.startsWith("token"))
+      {
+        Log.d(TAG,"we have array line");
+        //"token:" + token + ":" + line)
+        DialogArray tokenActionDia = new DialogArray(getActivity(), p1, token);
+        tokenActionDia.setTokenDialogListener(this);
+        tokenActionDia.getMenuInflater().inflate(R.menu.array_menu, tokenActionDia.getMenu());
+        tokenActionDia.setOnMenuItemClickListener(tokenActionDia);
+        tokenActionDia.show();
+
+      }
+
     }//else if (p1 instanceof TextView)
 
   }//public void onClick(View p1)
@@ -605,9 +621,85 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     }//    switch (action)
     buildTableView();
   }//public void onFinishTokenDialog(String inputText)
+  /**
+   clear
+   * 
+   * clear the data
+   */
   public void clear()
   {
     data.clear();
     hidden.clear();
   }
+  /**
+   * coming back from the hovering menu
+   */
+  public void onFinishArrayDialog(String token, String action)
+  {
+    int line;
+    if (token.contains(":"))
+    {
+      String[] pos = token.split(":");
+      token = pos[1];
+      try
+      {
+        line = Integer.parseInt(pos[2]);
+        //Toast.makeText(context, "removed line  " + line + " of " + token, Toast.LENGTH_SHORT).show();
+      }//try
+      catch (NumberFormatException e)
+      {
+        Toast.makeText(context, "couldn't extract linenum out of  " + token, Toast.LENGTH_SHORT).show();
+        return;
+      }//catch
+    }//if (token.contains(":"))
+    else
+    {
+      Toast.makeText(context, "not correct token  " + token, Toast.LENGTH_SHORT).show();
+      return;
+    }
+
+    switch (action)
+    {
+      case "delete":
+        for (Map.Entry<Integer,String> keyVal: data.header().entrySet())
+        {
+          String lang = keyVal.getValue();
+          StringEntry aE = data.get(token, lang);
+          if (aE != null && aE instanceof ArrayEntry)
+          {
+            ArrayEntry rec = (ArrayEntry) aE;
+            rec.remove(line);
+          }//if (aE != null && aE instanceof ArrayEntry)
+        }//for (String lang: langList)
+        
+        //else deleteToken(token);
+        break;
+      case "up":
+        for (Map.Entry<Integer,String> keyVal: data.header().entrySet())
+        {
+          String lang = keyVal.getValue();
+          StringEntry aE = data.get(token, lang);
+          if (aE != null && aE instanceof ArrayEntry)
+          {
+            ArrayEntry rec = (ArrayEntry) aE;
+            rec.swap(line, line -1);
+          }//if (aE != null && aE instanceof ArrayEntry)
+        }//for (String lang: langList)
+        break;
+      case "down":
+        for (Map.Entry<Integer,String> keyVal: data.header().entrySet())
+        {
+          String lang = keyVal.getValue();
+          StringEntry aE = data.get(token, lang);
+          if (aE != null && aE instanceof ArrayEntry)
+          {
+            ArrayEntry rec = (ArrayEntry) aE;
+            rec.swap(line, line +1);
+          }//if (aE != null && aE instanceof ArrayEntry)
+        }//for (String lang: langList)
+        break;
+    }//    switch (action)
+    buildTableView();
+  }//public void onFinishArrayDialog(String inputText)
+
 }//public class StringXmlTableFrag extends Fragment

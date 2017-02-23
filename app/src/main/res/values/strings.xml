@@ -7,6 +7,7 @@
    <string name="app_name">IntStringSynchro</string>
    <string name="choose_type">Choose ressource type</string>
    <string name="def_val">default value</string>
+   <string name="del_line">delete line</string>
    <string name="fallback">default</string>
    <string name="files_loaded">files loaded</string>
    <string name="files_saved">files saved</string>
@@ -17,12 +18,14 @@
    <string name="missing_value">missing (default) value</string>
    <string name="missing_xml">string.xml not found, specify the res directory, without values or string.xml</string>
    <string name="mode_unknown">unknown mode, allowed: add, del,edit</string>
+   <string name="move_down">down</string>
+   <string name="move_up">up</string>
    <string name="none">none</string>
    <plurals name="numberOfSongsAvailable">
       <item quantity="few">%d songs avaiable.</item>
       <item quantity="one">One Song available.</item>
-      <item quantity="zero">No Songs available</item>
       <item quantity="other">%d songs available.</item>
+      <item quantity="zero">No Songs available</item>
    </plurals>
    <string name="open_stringxml">select a project or a string.xml file of a project</string>
    <string name="reset_path">reset</string>

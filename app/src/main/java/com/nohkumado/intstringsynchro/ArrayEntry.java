@@ -6,7 +6,7 @@ import java.util.*;
  * @licence GLP v3
  * @version  "%I%, %G%",
  * 
- 
+
  Representation of a string ressource of type array 
 
  example 
@@ -93,19 +93,34 @@ public class ArrayEntry extends StringEntry
     array.add(msg);
   }//public void add(String msg)
   /**
-  * delegated method for the array size
-  */
+   * delegated method for the array size
+   */
   public int size()
   {
     if (array != null)  return array.size();
     return -1;
   }//public int size()
   /**
-  * delegated method for getting at index n
-  */
+   * delegated method for getting at index n
+   */
   public String get(int line)
   {
     if (array != null) return array.get(line);
     return null;
   }//public String get(int line)
+  
+
+  public void swap(int line, int p1)
+  {
+    if (array == null) return;
+    if(line > p1 && p1 >=0)
+    {
+      Collections.swap(array,line,p1);
+    }
+    else
+    if(line < p1 && p1 <array.size())
+    {
+      Collections.swap(array,line,p1);
+    } 
+  }//public void swap(int line, int p1)
 }//class

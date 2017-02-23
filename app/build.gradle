@@ -1,15 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 21
+    compileSdkVersion 25
     buildToolsVersion "21.1.0"
 
     defaultConfig {
         applicationId "com.nohkumado.intstringsynchro"
-        minSdkVersion 14
-        targetSdkVersion 21
-        versionCode 10
-        versionName "1.10"
+        minSdkVersion 21
+        targetSdkVersion 25
+        versionCode 12
+        versionName "1.12"
     }
     buildTypes {
         release {
@@ -21,6 +21,7 @@ android {
 
 dependencies {
   compile 'com.github.angads25:filepicker:1.0.8'
+  //compile 'com.github.amlcurran.showcaseview:library:5.4.3'
   compile project('::../UtilsApp:nohutils')
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }

@@ -7,6 +7,7 @@
    <string name="app_name">IntStringSynchro</string>
    <string name="choose_type">choix de type de ressource</string>
    <string name="def_val">valeur par défaut</string>
+   <string name="del_line">effacer</string>
    <string name="fallback">valeur par défaut</string>
    <string name="files_loaded">chargé les fichiers</string>
    <string name="files_saved">sauvegardé les fichiers</string>
@@ -17,6 +18,8 @@
    <string name="missing_value">valeur manquante</string>
    <string name="missing_xml">pas trouvé strings.xml, priere de spécifier un chemin vers un projet existant</string>
    <string name="mode_unknown">mode non reconnu, permis: add,del,edit</string>
+   <string name="move_down">descendre</string>
+   <string name="move_up">élever</string>
    <string name="none">aucune</string>
    <string name="open_stringxml">Ouvrir un projet avec un/des fichier strings.xml</string>
    <string-array name="planets_array">
