@@ -109,6 +109,7 @@ public class DirectoryScanner
                 }
                 else
                 {
+                  if(subDirs != null && aFile != null) //fix for a zendphone crash
                   subDirs.add(aFile);
                   // Log.d(TAG, "added("+fName+") " + aFile.getAbsolutePath());
                 }
