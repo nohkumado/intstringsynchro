@@ -255,50 +255,64 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
     String content = v.getText().toString().trim();
     String cleaned = TextUtils.htmlEncode(content);
     //Log.d(TAG, "Editor action! " + event + "  id" + actionId + " " + content + " clean *" + cleaned + "'");
+    if(event == null)
+    {
+      if (EditorInfo.IME_ACTION_DONE == actionId)
+      {
+        validateNewLine(v);//else
+        return true;
+      }//if (EditorInfo.IME_ACTION_DONE == actionId)
+      Toast.makeText(context, "Invalid event, Please send me a mail with : 'event = null, CODE = " + actionId+"'", Toast.LENGTH_LONG).show();
+    }//if(event == null)
 
     if (EditorInfo.IME_ACTION_DONE == actionId || (event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER))
     {
-      String posHint = v.getHint().toString().trim();
-      String[] pos = posHint.split(":");
-
-      if (pos.length == 2)
-      {
-        StringEntry aEntry = new StringEntry(pos[0], v.getText().toString());
-        data.set(pos[0], pos[1], aEntry);
-      }//if (pos.length == 2) 
-      else
-      {
-        try
-        {
-          String token = pos[0];
-          String lang = pos[1];
-
-          int num =  Integer.parseInt(pos[2]);  
-          //numeric
-          ArrayEntry aEntry = (ArrayEntry) data.get(token, lang);
-          if (aEntry == null)
-          {
-            aEntry = new ArrayEntry(token);
-            data.set(token, lang, aEntry);
-          }//if (aEntry == null)
-          aEntry.set(num, v.getText().toString().trim());
-          buildTableView();
-        }//try
-        catch (NumberFormatException e)
-        {
-          //Log.d(TAG, "adding plural");
-          PluralEntry aEntry = (PluralEntry) data.get(pos[0], pos[1]);
-          if (aEntry == null)
-          {
-            aEntry = new PluralEntry(pos[0]);
-            data.set(pos[0], pos[1], aEntry);
-          }//if (aEntry == null)
-          aEntry.put(pos[2], v.getText().toString());
-        }//catch (NumberFormatException e)
-      }//else
+      validateNewLine(v);//else
       return true;
     }//if (EditorInfo.IME_ACTION_DONE == actionId || (event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER))
     return false;
+  }//public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
+
+  private void validateNewLine(TextView v)
+  {
+    String posHint = v.getHint().toString().trim();
+    String[] pos = posHint.split(":");
+
+    if (pos.length == 2)
+    {
+      StringEntry aEntry = new StringEntry(pos[0], v.getText().toString());
+      data.set(pos[0], pos[1], aEntry);
+    }//if (pos.length == 2) 
+    else
+    {
+      try
+      {
+        String token = pos[0];
+        String lang = pos[1];
+
+        int num =  Integer.parseInt(pos[2]);  
+        //numeric
+        ArrayEntry aEntry = (ArrayEntry) data.get(token, lang);
+        if (aEntry == null)
+        {
+          aEntry = new ArrayEntry(token);
+          data.set(token, lang, aEntry);
+        }//if (aEntry == null)
+        aEntry.set(num, v.getText().toString().trim());
+        buildTableView();
+      }//try
+      catch (NumberFormatException e)
+      {
+        //Log.d(TAG, "adding plural");
+        PluralEntry aEntry = (PluralEntry) data.get(pos[0], pos[1]);
+        if (aEntry == null)
+        {
+          aEntry = new PluralEntry(pos[0]);
+          data.set(pos[0], pos[1], aEntry);
+        }//if (aEntry == null)
+        aEntry.put(pos[2], v.getText().toString());
+      }//catch (NumberFormatException e)
+    }
   }//onEditorAction
   /**
    * create the table entry for a plural entr
