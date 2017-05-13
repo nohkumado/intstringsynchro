@@ -183,8 +183,11 @@ DialogSelectionListener//, OnEditorActionListener
     pathView = (TextView) findViewById(R.id.path_view);
     pathView.setText(actProjectPath);
     pathView.setOnClickListener(this);
+    Log.d(TAG,"got here trying to load '"+actProjectPath+"'");
     if (actProjectPath == null || actProjectPath.length() <= 0 || tryToFindADefaultDir().equals(actProjectPath))
     {
+      Log.d(TAG,"trying to load '"+tryToFindADefaultDir() + "/AppProjects"+"'");
+      
       callProjectSelect(tryToFindADefaultDir() + "/AppProjects");
     }//if(actProjectPath == null || tryToFindADefaultDir().equals(actProjectPath))
     else if (actProjectPath != null && actProjectPath.length() > 0 && data.size() <= 0) 
@@ -443,7 +446,7 @@ DialogSelectionListener//, OnEditorActionListener
       for (String fName : p1) 
       {
         //Log.d(TAG,"calling find string file on "+fName);
-        for (StringFile aFile: scanner.findStringFiles(fName, error)) toLoad.add(aFile);
+        for (StringFile aFile: scanner.findStringFiles(fName, error,this)) toLoad.add(aFile);
       }
       if (scanner.isAmbiguous())
       {

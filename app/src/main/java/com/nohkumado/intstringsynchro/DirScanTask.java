@@ -12,6 +12,7 @@ import android.os.*;
 import android.util.*;
 import java.util.*;
 import android.app.*;
+import android.widget.*;
 
 public class DirScanTask extends AsyncTask<String,Integer,Void>
 {
@@ -36,8 +37,16 @@ public class DirScanTask extends AsyncTask<String,Integer,Void>
     for(String fName : p1) 
     {
       //Log.d(TAG,"calling find string file on "+fName);
-      for(StringFile aFile: scanner.findStringFiles(fName,error)) toLoad.add(aFile);
+      //for(StringFile aFile: scanner.findStringFiles(fName,error)) toLoad.add(aFile);
+      
+      ArrayList<StringFile> foundFiles = scanner.findStringFiles(fName,error,mA);
+      //Log.d(TAG,"retrieved "+foundFiles);
+      for(StringFile aFile: foundFiles) toLoad.add(aFile);
+      
     }
+    //Log.d(TAG,"would toast  "+error+" to "+mA);
+    
+    if(error.length() > 0) Toast.makeText(mA,error.toString(), Toast.LENGTH_LONG).show(); 
     return null;
   }
 
@@ -50,6 +59,3 @@ public class DirScanTask extends AsyncTask<String,Integer,Void>
   }//  protected Void doInBackground(String[] p1)
   
 }//public class DirScanTask extends AsyncTask<String,Integer,Void>
-
-
-

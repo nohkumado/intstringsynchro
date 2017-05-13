@@ -263,6 +263,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
         return true;
       }//if (EditorInfo.IME_ACTION_DONE == actionId)
       Toast.makeText(context, "Invalid event, Please send me a mail with : 'event = null, CODE = " + actionId+"'", Toast.LENGTH_LONG).show();
+      return false;
     }//if(event == null)
 
     if (EditorInfo.IME_ACTION_DONE == actionId || (event.getAction() == KeyEvent.ACTION_DOWN && event.getKeyCode() == KeyEvent.KEYCODE_ENTER))

@@ -20,7 +20,9 @@
    <string name="mode_unknown">unknown mode, allowed: add, del,edit</string>
    <string name="move_down">down</string>
    <string name="move_up">up</string>
+   <string name="no_right">not enough rights</string>
    <string name="none">none</string>
+   <string name="not_a_dir">not a directory</string>
    <plurals name="numberOfSongsAvailable">
       <item quantity="few">%d songs avaiable.</item>
       <item quantity="one">One Song available.</item>
