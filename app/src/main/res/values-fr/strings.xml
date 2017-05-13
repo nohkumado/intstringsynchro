@@ -22,7 +22,7 @@
    <string name="move_up">élever</string>
    <string name="no_right">pas assez de droits</string>
    <string name="none">aucune</string>
-   <string name="not_a_dir">ce n'est pas un repertoire</string>
+   <string name="not_a_dir">ce n\'est pas un repertoire</string>
    <string name="open_stringxml">Ouvrir un projet avec un/des fichier strings.xml</string>
    <string-array name="planets_array">
       <item>Mercure</item>
