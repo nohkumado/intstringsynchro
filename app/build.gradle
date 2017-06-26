@@ -8,8 +8,8 @@ android {
         applicationId "com.nohkumado.intstringsynchro"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 17
-        versionName "1.17"
+        versionCode 18
+        versionName "1.18"
     }
     buildTypes {
         release {

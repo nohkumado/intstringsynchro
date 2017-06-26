@@ -46,7 +46,7 @@ public class DirScanTask extends AsyncTask<String,Integer,Void>
     }
     //Log.d(TAG,"would toast  "+error+" to "+mA);
     
-    if(error.length() > 0) Toast.makeText(mA,error.toString(), Toast.LENGTH_LONG).show(); 
+    if(error.length() > 0) Log.e(TAG,error.toString()); 
     return null;
   }
 
