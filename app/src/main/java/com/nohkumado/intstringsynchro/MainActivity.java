@@ -433,24 +433,24 @@ DialogSelectionListener//, OnEditorActionListener
    * return from the filechooserdialog
    */
   @Override
-  public void onSelectedFilePaths(String[] p1)
+  public void onSelectedFilePaths(String[] selectedStartDirs)
   {
     ArrayList<StringFile> toLoad = new ArrayList<>();
     StringBuilder error = new StringBuilder();
     //Log.d(TAG, "onSelected " + Arrays.toString(p1));
     StringFileLoadTask task = new StringFileLoadTask(data, this);
     DirectoryScanner scanner;
-    if (p1.length > 0) 
+    if (selectedStartDirs.length > 0) 
     {
       scanner = new DirectoryScanner();
-      for (String fName : p1) 
+      for (String fName : selectedStartDirs) 
       {
         //Log.d(TAG,"calling find string file on "+fName);
         for (StringFile aFile: scanner.findStringFiles(fName, error,this)) toLoad.add(aFile);
       }
       if (scanner.isAmbiguous())
       {
-        callProjectSelect(p1);
+        callProjectSelect(selectedStartDirs);
         return;
       }
       //toLoad = task.findStringFiles(p1[0], error);
