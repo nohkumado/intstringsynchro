@@ -23,7 +23,7 @@ public class PluralEntry extends StringEntry
   /** CTOR */
   public PluralEntry(String n, HashMap<String,StringEntry> a)
   {
-    super(n, "");
+    super(n, new CdataString());
     if (a != null) hashmap = a;
     else hashmap = new HashMap<>();
   }
@@ -63,11 +63,11 @@ public class PluralEntry extends StringEntry
     StringBuilder  sb = new StringBuilder();
     sb.append(indent).append("<plurals name=\"").append(token).append("\">\n");
     for (String quant : hashmap.keySet()) 
-      sb.append(indent).append(indent).append("<item quantity=\"").append(quant).append("\">").append(hashmap.get(quant).text).append("</item>\n");
+      sb.append(indent).append(indent).append("<item quantity=\"").append(quant).append("\">").append(hashmap.get(quant).toXml(indent)).append("</item>\n");
     sb.append(indent).append("</plurals>\n");
     return sb.toString();
   }//public String toXml(String indent)
-  public void put(String key, String value)
+  public void put(String key, CdataString value)
   {
     if(availableKEys == null) availableKEys = Pattern.compile("zero|one|two|few|many|other");
     Matcher m = availableKEys.matcher(key);

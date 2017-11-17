@@ -530,7 +530,8 @@ DialogSelectionListener//, OnEditorActionListener
             {
               //Log.d(TAG, "found langCand " + langCand);
               String token = intentArgs.getString("token");
-              StringEntry newEntry = new StringEntry(token, intentArgs.get(key).toString());
+				CdataString txt = new CdataString(intentArgs.get(key).toString());
+				StringEntry newEntry = new StringEntry(token, txt);
               data.set(token, langCand, newEntry);
             }//if (langCand != null)
             //else Log.d(TAG, "not a value " + key);

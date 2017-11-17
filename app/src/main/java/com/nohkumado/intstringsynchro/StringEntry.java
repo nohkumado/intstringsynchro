@@ -13,24 +13,38 @@ public class StringEntry
   /** the token used in the code */
   protected String token;
   /** the text associated with that token */
-  protected String text;
+  private CdataString text;
   /** CTOR */
-  public StringEntry(String name, String text)
+  public StringEntry(String name, CdataString text)
   {
     token = name;
     this.text = text;
+  }
+
+  public boolean isCdata()
+  {
+	  if(text != null) return text.isCdata();
+	  return false;
   }//public StringEntry(String name, String text)
   /**
    * make a string representation, for pretty printing
    */
-  @Override
-  public String toString()
+  public String asString()
   {
-    StringBuilder  sb = new StringBuilder();
-    sb.append("String[").append(token).append("]");
-    sb.append(text);
-    return sb.toString();
+    return text.toString();
   }//public String toString()
+	/**
+	 * make a string representation, for pretty printing
+	 */
+	@Override
+	public String toString()
+	{
+		StringBuilder  sb = new StringBuilder();
+		sb.append("String[").append(token).append("]");
+		sb.append(text);
+		return sb.toString();
+	}//public String toString()
+	
   /**
    * create the xml representation, the stuff needed to write into strings.xml
    example 
@@ -40,7 +54,7 @@ public class StringEntry
   {
     StringBuilder  sb = new StringBuilder();
     sb.append(indent).append("<string name=\"").append(token).append("\">");
-    sb.append(text).append("</string>\n");
+    sb.append(text.toXml()).append("</string>\n");
     return sb.toString();
   }//public String toXml(String indent)
 }//public class StringEntry

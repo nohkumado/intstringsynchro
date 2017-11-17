@@ -122,15 +122,16 @@ public class IntStringSynchro extends Activity
               switch(type)
               {
                 case "string":
-                  newEntry = new StringEntry(token, intentArgs.get(key).toString());
+					  CdataString txt = new CdataString(intentArgs.get(key).toString());
+                  newEntry = new StringEntry(token, txt);
                   break;
                 case "array":
                   newEntry = new ArrayEntry(token);
-                  ((ArrayEntry)newEntry).add(intentArgs.get(key).toString().trim());
+					  ((ArrayEntry)newEntry).add(new CdataString(intentArgs.get(key).toString().trim()));
                   break;
                 case "plural":
                   newEntry = new PluralEntry(token);
-                  ((PluralEntry)newEntry).put("one",intentArgs.get(key).toString().trim());
+					  ((PluralEntry)newEntry).put("one",new CdataString(intentArgs.get(key).toString().trim()));
                   
                   break;
               }
