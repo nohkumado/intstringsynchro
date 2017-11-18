@@ -45,9 +45,9 @@ public class CdataString
 		{
 			cdata = true;
 			summary = summary.replace("]]>", "");
-			Log.d(TAG, "created cdata for " + summary);
+			//Log.d(TAG, "created cdata for " + summary);
 		}
-		else Log.d(TAG, "no problem with " + summary);
+		//else Log.d(TAG, "no problem with " + summary);
 		content = summary;
 
 		return this;
@@ -72,7 +72,7 @@ public class CdataString
 
 	public String toXml()
 	{
-		if (cdata) return "<![CDATA[" + content + "]]>";
+		if (cdata) return "<![CDATA[\"" + content + "\"]]>";
 		return content;
 	}//public void cdata(String summary)
 }//public class CdataString

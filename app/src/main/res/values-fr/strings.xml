@@ -20,6 +20,7 @@
    <string name="mode_unknown">mode non reconnu, permis: add,del,edit</string>
    <string name="move_down">descendre</string>
    <string name="move_up">élever</string>
+   <string name="no_dir_found">Pas trouve de structure de fichiers style maven avec un fichier strings.xml dedans</string>
    <string name="no_right">pas assez de droits</string>
    <string name="none">aucune</string>
    <string name="not_a_dir">ce n\'est pas un repertoire</string>

@@ -68,7 +68,7 @@ public class ArrayEntry extends StringEntry
 	{
 		StringBuilder  sb = new StringBuilder();
 		sb.append(indent).append("<string-array name=\"").append(token).append("\">\n");
-		for (CdataString iem : array) sb.append(indent).append(indent).append("<item>").append(iem.toXml()).append("</item>\n");
+		for (CdataString iem : array) sb.append(indent).append(indent).append("<item>").append(iem.toXml().trim()).append("</item>\n");
 
 		sb.append(indent).append("</string-array>\n");
 		return sb.toString();

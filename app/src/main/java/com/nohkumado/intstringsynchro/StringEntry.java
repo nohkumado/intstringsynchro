@@ -54,7 +54,7 @@ public class StringEntry
   {
     StringBuilder  sb = new StringBuilder();
     sb.append(indent).append("<string name=\"").append(token).append("\">");
-    sb.append(text.toXml()).append("</string>\n");
+    sb.append(text.toXml().trim()).append("</string>\n");
     return sb.toString();
   }//public String toXml(String indent)
 }//public class StringEntry

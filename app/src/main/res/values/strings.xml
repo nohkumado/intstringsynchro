@@ -5,6 +5,10 @@
    <string name="add_project">Add Project</string>
    <string name="add_tok">Add Token</string>
    <string name="app_name">IntStringSynchro</string>
+   <string-array name="array_test">
+      <item>a test</item>
+      <item>next</item>
+   </string-array>
    <string name="choose_type">Choose ressource type</string>
    <string name="def_val">default value</string>
    <string name="del_line">delete line</string>
@@ -20,14 +24,15 @@
    <string name="mode_unknown">unknown mode, allowed: add, del,edit</string>
    <string name="move_down">down</string>
    <string name="move_up">up</string>
+   <string name="no_dir_found">No suitable directory found, please supply a maven style tree with a strimg.xml file in it</string>
    <string name="no_right">not enough rights</string>
    <string name="none">none</string>
    <string name="not_a_dir">not a directory</string>
    <plurals name="numberOfSongsAvailable">
-      <item quantity="few">%d songs avaiable.</item>
-      <item quantity="one">One Song available.</item>
       <item quantity="zero">No Songs available</item>
       <item quantity="other">%d songs available.</item>
+      <item quantity="one">One Song available.</item>
+      <item quantity="few">%d songs avaiable.</item>
    </plurals>
    <string name="open_stringxml">select a project or a string.xml file of a project</string>
    <string name="reset_path">reset</string>

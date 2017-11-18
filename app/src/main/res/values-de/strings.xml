@@ -20,6 +20,7 @@
    <string name="mode_unknown">unbekannter Modus, add,del, edit erlaubt</string>
    <string name="move_down">runter</string>
    <string name="move_up">hoch</string>
+   <string name="no_dir_found">Kein Maven kompatibler Verzeichnisbaum mit einer strings.xml Datei gefunden</string>
    <string name="no_right">nicht genug Rechte</string>
    <string name="none">keine</string>
    <string name="not_a_dir">kein Verzeichnis</string>

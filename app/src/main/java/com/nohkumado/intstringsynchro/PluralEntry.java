@@ -63,7 +63,7 @@ public class PluralEntry extends StringEntry
     StringBuilder  sb = new StringBuilder();
     sb.append(indent).append("<plurals name=\"").append(token).append("\">\n");
     for (String quant : hashmap.keySet()) 
-      sb.append(indent).append(indent).append("<item quantity=\"").append(quant).append("\">").append(hashmap.get(quant).toXml(indent)).append("</item>\n");
+      sb.append(indent).append(indent).append("<item quantity=\"").append(quant).append("\">").append(hashmap.get(quant).asString().trim()).append("</item>\n");
     sb.append(indent).append("</plurals>\n");
     return sb.toString();
   }//public String toXml(String indent)
