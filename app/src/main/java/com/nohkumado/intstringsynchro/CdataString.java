@@ -72,7 +72,17 @@ public class CdataString
 
 	public String toXml()
 	{
-		if (cdata) return "<![CDATA[\"" + content + "\"]]>";
+		if (cdata)
+		{
+			content = content.trim();
+			StringBuilder sb = new StringBuilder();
+			sb.append("<![CDATA[");
+			if(!content.startsWith("\"")) sb.append("\"");
+			sb.append(content);
+			if(!content.endsWith("\"")) sb.append("\"");
+			sb.append( "]]>");
+			return  sb.toString();
+		}//if (cdata)
 		return content;
 	}//public void cdata(String summary)
 }//public class CdataString
