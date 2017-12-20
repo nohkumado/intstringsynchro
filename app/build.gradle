@@ -1,15 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 28
     buildToolsVersion "21.1.0"
 
     defaultConfig {
         applicationId "com.nohkumado.intstringsynchro"
-        minSdkVersion 21
-        targetSdkVersion 25
-        versionCode 21
-        versionName "1.21"
+        minSdkVersion 23
+        targetSdkVersion 28
+        versionCode 22
+        versionName "1.22"
     }
     buildTypes {
         release {

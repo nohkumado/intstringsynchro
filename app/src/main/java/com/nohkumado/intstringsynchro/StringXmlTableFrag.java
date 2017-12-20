@@ -418,7 +418,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
 					if (someContent != null && someContent.isCdata()) 
 					{
 						newCell.setBackgroundColor(android.R.color.holo_orange_light);
-						debug("set background for " + token);
+						//debug("set background for " + token);
 					}
 				}//if (data.get(token, lang) != null)
 				else newRow.addView(createEditView(llp, "", token + ":" + lang + ":" + line));
@@ -456,7 +456,7 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
 			TextView newCell = createEditView(llp, text, token + ":" + lang);
 			if (someContent != null && someContent.isCdata()) 
 			{
-				debug("set background for " + token);
+				//debug("set background for " + token);
 				//Color.argb(255, rand.nextInt(256), rand.nextInt(256), rand.nextInt(256)
 				//newCell.setBackgroundColor(android.R.color.holo_orange_light);
 				newCell.setBackgroundColor(R.color.colorAccent);
@@ -528,10 +528,10 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
 			//Toast.makeText(context, "hit token " + ((TextView)p1).getText(), Toast.LENGTH_SHORT).show();
 			String token = ((TextView)p1).getHint().toString();
 			if (token == null) token = "";
-			Log.d(TAG, "text '" + ((TextView)p1).getText() + "' token '" + token + "'");
+			//Log.d(TAG, "text '" + ((TextView)p1).getText() + "' token '" + token + "'");
 			if ("token".equals(token))
 			{
-				Log.d(TAG, "we have array title");
+				//Log.d(TAG, "we have array title");
 				token = ((TextView)p1).getText().toString();
 				if (token == null || token.length() <= 0) token =  ((TextView)p1).getHint().toString();
 
@@ -543,14 +543,13 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
 			}//if ("token".equals(((TextView)p1).getHint().toString()))
 			else if (token.startsWith("token"))
 			{
-				Log.d(TAG, "we have array line");
+				//Log.d(TAG, "we have array line");
 				//"token:" + token + ":" + line)
 				DialogArray tokenActionDia = new DialogArray(getActivity(), p1, token);
 				tokenActionDia.setTokenDialogListener(this);
 				tokenActionDia.getMenuInflater().inflate(R.menu.array_menu, tokenActionDia.getMenu());
 				tokenActionDia.setOnMenuItemClickListener(tokenActionDia);
 				tokenActionDia.show();
-
 			}
 
 		}//else if (p1 instanceof TextView)
@@ -657,7 +656,18 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
 				else deleteToken(token);
 				break;
 			case "rename":
-				Toast.makeText(context, "rename of " + token + " not yet supported  ", Toast.LENGTH_SHORT).show();
+				//Toast.makeText(context, "rename of " + token + " not yet supported  ", Toast.LENGTH_SHORT).show();
+				DialogRenameFrag dial = new DialogRenameFrag().setData(data,token).setCaller(this);
+				dial.show(context.getFragmentManager(),"rename");
+//				for (Map.Entry<Integer,String> keyVal: data.header().entrySet())
+//				{
+//					String lang = keyVal.getValue();
+//					StringEntry aE = data.get(token, lang);
+//					if (aE != null)
+//					{
+//					}//if (aE != null && aE instanceof ArrayEntry)
+//				}//for (String lang: langList)
+//				
 				break;
 			case "copy":
 				Toast.makeText(context, "copy  " + token + " not yet supported  ", Toast.LENGTH_SHORT).show();

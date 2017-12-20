@@ -179,7 +179,7 @@ public class StringXmlParser
 		summary = parser.getText();
 		if (parser.getEventType() == XmlPullParser.CDSECT)
 		{
-			Log.e(TAG, "#### found CDATA " + summary);
+			//Log.e(TAG, "#### found CDATA " + summary);
 			result.cdata(summary);
 		}
 		else if (parser.getEventType() == XmlPullParser.TEXT)//several text segments possible
