@@ -41,6 +41,13 @@ public class ArrayEntry extends StringEntry
 		if (a != null) array = a;
 		else array = new ArrayList<>();
 	}//public ArrayEntry(String n, ArrayList<String> a)
+	public ArrayEntry(ArrayEntry a)
+	{
+		super(a);
+		array = new ArrayList<>();
+		for(CdataString tok : a.array) array.add(new CdataString(tok));
+	}//public ArrayEntry(ArrayEntry a)
+	
 	/**
 	 * remove an entry at 
 	 * @argument index

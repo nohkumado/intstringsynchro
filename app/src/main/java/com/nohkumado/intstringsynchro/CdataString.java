@@ -19,6 +19,14 @@ public class CdataString
 	{
 		content(init);
 	}
+	public CdataString(CdataString init)
+	{
+		if (init != null)
+		{
+			content = init.content;
+			cdata = init.cdata;	
+		}//if(init != null)
+	}//copy CTOR
 
 	public boolean isCdata()
 	{
@@ -77,10 +85,10 @@ public class CdataString
 			content = content.trim();
 			StringBuilder sb = new StringBuilder();
 			sb.append("<![CDATA[");
-			if(!content.startsWith("\"")) sb.append("\"");
+			if (!content.startsWith("\"")) sb.append("\"");
 			sb.append(content);
-			if(!content.endsWith("\"")) sb.append("\"");
-			sb.append( "]]>");
+			if (!content.endsWith("\"")) sb.append("\"");
+			sb.append("]]>");
 			return  sb.toString();
 		}//if (cdata)
 		return content;

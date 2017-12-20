@@ -15,6 +15,7 @@ import java.util.*;
 
 
 import android.view.View.OnClickListener;
+import java.util.regex.*;
 /**
  * @author Noh Kuma Do <nohkumado at gmail dot com>
  * @licence GLP v3
@@ -657,8 +658,8 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
 				break;
 			case "rename":
 				//Toast.makeText(context, "rename of " + token + " not yet supported  ", Toast.LENGTH_SHORT).show();
-				DialogRenameFrag dial = new DialogRenameFrag().setData(data,token).setCaller(this);
-				dial.show(context.getFragmentManager(),"rename");
+				DialogRenameFrag dial = new DialogRenameFrag().setData(data, token).setCaller(this);
+				dial.show(context.getFragmentManager(), "rename");
 //				for (Map.Entry<Integer,String> keyVal: data.header().entrySet())
 //				{
 //					String lang = keyVal.getValue();
@@ -670,7 +671,35 @@ DialogFragAddLang.AddLangDialogListener, DialogFragAddToken.AddTokenDialogListen
 //				
 				break;
 			case "copy":
-				Toast.makeText(context, "copy  " + token + " not yet supported  ", Toast.LENGTH_SHORT).show();
+				//Toast.makeText(context, "copy  " + token + " not yet supported  ", Toast.LENGTH_SHORT).show();
+				if (data.contains(token))
+				{
+					int n = 1;
+					Pattern pat = Pattern.compile("^(.*?)(\\d+)\\s*$");
+					Matcher m = pat.matcher(token);
+					if(m.find())
+					{
+						token = m.group(1);
+						n = Integer.parseInt(m.group(2));
+					}
+					String newName = token + n;
+					while (data.contains(newName)) 
+					{
+						n++;
+						newName = token + n;
+					}//while(data.contains(newName))
+
+					for (Map.Entry<Integer,String> keyVal: data.header().entrySet())
+					{
+						String lang = keyVal.getValue();
+						StringEntry aE = data.get(token, lang);
+
+						if (aE != null)
+						{
+							data.set(newName, lang, StringEntryFactory.instantiate(aE));
+						}//if (aE != null && aE instanceof ArrayEntry)
+					}//for (String lang: langList)
+				}//	if (data.contains(token))
 				break;
 		}//    switch (action)
 		buildTableView();

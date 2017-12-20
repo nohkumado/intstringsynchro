@@ -10,29 +10,37 @@ import java.util.*;
  */
 public class StringEntry
 {
-  /** the token used in the code */
-  protected String token;
-  /** the text associated with that token */
-  private CdataString text;
-  /** CTOR */
-  public StringEntry(String name, CdataString text)
-  {
-    token = name;
-    this.text = text;
-  }
+	/** the token used in the code */
+	protected String token;
+	/** the text associated with that token */
+	private CdataString text;
+	/** CTOR */
+	public StringEntry(String name, CdataString text)
+	{
+		token = name;
+		this.text = text;
+	}
+	public StringEntry(StringEntry template)
+	{
+		if(template != null)
+		{
+			token = template.token;
+			text = new CdataString( template.text);
+		}//if(template != null)
+	}//copy CTOR
 
-  public boolean isCdata()
-  {
-	  if(text != null) return text.isCdata();
-	  return false;
-  }//public StringEntry(String name, String text)
-  /**
-   * make a string representation, for pretty printing
-   */
-  public String asString()
-  {
-    return text.toString();
-  }//public String toString()
+	public boolean isCdata()
+	{
+		if (text != null) return text.isCdata();
+		return false;
+	}//public StringEntry(String name, String text)
+	/**
+	 * make a string representation, for pretty printing
+	 */
+	public String asString()
+	{
+		return text.toString();
+	}//public String toString()
 	/**
 	 * make a string representation, for pretty printing
 	 */
@@ -44,17 +52,17 @@ public class StringEntry
 		sb.append(text);
 		return sb.toString();
 	}//public String toString()
-	
-  /**
-   * create the xml representation, the stuff needed to write into strings.xml
-   example 
-   <string name="oyoyoy">something will be printed</string>
-   */
-  public String toXml(String indent)
-  {
-    StringBuilder  sb = new StringBuilder();
-    sb.append(indent).append("<string name=\"").append(token).append("\">");
-    sb.append(text.toXml().trim()).append("</string>\n");
-    return sb.toString();
-  }//public String toXml(String indent)
+
+	/**
+	 * create the xml representation, the stuff needed to write into strings.xml
+	 example 
+	 <string name="oyoyoy">something will be printed</string>
+	 */
+	public String toXml(String indent)
+	{
+		StringBuilder  sb = new StringBuilder();
+		sb.append(indent).append("<string name=\"").append(token).append("\">");
+		sb.append(text.toXml().trim()).append("</string>\n");
+		return sb.toString();
+	}//public String toXml(String indent)
 }//public class StringEntry
